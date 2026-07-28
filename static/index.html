@@ -50,6 +50,24 @@
     gtag("config", "G-WKJQ5QHQTJ")
   </script>
   <!-- DO NOT REMOVE-->
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const titleEl = document.querySelector('h1.title');
+    if (titleEl) {
+      titleEl.textContent = 'CHICKENCOOP';
+    }
+    
+    // Fallback observer in case the script loads slightly after DOMContentLoaded
+    const observer = new MutationObserver((mutations, obs) => {
+      const el = document.querySelector('h1.title');
+      if (el) {
+        el.textContent = 'CHICKENCOOP';
+        obs.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+</script>
 </body>
 
 </html>
