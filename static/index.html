@@ -50,18 +50,17 @@
     gtag("config", "G-WKJQ5QHQTJ")
   </script>
   <!-- DO NOT REMOVE-->
-  <script>
+ <script>
   window.addEventListener('DOMContentLoaded', () => {
     const titleEl = document.querySelector('h1.title');
     if (titleEl) {
-      titleEl.textContent = 'CHICKENCOOP';
+      titleEl.innerHTML = '<img src="./assets/cooplogo.png" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
     }
     
-    // Fallback observer in case the script loads slightly after DOMContentLoaded
     const observer = new MutationObserver((mutations, obs) => {
       const el = document.querySelector('h1.title');
       if (el) {
-        el.textContent = 'CHICKENCOOP';
+        el.innerHTML = '<img src="./assets/logo.png" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
         obs.disconnect();
       }
     });
