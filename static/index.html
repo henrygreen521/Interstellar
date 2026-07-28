@@ -54,13 +54,13 @@
   window.addEventListener('DOMContentLoaded', () => {
     const titleEl = document.querySelector('h1.title');
     if (titleEl) {
-      titleEl.innerHTML = '<img src="./assets/media/Icons/cooplogo.png" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+      titleEl.innerHTML = '<img src="./assets/media/Icons/cooplogo.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
     }
     
     const observer = new MutationObserver((mutations, obs) => {
       const el = document.querySelector('h1.title');
       if (el) {
-        el.innerHTML = '<img src="./assets/media/Icons/cooplogo.png" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+        el.innerHTML = '<img src="./assets/media/Icons/cooplogo.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
         obs.disconnect();
       }
     });
