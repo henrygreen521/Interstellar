@@ -50,17 +50,17 @@
     gtag("config", "G-WKJQ5QHQTJ")
   </script>
   <!-- DO NOT REMOVE-->
- <script>
+<script>
   window.addEventListener('DOMContentLoaded', () => {
     const titleEl = document.querySelector('h1.title');
     if (titleEl) {
-      titleEl.innerHTML = '<img src="./assets/cooplogo.png" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+      titleEl.innerHTML = '<img src="./assets/media/Icons/cooplogo.png" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
     }
     
     const observer = new MutationObserver((mutations, obs) => {
       const el = document.querySelector('h1.title');
       if (el) {
-        el.innerHTML = '<img src="./assets/logo.png" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+        el.innerHTML = '<img src="./assets/media/Icons/cooplogo.png" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
         obs.disconnect();
       }
     });
