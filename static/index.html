@@ -52,15 +52,27 @@
   <!-- DO NOT REMOVE-->
 <script>
   window.addEventListener('DOMContentLoaded', () => {
+    // Swap text for your logo image
     const titleEl = document.querySelector('h1.title');
     if (titleEl) {
-      titleEl.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+      titleEl.innerHTML = '<img src="/assets/media/icons/cooplogo.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+    }
+    
+    // Replace the cycling subtitle text
+    const subtitleEl = document.querySelector('.subtitle');
+    if (subtitleEl) {
+      subtitleEl.textContent = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt"';
     }
     
     const observer = new MutationObserver((mutations, obs) => {
       const el = document.querySelector('h1.title');
+      const sub = document.querySelector('.subtitle');
+      
       if (el) {
-        el.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+        el.innerHTML = '<img src="/assets/media/icons/cooplogo.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+      }
+      if (sub) {
+        sub.textContent = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt"';
         obs.disconnect();
       }
     });
