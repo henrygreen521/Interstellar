@@ -52,15 +52,32 @@
   <!-- DO NOT REMOVE-->
 <script>
   window.addEventListener('DOMContentLoaded', () => {
+    // 1. Handle the Logo Title
     const titleEl = document.querySelector('h1.title');
     if (titleEl) {
       titleEl.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
     }
     
+    // 2. Handle the Subtitle / Credits text
+    const subtitleEl = document.getElementById('splash');
+    if (subtitleEl) {
+      subtitleEl.textContent = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt"';
+    }
+    
+    // 3. Observer to catch dynamically rendered elements
     const observer = new MutationObserver((mutations, obs) => {
       const el = document.querySelector('h1.title');
+      const sub = document.getElementById('splash');
+      
       if (el) {
         el.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+      }
+      if (sub) {
+        sub.textContent = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt"';
+      }
+      
+      // Once both are successfully targeted and updated, disconnect the observer
+      if (el && sub) {
         obs.disconnect();
       }
     });
