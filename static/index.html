@@ -52,36 +52,15 @@
   <!-- DO NOT REMOVE-->
 <script>
   window.addEventListener('DOMContentLoaded', () => {
-    // 1. Handle the Logo Title (using cooplogo2)
     const titleEl = document.querySelector('h1.title');
     if (titleEl) {
       titleEl.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
     }
     
-    // 2. Set the single combined message and prevent template overwrites
     const splashEl = document.getElementById('splash');
     if (splashEl) {
-      const combinedMessage = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
-      
-      // Clear out native template listeners by cloning
-      const freshSplash = splashEl.cloneNode(false);
-      freshSplash.textContent = combinedMessage;
-      splashEl.parentNode.replaceChild(freshSplash, splashEl);
+      splashEl.textContent = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
     }
-    
-    // 3. Observer to keep everything stable if the page mutates
-    const observer = new MutationObserver((mutations, obs) => {
-      const el = document.querySelector('h1.title');
-      const splash = document.getElementById('splash');
-      
-      if (el) {
-        el.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
-      }
-      if (splash && splash.textContent !== 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop') {
-        splash.textContent = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
   });
 </script>
 </body>
