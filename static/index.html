@@ -55,30 +55,41 @@
     // 1. Handle the Logo Title
     const titleEl = document.querySelector('h1.title');
     if (titleEl) {
-      titleEl.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+      titleEl.innerHTML = '<img src="/assets/media/icons/cooplogo.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
     }
     
-    // 2. Handle the Subtitle / Credits text
-    const subtitleEl = document.getElementById('splash');
-    if (subtitleEl) {
-      subtitleEl.textContent = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt"';
+    // 2. Define your custom rotating messages
+    const messages = [
+      'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt"',
+      'thank @_mngoo for the logo',
+      'w coop'
+    ];
+    
+    let currentIndex = 0;
+    const splashEl = document.getElementById('splash');
+    
+    if (splashEl) {
+      // Clone the element to strip away all native template click/splash listeners
+      const freshSplash = splashEl.cloneNode(true);
+      splashEl.parentNode.replaceChild(freshSplash, splashEl);
+      
+      const activeSplash = document.getElementById('splash');
+      
+      // Set the first message
+      activeSplash.textContent = messages[currentIndex];
+      
+      // Rotate messages every 4 seconds and force-apply them
+      setInterval(() => {
+        currentIndex = (currentIndex + 1) % messages.length;
+        activeSplash.textContent = messages[currentIndex];
+      }, 4000);
     }
     
-    // 3. Observer to catch dynamically rendered elements
+    // 3. Observer to keep the logo safe if the page re-renders
     const observer = new MutationObserver((mutations, obs) => {
       const el = document.querySelector('h1.title');
-      const sub = document.getElementById('splash');
-      
       if (el) {
-        el.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
-      }
-      if (sub) {
-        sub.textContent = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt, also @_mngoo for the logo';
-      }
-      
-      // Once both are successfully targeted and updated, disconnect the observer
-      if (el && sub) {
-        obs.disconnect();
+        el.innerHTML = '<img src="/assets/media/icons/cooplogo.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
