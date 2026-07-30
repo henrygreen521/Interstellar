@@ -52,15 +52,21 @@
   <!-- DO NOT REMOVE-->
 <script>
   window.addEventListener('DOMContentLoaded', () => {
-    const titleEl = document.querySelector('h1.title');
-    if (titleEl) {
-      titleEl.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
-    }
-    
-    const splashEl = document.getElementById('splash');
-    if (splashEl) {
-      splashEl.textContent = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
-    }
+    const targetText = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
+    const logoHtml = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+
+    // Enforce immediately and continuously every second
+    setInterval(() => {
+      const titleEl = document.querySelector('h1.title');
+      if (titleEl && titleEl.innerHTML !== logoHtml) {
+        titleEl.innerHTML = logoHtml;
+      }
+      
+      const splashEl = document.getElementById('splash');
+      if (splashEl && splashEl.textContent !== targetText) {
+        splashEl.textContent = targetText;
+      }
+    }, 1000);
   });
 </script>
 </body>
