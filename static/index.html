@@ -8,6 +8,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="shortcut icon" id="tab-favicon" href="favicon.png" />
   <title id="t">Home</title>
+  
+  <style>
+    #splash {
+      visibility: hidden;
+    }
+  </style>
+
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/h.css?v=01" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
@@ -55,18 +62,34 @@
     const targetText = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
     const logoHtml = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
 
-    // Enforce immediately and continuously every second
+    const titleEl = document.querySelector('h1.title');
+    if (titleEl) {
+      titleEl.innerHTML = logoHtml;
+    }
+    
+    const splashEl = document.getElementById('splash');
+    if (splashEl) {
+      splashEl.textContent = targetText;
+      splashEl.style.visibility = 'visible'; // Reveal it cleanly
+    }
+
+    // Keep it locked against template overrides
     setInterval(() => {
-      const titleEl = document.querySelector('h1.title');
-      if (titleEl && titleEl.innerHTML !== logoHtml) {
-        titleEl.innerHTML = logoHtml;
+      const title = document.querySelector('h1.title');
+      if (title && title.innerHTML !== logoHtml) {
+        title.innerHTML = logoHtml;
       }
       
-      const splashEl = document.getElementById('splash');
-      if (splashEl && splashEl.textContent !== targetText) {
-        splashEl.textContent = targetText;
+      const splash = document.getElementById('splash');
+      if (splash) {
+        if (splash.textContent !== targetText) {
+          splash.textContent = targetText;
+        }
+        if (splash.style.visibility === 'hidden') {
+          splash.style.visibility = 'visible';
+        }
       }
-    }, 1000);
+    }, 500);
   });
 </script>
 </body>
