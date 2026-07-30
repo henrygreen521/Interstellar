@@ -55,7 +55,7 @@
     // 1. Handle the Logo Title
     const titleEl = document.querySelector('h1.title');
     if (titleEl) {
-      titleEl.innerHTML = '<img src="/assets/media/icons/cooplogo.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+      titleEl.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
     }
     
     // 2. Define your custom rotating messages
@@ -89,7 +89,7 @@
     const observer = new MutationObserver((mutations, obs) => {
       const el = document.querySelector('h1.title');
       if (el) {
-        el.innerHTML = '<img src="/assets/media/icons/cooplogo.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+        el.innerHTML = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
