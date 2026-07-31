@@ -47,49 +47,21 @@
   <script src="/assets/js/m1.js"></script>
   <!-- DO NOT REMOVE-->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || []
-    function gtag() {
-      dataLayer.push(arguments)
-    }
-    gtag("js", new Date())
-
-    gtag("config", "G-WKJQ5QHQTJ")
-  </script>
-  <!-- DO NOT REMOVE-->
-<script>
+ <script>
   window.addEventListener('DOMContentLoaded', () => {
-    const targetText = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
-    const logoHtml = '<img src="/assets/media/icons/cooplogo2.webp" alt="Chicken Coop" style="max-height: 90px; width: auto;">';
+    const text = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
+    const logo = '<img src="/assets/media/icons/cooplogo2.webp" style="max-height: 90px;">';
 
-    const titleEl = document.querySelector('h1.title');
-    if (titleEl) {
-      titleEl.innerHTML = logoHtml;
-    }
-    
-    const splashEl = document.getElementById('splash');
-    if (splashEl) {
-      splashEl.textContent = targetText;
-      splashEl.style.visibility = 'visible'; // Reveal it cleanly
-    }
-
-    // Keep it locked against template overrides
     setInterval(() => {
-      const title = document.querySelector('h1.title');
-      if (title && title.innerHTML !== logoHtml) {
-        title.innerHTML = logoHtml;
-      }
+      document.querySelector('h1.title').innerHTML = logo;
+      document.getElementById('splash').textContent = text;
       
-      const splash = document.getElementById('splash');
-      if (splash) {
-        if (splash.textContent !== targetText) {
-          splash.textContent = targetText;
-        }
-        if (splash.style.visibility === 'hidden') {
-          splash.style.visibility = 'visible';
-        }
-      }
-    }, 500);
+      Object.defineProperty(document, 'title', {
+        get: () => 'ChickenCoop',
+        set: () => {}
+      });
+      document.getElementById('t').textContent = 'ChickenCoop';
+    }, 200);
   });
 </script>
 </body>
