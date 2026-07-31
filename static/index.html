@@ -49,30 +49,134 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
+    // 1. Branding & Cloak Protection Script
     const text = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
     const logo = '<img src="/assets/media/icons/cooplogo2.webp" style="max-height: 90px;">';
     const faviconUrl = 'assets/media/favicon/cooplogo.png';
 
     setInterval(() => {
-      document.querySelector('h1.title').innerHTML = logo;
+      const h1Title = document.querySelector('h1.title');
+      if (h1Title && h1Title.innerHTML !== logo) h1Title.innerHTML = logo;
       
       const splash = document.getElementById('splash');
       if (splash) {
-        splash.textContent = text;
-        splash.style.visibility = 'visible';
+        if (splash.textContent !== text) splash.textContent = text;
+        if (splash.style.visibility !== 'visible') splash.style.visibility = 'visible';
       }
       
-      Object.defineProperty(document, 'title', {
-        get: () => 'ChickenCoop',
-        set: () => {}
-      });
-      document.getElementById('t').textContent = 'ChickenCoop';
+      if (document.title !== 'ChickenCoop') {
+        Object.defineProperty(document, 'title', {
+          get: () => 'ChickenCoop',
+          set: () => {}
+        });
+      }
+      
+      const titleTag = document.getElementById('t');
+      if (titleTag && titleTag.textContent !== 'ChickenCoop') titleTag.textContent = 'ChickenCoop';
 
       let favicon = document.getElementById('tab-favicon') || document.querySelector("link[rel*='icon']");
-      if (favicon) {
+      if (favicon && favicon.href !== faviconUrl) {
         favicon.href = faviconUrl;
       }
     }, 200);
+
+    // 2. Corner Clock & Date Widget with Seconds Toggle
+    const clockDiv = document.createElement('div');
+    clockDiv.id = 'coop-clock';
+    clockDiv.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(20, 20, 20, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 15px;
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      z-index: 99999;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      text-align: right;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    `;
+    clockDiv.innerHTML = `<div id="coop-time" style="font-weight: bold; font-size: 16px;"></div><div id="coop-date" style="font-size: 11px; color: #aaa; margin-top: 2px;"></div>`;
+    document.body.appendChild(clockDiv);
+
+    let showSeconds = localStorage.getItem('coop_show_seconds') === 'true';
+
+    function updateClock() {
+      const now = new Date();
+      let timeOpts = { hour: 'numeric', minute: '2-digit', hour12: true };
+      if (showSeconds) timeOpts.second = '2-digit';
+      
+      const timeString = now.toLocaleTimeString([], timeOpts);
+      const dateString = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+      
+      const timeEl = document.getElementById('coop-time');
+      const dateEl = document.getElementById('coop-date');
+      if (timeEl) timeEl.textContent = timeString;
+      if (dateEl) dateEl.textContent = dateString;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 3. Settings Page Integration Observer
+    const observer = new MutationObserver(() => {
+      const settingsHeader = Array.from(document.querySelectorAll('h1, h2, h3, .title, span')).find(el => el.textContent.trim() === 'Settings');
+      const settingsContainer = settingsHeader ? settingsHeader.closest('div, section, .settings-content, body') : null;
+
+      if (settingsContainer && !document.getElementById('coop-settings-toggle')) {
+        const toggleWrapper = document.createElement('div');
+        toggleWrapper.id = 'coop-settings-toggle';
+        toggleWrapper.style.cssText = `
+          margin: 20px 0;
+          padding: 15px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 10px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: #fff;
+          font-family: inherit;
+        `;
+        
+        toggleWrapper.innerHTML = `
+          <div>
+            <div style="font-weight: bold; font-size: 14px;">Show Seconds on Corner Clock</div>
+            <div style="font-size: 12px; color: #888; margin-top: 2px;">Displays seconds in the live date & time widget</div>
+          </div>
+          <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer;">
+            <input type="checkbox" id="coop-sec-checkbox" ${showSeconds ? 'checked' : ''} style="opacity: 0; width: 0; height: 0;">
+            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .3s; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);"></span>
+          </label>
+        `;
+
+        const sliderStyle = document.createElement('style');
+        sliderStyle.innerHTML = `
+          #coop-settings-toggle input:checked + span { background-color: #ff5722 !important; }
+          #coop-settings-toggle input:checked + span:before { transform: translateX(20px); }
+          #coop-settings-toggle span:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%;
+          }
+        `;
+        document.head.appendChild(sliderStyle);
+
+        // Append nicely inside the settings panel
+        const targetTarget = settingsContainer.querySelector('.options, .content, .settings-list') || settingsContainer;
+        targetTarget.appendChild(toggleWrapper);
+
+        document.getElementById('coop-sec-checkbox').addEventListener('change', (e) => {
+          showSeconds = e.target.checked;
+          localStorage.setItem('coop_show_seconds', showSeconds);
+          updateClock();
+        });
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
   });
 </script>
 </body>
