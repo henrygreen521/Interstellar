@@ -47,15 +47,20 @@
   <script src="/assets/js/m1.js"></script>
   <!-- DO NOT REMOVE-->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
- <script>
+<script>
   window.addEventListener('DOMContentLoaded', () => {
     const text = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
     const logo = '<img src="/assets/media/icons/cooplogo2.webp" style="max-height: 90px;">';
-    const faviconUrl = '/assets/media/favicon/cooplogo.png';
+    const faviconUrl = 'assets/media/favicon/cooplogo.png';
 
     setInterval(() => {
       document.querySelector('h1.title').innerHTML = logo;
-      document.getElementById('splash').textContent = text;
+      
+      const splash = document.getElementById('splash');
+      if (splash) {
+        splash.textContent = text;
+        splash.style.visibility = 'visible';
+      }
       
       Object.defineProperty(document, 'title', {
         get: () => 'ChickenCoop',
