@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ChickenCoop Chat</title>
+  <style>
+    body { 
+      font-family: sans-serif; 
+      background: #111; 
+      color: #fff; 
+      display: flex; 
+      flex-direction: column; 
+      height: 100vh; 
+      margin: 0; 
+      padding: 20px; 
+      box-sizing: border-box; 
+    }
+    h2 { color: #ff5722; margin-top: 0; }
+    #chat-box { 
+      flex: 1; 
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+      border-radius: 12px; 
+      padding: 15px; 
+      overflow-y: auto; 
+      margin-bottom: 15px; 
+      background: #1a1a1a; 
+    }
+    .message { margin-bottom: 10px; line-height: 1.4; }
+    .message span { font-weight: bold; color: #ff5722; margin-right: 5px; }
+    #form { display: flex; gap: 10px; }
+    input { 
+      padding: 12px; 
+      border-radius: 8px; 
+      border: 1px solid rgba(255, 255, 255, 0.15); 
+      background: #222; 
+      color: #fff; 
+      font-size: 15px; 
+    }
+    #username { width: 140px; }
+    #message-input { flex: 1; }
+    button { 
+      padding: 12px 24px; 
+      background: #ff5722; 
+      border: none; 
+      border-radius: 8px; 
+      color: #fff; 
+      font-weight: bold; 
+      cursor: pointer; 
+    }
+  </style>
+</head>
+<body>
+
+  <h2>ChickenCoop Chat</h2>
+  <div id="chat-box"></div>
+
+  <form id="form">
+    <input type="text" id="username" placeholder="Your Name" required />
+    <input type="text" id="message-input" placeholder="Type a message..." required autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    // --- REPLACE WITH YOUR ACTUAL RENDER URL ---
+    const socket = io('https://chickencoop-chat-server.onrender.com');
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('message-input');
+    const usernameInput = document.getElementById('username');
+    const chatBox = document.getElementById('chat-box');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (input.value && usernameInput.value) {
+        socket.emit('chat_message', { 
+          user: usernameInput.value, 
+          text: input.value 
+        });
+        input.value = '';
+      }
+    });
+
+    socket.on('chat_message', (data) => {
+      const item = document.createElement('div');
+      item.classList.add('message');
+      item.innerHTML = `<span>${data.user}:</span> ${data.text}`;
+      chatBox.appendChild(item);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  </script>
+
+</body>
+</html>
