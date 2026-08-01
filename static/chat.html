@@ -183,7 +183,8 @@
 
             socket.on('receive_message', (data) => {
                 if (currentReceiver && (data.sender_id === currentReceiver.id || data.receiver_id === currentReceiver.id)) {
-                    appendMessage(data.message, data.sender_id === currentUser.id ? 'sent' : 'received', data.sender_id === currentUser.id ? currentUser.pfp : currentReceiver.pfp);
+                    const isSent = data.sender_id === currentUser.id;
+                    appendMessage(data.message, isSent ? 'sent' : 'received', isSent ? currentUser.pfp : currentReceiver.pfp);
                 }
             });
 
@@ -274,7 +275,6 @@
                     body: JSON.stringify({ sender_id: currentUser.id, receiver_id: targetUser.id })
                 });
 
-                const data = await res.json();
                 if (res.ok) {
                     statusEl.style.color = "#2ecc71";
                     statusEl.innerText = "Sent";
@@ -299,7 +299,7 @@
                 loadRequests();
                 loadFriends();
             } catch (e) {
-                // Handle network error quietly or alert if needed
+                // Handle network error quietly
             }
         }
 
@@ -313,12 +313,13 @@
                 
                 const box = document.getElementById('messages-box');
                 box.innerHTML = '';
+                
                 messages.forEach(m => {
                     const isSent = m.sender_id === currentUser.id;
                     appendMessage(m.message, isSent ? 'sent' : 'received', isSent ? currentUser.pfp : friend.pfp);
                 });
             } catch (e) {
-                // Handle fetch error
+                console.error("Error loading messages", e);
             }
         }
 
