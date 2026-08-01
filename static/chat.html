@@ -260,7 +260,7 @@
 
   <!-- Auth Screen / Main Landing Page -->
   <div id="auth-container">
-    <h2>🐔 ChickenCoop Chat</h2>
+    <h2>Chicken Coop Chat</h2>
     <div class="credits">Created by Mr.Green & Team</div>
     <div id="error-msg" class="error-msg"></div>
     <input type="text" id="auth-username" placeholder="Username" maxlength="15" required />
@@ -295,7 +295,7 @@
         <div class="chat-header">
           <span id="chat-with-display">Select a friend</span>
           <div class="header-actions">
-            <div class="theme-toggle" title="Toggle Light/Dark Mode" onclick="toggleTheme()">🌙</div>
+            <div class="theme-toggle" title="Toggle Light/Dark Mode" onclick="toggleTheme()">dark</div>
             <div class="menu-icon" title="Menu" onclick="toggleMenu()">☰</div>
           </div>
         </div>
@@ -569,11 +569,11 @@
       if (body.classList.contains('dark-mode')) {
         body.classList.remove('dark-mode');
         body.classList.add('light-mode');
-        toggleBtn.textContent = '☀️';
+        toggleBtn.textContent = 'light';
       } else {
         body.classList.remove('light-mode');
         body.classList.add('dark-mode');
-        toggleBtn.textContent = '🌙';
+        toggleBtn.textContent = 'dark';
       }
     }
 
