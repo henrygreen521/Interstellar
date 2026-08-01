@@ -228,7 +228,7 @@
     }
     #form button:disabled { background: #aaa; cursor: not-allowed; }
 
-    /* Foldout Menu Modal */
+    /* Foldout Menu Drawer */
     #foldout-menu {
       display: none;
       position: absolute;
@@ -260,7 +260,7 @@
 
   <!-- Auth Screen / Main Landing Page -->
   <div id="auth-container">
-    <h2>Chicken Coop Chat</h2>
+    <h2>🐔 ChickenCoop Chat</h2>
     <div class="credits">Created by Mr.Green & Team</div>
     <div id="error-msg" class="error-msg"></div>
     <input type="text" id="auth-username" placeholder="Username" maxlength="15" required />
@@ -569,11 +569,11 @@
       if (body.classList.contains('dark-mode')) {
         body.classList.remove('dark-mode');
         body.classList.add('light-mode');
-        toggleBtn.textContent = 'light';
+        toggleBtn.textContent = '☀️';
       } else {
         body.classList.remove('light-mode');
         body.classList.add('dark-mode');
-        toggleBtn.textContent = 'dark';
+        toggleBtn.textContent = '🌙';
       }
     }
 
