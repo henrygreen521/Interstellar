@@ -70,7 +70,7 @@
     }
     .error-msg { color: #ff4444; font-size: 13px; margin-bottom: 10px; }
 
-    /* Chat App Layout */
+    /* App Screen */
     #app-container {
       display: none;
       width: 95vw;
@@ -199,7 +199,23 @@
       align-items: center;
     }
     .header-actions { display: flex; align-items: center; gap: 15px; }
-    .theme-toggle, .menu-icon { font-size: 20px; cursor: pointer; user-select: none; }
+    
+    .action-btn {
+      background: none;
+      border: 1px solid var(--border-color, #aaa);
+      color: var(--text-color, #333);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .action-btn:hover {
+      background: rgba(0,0,0,0.05);
+    }
 
     #chat-box { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
     
@@ -260,8 +276,8 @@
 
   <!-- Auth Screen / Main Landing Page -->
   <div id="auth-container">
-    <h2>Chicken Coop Chat</h2>
-    <div class="credits">Created by Mr.Green & Team</div>
+    <h2>ChickenCoop Chat</h2>
+    <div class="credits">Created by Henry & Team</div>
     <div id="error-msg" class="error-msg"></div>
     <input type="text" id="auth-username" placeholder="Username" maxlength="15" required />
     <input type="password" id="auth-password" placeholder="Password" required />
@@ -284,7 +300,7 @@
             </div>
             <div id="current-user-display" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;"></div>
           </div>
-          <span style="cursor: pointer; font-size: 18px;" title="Log out to main screen" onclick="logout()">🚪</span>
+          <button class="action-btn" title="Log out to login screen" onclick="logout()" style="background: rgba(0,0,0,0.2); border: none; color: #fff; padding: 5px 10px;">Log Out</button>
         </div>
         <div style="padding: 10px 15px; font-size: 12px; font-weight: bold; opacity: 0.8;">FRIENDS LIST</div>
         <div id="user-list" class="user-list"></div>
@@ -295,8 +311,9 @@
         <div class="chat-header">
           <span id="chat-with-display">Select a friend</span>
           <div class="header-actions">
-            <div class="theme-toggle" title="Toggle Light/Dark Mode" onclick="toggleTheme()">dark</div>
-            <div class="menu-icon" title="Menu" onclick="toggleMenu()">☰</div>
+            <button class="action-btn" onclick="goHome()">Home</button>
+            <button class="action-btn" onclick="toggleTheme()">Theme</button>
+            <button class="action-btn" onclick="toggleMenu()">Menu</button>
           </div>
         </div>
         
@@ -466,7 +483,7 @@
       });
 
       if (activeFriendsCount === 0) {
-        userListEl.innerHTML = `<div style="padding:10px; font-size:13px; opacity:0.8;">No friends added yet. Open ☰ menu to add!</div>`;
+        userListEl.innerHTML = `<div style="padding:10px; font-size:13px; opacity:0.8;">No friends added yet. Open Menu to add!</div>`;
       }
       if (pendingCount === 0) {
         requestsListEl.innerHTML = `<div style="font-size: 13px; opacity: 0.6;">No pending requests</div>`;
@@ -565,31 +582,26 @@
 
     function toggleTheme() {
       const body = document.body;
-      const toggleBtn = document.querySelector('.theme-toggle');
       if (body.classList.contains('dark-mode')) {
         body.classList.remove('dark-mode');
         body.classList.add('light-mode');
-        toggleBtn.textContent = 'light';
       } else {
         body.classList.remove('light-mode');
         body.classList.add('dark-mode');
-        toggleBtn.textContent = 'dark';
       }
     }
 
-function logout() {
+    function goHome() {
+      window.location.href = 'https://chickencoopproxy.vercel.app';
+    }
+
+    function logout() {
       if (socket) socket.disconnect();
-      
-      // Clear out local variables
       currentUser = null;
       activeChatUser = null;
       isOwner = 0;
       isDesigner = 0;
 
-      // Send them to your proxy home screen, but add a reload flag 
-      // so the browser never gets stuck caching the old view
-      window.location.href = 'https://chickencoopproxy.vercel.app?logout=true';
-    }
       document.getElementById('app-container').style.display = 'none';
       document.getElementById('auth-container').style.display = 'block';
 
