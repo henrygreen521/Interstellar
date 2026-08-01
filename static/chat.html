@@ -7,8 +7,8 @@
     <style>
         body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .container { width: 100%; max-width: 600px; background: #1e1e1e; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        input, button, select { width: 100%; padding: 10px; margin: 8px 0; border: none; border-radius: 4px; box-sizing: border-box; }
-        input, select { background: #2a2a2a; color: #fff; }
+        input, button { width: 100%; padding: 10px; margin: 8px 0; border: none; border-radius: 4px; box-sizing: border-box; }
+        input { background: #2a2a2a; color: #fff; }
         button { background: #4CAF50; color: white; cursor: pointer; font-weight: bold; }
         button:hover { background: #45a049; }
         .danger { background: #d9534f; }
@@ -26,12 +26,6 @@
     <h2>ChickenCoop Login / Register</h2>
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
-    <label>Badge Status:</label>
-    <select id="badge-select">
-        <option value="Member">Member</option>
-        <option value="VIP">VIP</option>
-        <option value="Developer">Developer</option>
-    </select>
     <label>Profile Picture (From Device):</label>
     <input type="file" id="pfp-input" accept="image/*">
     <button onclick="handleAuth()">Sign In / Register</button>
@@ -45,7 +39,7 @@
     <hr>
     <h4>Start New Chat / Group</h4>
     <input type="text" id="target-user" placeholder="Comma-separated usernames (e.g. user1, user2)">
-    <input type="text" id="group-name" placeholder="Optional Group Name (Defaults to usernames)">
+    <input type="text" id="group-name" placeholder="Optional Group Name">
     <button onclick="createConversation()">Open Chat</button>
     
     <h4>Active Conversations</h4>
@@ -61,27 +55,21 @@
 </div>
 
 <script>
-    // REPLACE WITH YOUR ACTUAL LIVE RENDER BACKEND URL
-    const API_BASE = "https://your-render-app-url.onrender.com"; 
+    const API_BASE = "YOUR_RENDER_BACKEND_URL_HERE"; // Replace with your live Render URL
     let currentUser = null;
     let currentConvId = null;
 
     async function handleAuth() {
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value.trim();
-        const badge_status = document.getElementById('badge-select').value;
         const pfpFile = document.getElementById('pfp-input').files[0];
 
         if (!username || !password) return alert("Fill in username and password.");
 
-        // Use FormData to support file uploads cleanly via Multer
         const formData = new FormData();
         formData.append('username', username);
         formData.append('password', password);
-        formData.append('badge_status', badge_status);
-        if (pfpFile) {
-            formData.append('pfp', pfpFile);
-        }
+        if (pfpFile) formData.append('pfp', pfpFile);
 
         try {
             const res = await fetch(`${API_BASE}/api/auth`, {
@@ -100,7 +88,6 @@
                 alert(data.error);
             }
         } catch (err) {
-            console.error("Auth error:", err);
             alert("Failed to connect to backend server.");
         }
     }
@@ -113,7 +100,10 @@
         try {
             const res = await fetch(`${API_BASE}/api/users/${currentUser.username}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': currentUser.session_token
+                },
                 body: JSON.stringify({ password })
             });
             const data = await res.json();
@@ -124,7 +114,6 @@
                 alert(data.error);
             }
         } catch (err) {
-            console.error("Delete error:", err);
             alert("Error deleting account.");
         }
     }
@@ -132,17 +121,18 @@
     async function createConversation() {
         const targetInput = document.getElementById('target-user').value.trim();
         const groupNameInput = document.getElementById('group-name').value.trim();
-        if (!targetInput) return alert("Enter at least one other member username.");
+        if (!targetInput) return alert("Enter member usernames.");
 
         let members = targetInput.split(',').map(u => u.trim()).filter(u => u.length > 0);
-        if (!members.includes(currentUser.username)) members.push(currentUser.username);
-
-        const isGroup = members.length > 2 || groupNameInput.length > 0;
+        const isGroup = members.length > 1 || groupNameInput.length > 0;
 
         try {
             const res = await fetch(`${API_BASE}/api/conversations`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': currentUser.session_token
+                },
                 body: JSON.stringify({ members, group_name: groupNameInput || null, is_group: isGroup })
             });
             const data = await res.json();
@@ -159,7 +149,9 @@
 
     async function loadConversations() {
         try {
-            const res = await fetch(`${API_BASE}/api/conversations/${currentUser.username}`);
+            const res = await fetch(`${API_BASE}/api/conversations`, {
+                headers: { 'Authorization': currentUser.session_token }
+            });
             const convs = await res.json();
             const listDiv = document.getElementById('conv-list');
             listDiv.innerHTML = "";
@@ -185,18 +177,17 @@
     async function loadMessages() {
         if (!currentConvId) return;
         try {
-            const res = await fetch(`${API_BASE}/api/conversations/${currentConvId}/messages`);
+            const res = await fetch(`${API_BASE}/api/conversations/${currentConvId}/messages`, {
+                headers: { 'Authorization': currentUser.session_token }
+            });
+            if (!res.ok) return;
             const msgs = await res.json();
             const box = document.getElementById('msg-box');
             box.innerHTML = "";
             msgs.forEach(m => {
                 const div = document.createElement('div');
                 div.className = 'msg';
-                
-                const pfpElem = m.pfp_url 
-                    ? `<img src="${m.pfp_url}" alt="pfp">` 
-                    : `<div class="pfp-placeholder">${m.username.charAt(0).toUpperCase()}</div>`;
-                
+                const pfpElem = m.pfp_url ? `<img src="${m.pfp_url}" alt="pfp">` : `<div class="pfp-placeholder">${m.username.charAt(0).toUpperCase()}</div>`;
                 div.innerHTML = `${pfpElem} <div><strong>${m.username}</strong> <span style="font-size:10px; color:#aaa;">[${m.badge_status || 'Member'}]</span>: ${m.message}</div>`;
                 box.appendChild(div);
             });
@@ -214,8 +205,11 @@
         try {
             await fetch(`${API_BASE}/api/conversations/${currentConvId}/messages`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: currentUser.username, message })
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': currentUser.session_token
+                },
+                body: JSON.stringify({ message })
             });
             input.value = "";
             loadMessages();
@@ -229,7 +223,6 @@
         document.getElementById('active-chat-pane').classList.add('hidden');
     }
 
-    // Auto-refresh messages every 3 seconds if inside an active chat
     setInterval(() => {
         if (currentConvId) loadMessages();
     }, 3000);
