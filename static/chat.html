@@ -22,13 +22,13 @@
         .sidebar { width: 280px; background: #ff6600; display: flex; flex-direction: column; border-right: 2px solid #111; z-index: 10; }
         .user-profile { padding: 15px; background: #e55c00; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #111; }
         .user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .user-info img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .user-info img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; background: #333; }
         .logout-btn { background: #222; border: none; color: #fff; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; text-decoration: none; display: inline-block; }
         
         .friends-list { overflow-y: auto; flex: 1; }
         .friend-item { padding: 15px; border-bottom: 2px solid #111; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; transition: background 0.2s; background: #ff6600; }
         .friend-item:hover { background: #e55c00; }
-        .friend-item img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+        .friend-item img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #333; }
 
         /* Chat Area */
         .chat-area { flex: 1; display: flex; flex-direction: column; background: #333; position: relative; }
@@ -40,7 +40,7 @@
         .message-wrapper.sent { align-self: flex-end; flex-direction: row-reverse; }
         .message-wrapper.received { align-self: flex-start; }
         
-        .msg-pfp { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; }
+        .msg-pfp { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; background: #222; }
         .message { padding: 10px 14px; border-radius: 8px; word-break: break-word; color: #fff; }
         .message.sent { background: #ff6600; }
         .message.received { background: #444; }
@@ -147,9 +147,10 @@
         }
 
         async function handleAuth() {
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
-            const pfp = document.getElementById('pfp').value;
+            const pfp = document.getElementById('pfp').value.trim();
+            
             const endpoint = isRegistering ? '/api/register' : '/api/login';
 
             try {
@@ -163,7 +164,7 @@
                 if (data.error) {
                     alert(data.error);
                 } else {
-                    currentUser = data.user || { id: data.userId, username, pfp: pfp || 'https://via.placeholder.com/150' };
+                    currentUser = data.user || { id: data.userId, username, pfp };
                     initApp();
                 }
             } catch (err) {
@@ -176,7 +177,14 @@
             document.getElementById('app-container').style.display = 'flex';
             
             document.getElementById('my-username').innerText = currentUser.username;
-            document.getElementById('my-pfp').src = currentUser.pfp || 'https://via.placeholder.com/150';
+            
+            const myPfpImg = document.getElementById('my-pfp');
+            const fallbackMyPfp = `https://api.dicebear.com/7.x/identicon/svg?seed=${currentUser.username}`;
+            myPfpImg.src = currentUser.pfp || fallbackMyPfp;
+            myPfpImg.onerror = () => {
+                myPfpImg.onerror = null;
+                myPfpImg.src = fallbackMyPfp;
+            };
 
             socket = io(BACKEND_URL);
             socket.emit('join_room', currentUser.id);
@@ -207,7 +215,13 @@
                 friends.forEach(f => {
                     const item = document.createElement('div');
                     item.className = 'friend-item';
-                    item.innerHTML = `<img src="${f.pfp || 'https://via.placeholder.com/150'}"> <span>${f.username}</span>`;
+                    const fallback = `https://api.dicebear.com/7.x/identicon/svg?seed=${f.username}`;
+                    const avatarUrl = f.pfp || fallback;
+                    
+                    item.innerHTML = `
+                        <img src="${avatarUrl}" onerror="this.onerror=null; this.src='${fallback}';"> 
+                        <span>${f.username}</span>
+                    `;
                     item.onclick = () => selectFriend(f);
                     listEl.appendChild(item);
                 });
@@ -316,7 +330,8 @@
                 
                 messages.forEach(m => {
                     const isSent = m.sender_id === currentUser.id;
-                    appendMessage(m.message, isSent ? 'sent' : 'received', isSent ? currentUser.pfp : friend.pfp);
+                    const pfpSource = isSent ? currentUser.pfp : friend.pfp;
+                    appendMessage(m.message, isSent ? 'sent' : 'received', pfpSource);
                 });
             } catch (e) {
                 console.error("Error loading messages", e);
@@ -328,9 +343,16 @@
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper ${type}`;
 
+            const usernameForFallback = type === 'sent' ? currentUser.username : (currentReceiver ? currentReceiver.username : 'user');
+            const fallbackPfp = `https://api.dicebear.com/7.x/identicon/svg?seed=${usernameForFallback}`;
+            
             const pfpImg = document.createElement('img');
             pfpImg.className = 'msg-pfp';
-            pfpImg.src = pfpUrl || 'https://via.placeholder.com/150';
+            pfpImg.src = pfpUrl || fallbackPfp;
+            pfpImg.onerror = () => {
+                pfpImg.onerror = null;
+                pfpImg.src = fallbackPfp;
+            };
 
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${type}`;
