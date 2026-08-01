@@ -7,18 +7,37 @@
     * { box-sizing: border-box; }
     body { 
       font-family: sans-serif; 
-      background: #111; 
-      color: #fff; 
+      background: var(--bg-color, #111); 
+      color: var(--text-color, #fff); 
       height: 100vh; 
       margin: 0; 
       display: flex; 
       justify-content: center; 
       align-items: center; 
+      transition: background 0.3s, color 0.3s;
     }
 
-    /* Auth Screen */
+    /* Theme Variables */
+    body.light-mode {
+      --bg-color: #f0f2f5;
+      --text-color: #333;
+      --panel-bg: #fff;
+      --chat-bg: #f9f9f9;
+      --header-bg: #fff;
+      --border-color: #ddd;
+    }
+    body.dark-mode {
+      --bg-color: #111;
+      --text-color: #fff;
+      --panel-bg: #1e1e1e;
+      --chat-bg: #181818;
+      --header-bg: #222;
+      --border-color: #333;
+    }
+
+    /* Auth Screen / Main Landing */
     #auth-container {
-      background: #1a1a1a;
+      background: var(--panel-bg, #1a1a1a);
       border: 1px solid rgba(255, 255, 255, 0.1);
       padding: 30px;
       border-radius: 14px;
@@ -26,15 +45,17 @@
       text-align: center;
       box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     }
-    #auth-container h2 { color: #ff5722; margin-top: 0; }
+    #auth-container h2 { color: #ff5722; margin-top: 0; margin-bottom: 5px; }
+    .credits { font-size: 12px; opacity: 0.6; margin-bottom: 20px; }
+    
     #auth-container input {
       width: 100%;
       padding: 12px;
       margin-bottom: 12px;
       border-radius: 8px;
       border: 1px solid rgba(255,255,255,0.15);
-      background: #222;
-      color: #fff;
+      background: var(--chat-bg, #222);
+      color: var(--text-color, #fff);
     }
     #auth-container button {
       width: 100%;
@@ -55,11 +76,11 @@
       width: 95vw;
       max-width: 1200px;
       height: 90vh;
-      background: #eee;
+      background: var(--panel-bg, #eee);
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-      color: #333;
+      color: var(--text-color, #333);
     }
     .layout { display: flex; height: 100%; position: relative; }
     
@@ -74,7 +95,7 @@
     .sidebar-header {
       padding: 15px 20px;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 15px;
       border-bottom: 2px solid rgba(0,0,0,0.1);
       display: flex;
       align-items: center;
@@ -114,7 +135,7 @@
       background: rgba(0, 0, 0, 0.15);
     }
 
-    /* Owner Badge Style */
+    /* Badges */
     .owner-badge {
       background: #000;
       color: #fff;
@@ -127,35 +148,73 @@
       vertical-align: middle;
       letter-spacing: 0.5px;
     }
+    .designer-badge {
+      background: #ffb6c1;
+      color: #333;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+      display: inline-block;
+      vertical-align: middle;
+      letter-spacing: 0.5px;
+    }
+
+    /* Right-Click Context Menu */
+    #context-menu {
+      display: none;
+      position: absolute;
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      border-radius: 6px;
+      z-index: 1000;
+      width: 140px;
+      padding: 5px 0;
+      color: #333;
+    }
+    .context-menu-item {
+      padding: 8px 15px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #d32f2f;
+    }
+    .context-menu-item:hover {
+      background: #f0f0f0;
+    }
 
     /* Main Chat Panel */
-    .chat-panel { flex: 1; display: flex; flex-direction: column; background: #e0e0e0; position: relative; }
+    .chat-panel { flex: 1; display: flex; flex-direction: column; background: var(--chat-bg, #e0e0e0); position: relative; }
     
     .chat-header {
       padding: 15px 25px;
-      background: #f5f5f5;
-      border-bottom: 1px solid #ccc;
+      background: var(--header-bg, #f5f5f5);
+      border-bottom: 1px solid var(--border-color, #ccc);
       font-size: 18px;
       font-weight: 600;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .menu-icon { font-size: 24px; cursor: pointer; color: #555; }
+    .header-actions { display: flex; align-items: center; gap: 15px; }
+    .theme-toggle, .menu-icon { font-size: 20px; cursor: pointer; user-select: none; }
 
     #chat-box { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
     
-    .message { max-width: 70%; padding: 12px 18px; border-radius: 8px; line-height: 1.5; font-size: 15px; }
+    .message { max-width: 70%; padding: 12px 18px; border-radius: 8px; line-height: 1.5; font-size: 15px; color: #333; }
     .message.incoming { background: #fff; align-self: flex-start; border: 1px solid #d0d0d0; }
     .message.outgoing { background: #ff5722; color: #fff; align-self: flex-end; }
     
-    #form { padding: 15px 25px; background: #f5f5f5; display: flex; gap: 15px; border-top: 1px solid #ccc; }
+    #form { padding: 15px 25px; background: var(--header-bg, #f5f5f5); display: flex; gap: 15px; border-top: 1px solid var(--border-color, #ccc); }
     #message-input {
       flex: 1;
       padding: 12px;
       border-radius: 6px;
       border: 1px solid #aaa;
-      background: #fff;
+      background: var(--panel-bg, #fff);
+      color: var(--text-color, #333);
       font-size: 15px;
     }
     #form button {
@@ -176,32 +235,38 @@
       top: 60px;
       right: 20px;
       width: 320px;
-      background: #fff;
-      border: 1px solid #ccc;
+      background: var(--panel-bg, #fff);
+      border: 1px solid var(--border-color, #ccc);
       box-shadow: 0 4px 16px rgba(0,0,0,0.2);
       border-radius: 8px;
       z-index: 100;
       padding: 15px;
-      color: #333;
+      color: var(--text-color, #333);
     }
     #foldout-menu h3 { margin-top: 0; font-size: 16px; color: #ff5722; }
-    #foldout-menu input { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    #foldout-menu input { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; background: var(--chat-bg, #fff); color: var(--text-color, #333); }
     #foldout-menu button { width: 100%; padding: 8px; background: #ff5722; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
     
-    .request-row { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 6px; font-size: 14px; }
+    .request-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 6px; margin-bottom: 6px; font-size: 14px; }
     .request-row button { width: auto; padding: 4px 10px; font-size: 12px; margin-left: 4px; }
   </style>
 </head>
-<body>
+<body class="dark-mode" onclick="hideContextMenu()">
 
-  <!-- Auth Screen -->
+  <!-- Right-Click Context Menu -->
+  <div id="context-menu">
+    <div class="context-menu-item" onclick="removeFriendAction()">Remove Friend</div>
+  </div>
+
+  <!-- Auth Screen / Main Landing Page -->
   <div id="auth-container">
-    <h2>ChickenCoop Login</h2>
+    <h2>Chicken Coop Chat</h2>
+    <div class="credits">Created by Mr.Green & Team</div>
     <div id="error-msg" class="error-msg"></div>
     <input type="text" id="auth-username" placeholder="Username" maxlength="15" required />
     <input type="password" id="auth-password" placeholder="Password" required />
     <input type="text" id="auth-pfp" placeholder="PFP Image URL (optional)" />
-    <input type="password" id="auth-secret" placeholder="Secret Code (Optional Owner Key)" />
+    <input type="password" id="auth-secret" placeholder="Secret Code (Optional Key)" />
     <button onclick="handleAuth('login')">Log In</button>
     <button onclick="handleAuth('register')" style="background: #333; margin-top: 8px;">Sign Up</button>
   </div>
@@ -217,9 +282,9 @@
             <div class="avatar-container">
               <img id="my-avatar" class="avatar" src="" alt="pfp" />
             </div>
-            <div id="current-user-display"></div>
+            <div id="current-user-display" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;"></div>
           </div>
-          <span style="cursor: pointer; font-size: 18px;" title="Log out" onclick="logout()">🚪</span>
+          <span style="cursor: pointer; font-size: 18px;" title="Log out to main screen" onclick="logout()">🚪</span>
         </div>
         <div style="padding: 10px 15px; font-size: 12px; font-weight: bold; opacity: 0.8;">FRIENDS LIST</div>
         <div id="user-list" class="user-list"></div>
@@ -229,7 +294,10 @@
       <div class="chat-panel">
         <div class="chat-header">
           <span id="chat-with-display">Select a friend</span>
-          <div class="menu-icon" title="Menu" onclick="toggleMenu()">☰</div>
+          <div class="header-actions">
+            <div class="theme-toggle" title="Toggle Light/Dark Mode" onclick="toggleTheme()">🌙</div>
+            <div class="menu-icon" title="Menu" onclick="toggleMenu()">☰</div>
+          </div>
         </div>
         
         <!-- Foldout Menu Drawer -->
@@ -241,7 +309,7 @@
           
           <h3 style="margin-top: 20px;">Pending Requests</h3>
           <div id="requests-list">
-            <div style="font-size: 13px; color: #777;">No pending requests</div>
+            <div style="font-size: 13px; opacity: 0.6;">No pending requests</div>
           </div>
         </div>
 
@@ -268,9 +336,11 @@
     let currentUser = null;
     let currentPfp = null;
     let isOwner = 0;
+    let isDesigner = 0;
     let activeChatUser = null;
     let onlineUsersList = [];
     let cachedFriends = [];
+    let contextMenuTargetUser = null;
 
     async function handleAuth(type) {
       const username = document.getElementById('auth-username').value.trim();
@@ -297,6 +367,7 @@
           currentUser = data.username;
           currentPfp = data.pfp;
           isOwner = data.is_owner;
+          isDesigner = data.is_designer;
           initChatApp();
         } else {
           errorDiv.textContent = data.error || 'Authentication failed.';
@@ -311,7 +382,11 @@
       document.getElementById('app-container').style.display = 'block';
       
       const userDisplay = document.getElementById('current-user-display');
-      userDisplay.innerHTML = currentUser + (isOwner ? ' <span class="owner-badge">[OWNER]</span>' : '');
+      let badge = '';
+      if (isOwner) badge = ' <span class="owner-badge">[OWNER]</span>';
+      else if (isDesigner) badge = ' <span class="designer-badge">[DESIGNER]</span>';
+      
+      userDisplay.innerHTML = currentUser + badge;
       document.getElementById('my-avatar').src = currentPfp;
 
       socket = io(BACKEND_URL);
@@ -357,7 +432,10 @@
         if (f.status === 'accepted') {
           activeFriendsCount++;
           const isOnline = onlineUsersList.includes(friendName);
-          const friendIsOwner = f.is_owner === 1;
+          
+          let badge = '';
+          if (f.is_owner === 1) badge = ' <span class="owner-badge">[OWNER]</span>';
+          else if (f.is_designer === 1) badge = ' <span class="designer-badge">[DESIGNER]</span>';
           
           const div = document.createElement('div');
           div.className = `user-item ${activeChatUser === friendName ? 'active' : ''}`;
@@ -366,9 +444,13 @@
               <img class="avatar" src="${f.pfp}" />
               <div class="status-dot ${isOnline ? 'online' : 'offline'}" title="${isOnline ? 'Online' : 'Offline'}"></div>
             </div>
-            <span>${friendName} ${friendIsOwner ? '<span class="owner-badge">[OWNER]</span>' : ''}</span>
+            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${friendName} ${badge}</span>
           `;
           div.onclick = () => selectUser(friendName);
+          div.oncontextmenu = (e) => {
+            e.preventDefault();
+            showContextMenu(e, friendName);
+          };
           userListEl.appendChild(div);
         } else if (f.status === 'pending' && f.receiver === currentUser) {
           pendingCount++;
@@ -387,8 +469,44 @@
         userListEl.innerHTML = `<div style="padding:10px; font-size:13px; opacity:0.8;">No friends added yet. Open ☰ menu to add!</div>`;
       }
       if (pendingCount === 0) {
-        requestsListEl.innerHTML = `<div style="font-size: 13px; color: #777;">No pending requests</div>`;
+        requestsListEl.innerHTML = `<div style="font-size: 13px; opacity: 0.6;">No pending requests</div>`;
       }
+    }
+
+    function showContextMenu(e, friendName) {
+      contextMenuTargetUser = friendName;
+      const menu = document.getElementById('context-menu');
+      menu.style.display = 'block';
+      menu.style.left = `${e.pageX}px`;
+      menu.style.top = `${e.pageY}px`;
+    }
+
+    function hideContextMenu() {
+      const menu = document.getElementById('context-menu');
+      menu.style.display = 'none';
+    }
+
+    async function removeFriendAction() {
+      if (!contextMenuTargetUser) return;
+
+      if (confirm(`Are you sure you want to remove ${contextMenuTargetUser} from your friends list?`)) {
+        await fetch(`${BACKEND_URL}/api/friend-request/remove`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user1: currentUser, user2: contextMenuTargetUser })
+        });
+
+        if (activeChatUser === contextMenuTargetUser) {
+          activeChatUser = null;
+          document.getElementById('chat-with-display').textContent = 'Select a friend';
+          document.getElementById('chat-box').innerHTML = '<div style="text-align: center; color: #888; margin-top: 50px;">Click a friend on the orange sidebar to start chatting!</div>';
+          document.getElementById('message-input').disabled = true;
+          document.getElementById('send-btn').disabled = true;
+        }
+
+        loadFriendsData();
+      }
+      hideContextMenu();
     }
 
     async function sendFriendRequest() {
@@ -445,16 +563,34 @@
       loadFriendsData();
     }
 
+    function toggleTheme() {
+      const body = document.body;
+      const toggleBtn = document.querySelector('.theme-toggle');
+      if (body.classList.contains('dark-mode')) {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        toggleBtn.textContent = 'light';
+      } else {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        toggleBtn.textContent = 'dark';
+      }
+    }
+
     function logout() {
       if (socket) socket.disconnect();
       currentUser = null;
       activeChatUser = null;
       isOwner = 0;
+      isDesigner = 0;
+
       document.getElementById('app-container').style.display = 'none';
       document.getElementById('auth-container').style.display = 'block';
+
       document.getElementById('auth-password').value = '';
       document.getElementById('auth-pfp').value = '';
       document.getElementById('auth-secret').value = '';
+      document.getElementById('error-msg').textContent = '';
     }
 
     function sendMessage(e) {
