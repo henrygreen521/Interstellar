@@ -1,641 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ChickenCoop Chat</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { 
-      font-family: sans-serif; 
-      background: var(--bg-color, #111); 
-      color: var(--text-color, #fff); 
-      height: 100vh; 
-      margin: 0; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      transition: background 0.3s, color 0.3s;
-    }
-
-    /* Theme Variables */
-    body.light-mode {
-      --bg-color: #f0f2f5;
-      --text-color: #333;
-      --panel-bg: #fff;
-      --chat-bg: #f9f9f9;
-      --header-bg: #fff;
-      --border-color: #ddd;
-    }
-    body.dark-mode {
-      --bg-color: #111;
-      --text-color: #fff;
-      --panel-bg: #1e1e1e;
-      --chat-bg: #181818;
-      --header-bg: #222;
-      --border-color: #333;
-    }
-
-    /* Auth Screen / Main Landing */
-    #auth-container {
-      background: var(--panel-bg, #1a1a1a);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 30px;
-      border-radius: 14px;
-      width: 340px;
-      text-align: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    }
-    #auth-container h2 { color: #ff5722; margin-top: 0; margin-bottom: 5px; }
-    .credits { font-size: 12px; opacity: 0.6; margin-bottom: 20px; }
-    
-    #auth-container input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: var(--chat-bg, #222);
-      color: var(--text-color, #fff);
-    }
-    #auth-container button {
-      width: 100%;
-      padding: 12px;
-      background: #ff5722;
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-    .error-msg { color: #ff4444; font-size: 13px; margin-bottom: 10px; }
-
-    /* App Screen */
-    #app-container {
-      display: none;
-      width: 95vw;
-      max-width: 1200px;
-      height: 90vh;
-      background: var(--panel-bg, #eee);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-      color: var(--text-color, #333);
-    }
-    .layout { display: flex; height: 100%; position: relative; }
-    
-    /* Left Sidebar (Orange) */
-    .sidebar {
-      width: 280px;
-      background: #ff5722;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-    }
-    .sidebar-header {
-      padding: 15px 20px;
-      font-weight: bold;
-      font-size: 15px;
-      border-bottom: 2px solid rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .user-profile-info { display: flex; align-items: center; gap: 10px; }
-    
-    .avatar-container { position: relative; width: 34px; height: 34px; flex-shrink: 0; }
-    .avatar { width: 100%; height: 100%; border-radius: 50%; background: #ddd; object-fit: cover; border: 2px solid #fff; }
-    
-    .status-dot {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 2px solid #ff5722;
-    }
-    .status-dot.online { background: #4caf50; }
-    .status-dot.offline { background: #9e9e9e; }
-
-    .user-list { flex: 1; overflow-y: auto; padding: 10px; }
-    
-    .user-item {
-      padding: 10px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-bottom: 5px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: background 0.2s;
-    }
-    .user-item:hover, .user-item.active { 
-      background: rgba(0, 0, 0, 0.15);
-    }
-
-    /* Badges */
-    .owner-badge {
-      background: #000;
-      color: #fff;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-      display: inline-block;
-      vertical-align: middle;
-      letter-spacing: 0.5px;
-    }
-    .designer-badge {
-      background: #ffb6c1;
-      color: #333;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-      display: inline-block;
-      vertical-align: middle;
-      letter-spacing: 0.5px;
-    }
-
-    /* Right-Click Context Menu */
-    #context-menu {
-      display: none;
-      position: absolute;
-      background: #fff;
-      border: 1px solid #ccc;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      border-radius: 6px;
-      z-index: 1000;
-      width: 140px;
-      padding: 5px 0;
-      color: #333;
-    }
-    .context-menu-item {
-      padding: 8px 15px;
-      font-size: 13px;
-      cursor: pointer;
-      font-weight: 600;
-      color: #d32f2f;
-    }
-    .context-menu-item:hover {
-      background: #f0f0f0;
-    }
-
-    /* Main Chat Panel */
-    .chat-panel { flex: 1; display: flex; flex-direction: column; background: var(--chat-bg, #e0e0e0); position: relative; }
-    
-    .chat-header {
-      padding: 15px 25px;
-      background: var(--header-bg, #f5f5f5);
-      border-bottom: 1px solid var(--border-color, #ccc);
-      font-size: 18px;
-      font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .header-actions { display: flex; align-items: center; gap: 15px; }
-    
-    .action-btn {
-      background: none;
-      border: 1px solid var(--border-color, #aaa);
-      color: var(--text-color, #333);
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .action-btn:hover {
-      background: rgba(0,0,0,0.05);
-    }
-
-    #chat-box { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-    
-    .message { max-width: 70%; padding: 12px 18px; border-radius: 8px; line-height: 1.5; font-size: 15px; color: #333; }
-    .message.incoming { background: #fff; align-self: flex-start; border: 1px solid #d0d0d0; }
-    .message.outgoing { background: #ff5722; color: #fff; align-self: flex-end; }
-    
-    #form { padding: 15px 25px; background: var(--header-bg, #f5f5f5); display: flex; gap: 15px; border-top: 1px solid var(--border-color, #ccc); }
-    #message-input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #aaa;
-      background: var(--panel-bg, #fff);
-      color: var(--text-color, #333);
-      font-size: 15px;
-    }
-    #form button {
-      padding: 0 25px;
-      background: #ff5722;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #form button:disabled { background: #aaa; cursor: not-allowed; }
-
-    /* Foldout Menu Drawer */
-    #foldout-menu {
-      display: none;
-      position: absolute;
-      top: 60px;
-      right: 20px;
-      width: 320px;
-      background: var(--panel-bg, #fff);
-      border: 1px solid var(--border-color, #ccc);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-      border-radius: 8px;
-      z-index: 100;
-      padding: 15px;
-      color: var(--text-color, #333);
-    }
-    #foldout-menu h3 { margin-top: 0; font-size: 16px; color: #ff5722; }
-    #foldout-menu input { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; background: var(--chat-bg, #fff); color: var(--text-color, #333); }
-    #foldout-menu button { width: 100%; padding: 8px; background: #ff5722; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    
-    .request-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 6px; margin-bottom: 6px; font-size: 14px; }
-    .request-row button { width: auto; padding: 4px 10px; font-size: 12px; margin-left: 4px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChickenCoop</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #121212; color: #fff; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 600px; background: #1e1e1e; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        input, button, select { width: 100%; padding: 10px; margin: 8px 0; border: none; border-radius: 4px; box-sizing: border-box; }
+        input, select { background: #2a2a2a; color: #fff; }
+        button { background: #4CAF50; color: white; cursor: pointer; font-weight: bold; }
+        button:hover { background: #45a049; }
+        .danger { background: #d9534f; }
+        .danger:hover { background: #c9302c; }
+        .hidden { display: none !important; }
+        .chat-box { height: 300px; overflow-y: scroll; background: #252525; padding: 10px; border-radius: 4px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .msg { background: #333; padding: 8px; border-radius: 4px; display: flex; align-items: center; gap: 10px; }
+        .msg img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+        .pfp-placeholder { width: 30px; height: 30px; background: #555; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    </style>
 </head>
-<body class="dark-mode" onclick="hideContextMenu()">
+<body>
 
-  <!-- Right-Click Context Menu -->
-  <div id="context-menu">
-    <div class="context-menu-item" onclick="removeFriendAction()">Remove Friend</div>
-  </div>
+<div class="container" id="auth-section">
+    <h2>ChickenCoop Login / Register</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <label>Badge Status:</label>
+    <select id="badge-select">
+        <option value="Member">Member</option>
+        <option value="VIP">VIP</option>
+        <option value="Developer">Developer</option>
+    </select>
+    <label>Profile Picture (From Device):</label>
+    <input type="file" id="pfp-input" accept="image/*">
+    <button onclick="handleAuth()">Sign In / Register</button>
+</div>
 
-  <!-- Auth Screen / Main Landing Page -->
-  <div id="auth-container">
-    <h2>ChickenCoop Chat</h2>
-    <div class="credits"></div>
-    <div id="error-msg" class="error-msg"></div>
-    <input type="text" id="auth-username" placeholder="Username" maxlength="15" required />
-    <input type="password" id="auth-password" placeholder="Password" required />
-    <input type="text" id="auth-pfp" placeholder="PFP Image URL (optional)" />
-    <input type="password" id="auth-secret" placeholder="Secret Code (Optional Key)" />
-    <button onclick="handleAuth('login')">Log In</button>
-    <button onclick="handleAuth('register')" style="background: #333; margin-top: 8px;">Sign Up</button>
-  </div>
-
-  <!-- App Screen -->
-  <div id="app-container">
-    <div class="layout">
-      
-      <!-- Left Sidebar (Orange) -->
-      <div class="sidebar">
-        <div class="sidebar-header">
-          <div class="user-profile-info">
-            <div class="avatar-container">
-              <img id="my-avatar" class="avatar" src="" alt="pfp" />
-            </div>
-            <div id="current-user-display" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;"></div>
-          </div>
-          <button class="action-btn" title="Log out to login screen" onclick="logout()" style="background: rgba(0,0,0,0.2); border: none; color: #fff; padding: 5px 10px;">Log Out</button>
-        </div>
-        <div style="padding: 10px 15px; font-size: 12px; font-weight: bold; opacity: 0.8;">FRIENDS LIST</div>
-        <div id="user-list" class="user-list"></div>
-      </div>
-
-      <!-- Main Chat Area -->
-      <div class="chat-panel">
-        <div class="chat-header">
-          <span id="chat-with-display">Select a friend</span>
-          <div class="header-actions">
-            <button class="action-btn" onclick="goHome()">Home</button>
-            <button class="action-btn" onclick="toggleTheme()">Theme</button>
-            <button class="action-btn" onclick="toggleMenu()">Menu</button>
-          </div>
-        </div>
-        
-        <!-- Foldout Menu Drawer -->
-        <div id="foldout-menu">
-          <h3>Add Friends</h3>
-          <div id="menu-msg" style="font-size: 12px; color: #ff5722; margin-bottom: 5px;"></div>
-          <input type="text" id="add-friend-input" placeholder="Enter username..." />
-          <button onclick="sendFriendRequest()">Send Friend Request</button>
-          
-          <h3 style="margin-top: 20px;">Pending Requests</h3>
-          <div id="requests-list">
-            <div style="font-size: 13px; opacity: 0.6;">No pending requests</div>
-          </div>
-        </div>
-
-        <div id="chat-box">
-          <div style="text-align: center; color: #888; margin-top: 50px;">
-            Click a friend on the orange sidebar to start chatting!
-          </div>
-        </div>
-
-        <form id="form" onsubmit="sendMessage(event)">
-          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" disabled />
-          <button type="submit" id="send-btn" disabled>Send</button>
-        </form>
-      </div>
-
+<div class="container hidden" id="app-section">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="welcome-msg"></h3>
+        <button class="danger" style="width: auto; padding: 5px 10px;" onclick="deleteAccount()">Delete Account</button>
     </div>
-  </div>
-
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script>
-    const BACKEND_URL = 'https://chickencoop-chat-server.onrender.com';
+    <hr>
+    <h4>Start New Chat / Group</h4>
+    <input type="text" id="target-user" placeholder="Comma-separated usernames (e.g. user1, user2)">
+    <input type="text" id="group-name" placeholder="Optional Group Name (Defaults to usernames)">
+    <button onclick="createConversation()">Open Chat</button>
     
-    let socket;
+    <h4>Active Conversations</h4>
+    <div id="conv-list"></div>
+
+    <div id="active-chat-pane" class="hidden">
+        <h4 id="chat-title"></h4>
+        <div class="chat-box" id="msg-box"></div>
+        <input type="text" id="msg-input" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+        <button onclick="leaveChat()" style="background: #555;">Back to Conversations</button>
+    </div>
+</div>
+
+<script>
+    // REPLACE WITH YOUR ACTUAL LIVE RENDER BACKEND URL
+    const API_BASE = "https://your-render-app-url.onrender.com"; 
     let currentUser = null;
-    let currentPfp = null;
-    let isOwner = 0;
-    let isDesigner = 0;
-    let activeChatUser = null;
-    let onlineUsersList = [];
-    let cachedFriends = [];
-    let contextMenuTargetUser = null;
+    let currentConvId = null;
 
-    async function handleAuth(type) {
-      const username = document.getElementById('auth-username').value.trim();
-      const password = document.getElementById('auth-password').value.trim();
-      const pfp = document.getElementById('auth-pfp').value.trim();
-      const secretCode = document.getElementById('auth-secret').value.trim();
-      const errorDiv = document.getElementById('error-msg');
-      errorDiv.textContent = '';
+    async function handleAuth() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const badge_status = document.getElementById('badge-select').value;
+        const pfpFile = document.getElementById('pfp-input').files[0];
 
-      if (!username || !password) {
-        errorDiv.textContent = 'Please fill in all fields.';
-        return;
-      }
+        if (!username || !password) return alert("Fill in username and password.");
 
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/${type}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password, pfp, secretCode })
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          currentUser = data.username;
-          currentPfp = data.pfp;
-          isOwner = data.is_owner;
-          isDesigner = data.is_designer;
-          initChatApp();
-        } else {
-          errorDiv.textContent = data.error || 'Authentication failed.';
-        }
-      } catch (e) {
-        errorDiv.textContent = 'Could not connect to server.';
-      }
-    }
-
-    function initChatApp() {
-      document.getElementById('auth-container').style.display = 'none';
-      document.getElementById('app-container').style.display = 'block';
-      
-      const userDisplay = document.getElementById('current-user-display');
-      let badge = '';
-      if (isOwner) badge = ' <span class="owner-badge">[OWNER]</span>';
-      else if (isDesigner) badge = ' <span class="designer-badge">[DESIGNER]</span>';
-      
-      userDisplay.innerHTML = currentUser + badge;
-      document.getElementById('my-avatar').src = currentPfp;
-
-      socket = io(BACKEND_URL);
-      socket.emit('join', currentUser);
-
-      socket.on('online_users', (users) => {
-        onlineUsersList = users;
-        renderSidebar();
-      });
-
-      loadFriendsData();
-
-      socket.on('private_message', ({ sender, text }) => {
-        if (activeChatUser === sender) {
-          appendMessage(sender, text, 'incoming');
-        }
-      });
-    }
-
-    async function loadFriendsData() {
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/friends/${currentUser}`);
-        cachedFriends = await res.json();
-        renderSidebar();
-      } catch (e) {
-        console.error('Failed to load friends');
-      }
-    }
-
-    function renderSidebar() {
-      const userListEl = document.getElementById('user-list');
-      const requestsListEl = document.getElementById('requests-list');
-      
-      userListEl.innerHTML = '';
-      requestsListEl.innerHTML = '';
-
-      let pendingCount = 0;
-      let activeFriendsCount = 0;
-
-      cachedFriends.forEach(f => {
-        const friendName = f.sender === currentUser ? f.receiver : f.sender;
-        
-        if (f.status === 'accepted') {
-          activeFriendsCount++;
-          const isOnline = onlineUsersList.includes(friendName);
-          
-          let badge = '';
-          if (f.is_owner === 1) badge = ' <span class="owner-badge">[OWNER]</span>';
-          else if (f.is_designer === 1) badge = ' <span class="designer-badge">[DESIGNER]</span>';
-          
-          const div = document.createElement('div');
-          div.className = `user-item ${activeChatUser === friendName ? 'active' : ''}`;
-          div.innerHTML = `
-            <div class="avatar-container">
-              <img class="avatar" src="${f.pfp}" />
-              <div class="status-dot ${isOnline ? 'online' : 'offline'}" title="${isOnline ? 'Online' : 'Offline'}"></div>
-            </div>
-            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${friendName} ${badge}</span>
-          `;
-          div.onclick = () => selectUser(friendName);
-          div.oncontextmenu = (e) => {
-            e.preventDefault();
-            showContextMenu(e, friendName);
-          };
-          userListEl.appendChild(div);
-        } else if (f.status === 'pending' && f.receiver === currentUser) {
-          pendingCount++;
-          const row = document.createElement('div');
-          row.className = 'request-row';
-          row.innerHTML = `<span><b>${friendName}</b></span> 
-            <div>
-              <button style="background:#4caf50; color:#fff; border:none; border-radius:4px;" onclick="respondRequest(${f.id}, 'accepted')">Accept</button>
-              <button style="background:#f44336; color:#fff; border:none; border-radius:4px;" onclick="respondRequest(${f.id}, 'rejected')">X</button>
-            </div>`;
-          requestsListEl.appendChild(row);
-        }
-      });
-
-      if (activeFriendsCount === 0) {
-        userListEl.innerHTML = `<div style="padding:10px; font-size:13px; opacity:0.8;">No friends added yet. Open Menu to add!</div>`;
-      }
-      if (pendingCount === 0) {
-        requestsListEl.innerHTML = `<div style="font-size: 13px; opacity: 0.6;">No pending requests</div>`;
-      }
-    }
-
-    function showContextMenu(e, friendName) {
-      contextMenuTargetUser = friendName;
-      const menu = document.getElementById('context-menu');
-      menu.style.display = 'block';
-      menu.style.left = `${e.pageX}px`;
-      menu.style.top = `${e.pageY}px`;
-    }
-
-    function hideContextMenu() {
-      const menu = document.getElementById('context-menu');
-      menu.style.display = 'none';
-    }
-
-    async function removeFriendAction() {
-      if (!contextMenuTargetUser) return;
-
-      if (confirm(`Are you sure you want to remove ${contextMenuTargetUser} from your friends list?`)) {
-        await fetch(`${BACKEND_URL}/api/friend-request/remove`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user1: currentUser, user2: contextMenuTargetUser })
-        });
-
-        if (activeChatUser === contextMenuTargetUser) {
-          activeChatUser = null;
-          document.getElementById('chat-with-display').textContent = 'Select a friend';
-          document.getElementById('chat-box').innerHTML = '<div style="text-align: center; color: #888; margin-top: 50px;">Click a friend on the orange sidebar to start chatting!</div>';
-          document.getElementById('message-input').disabled = true;
-          document.getElementById('send-btn').disabled = true;
+        // Use FormData to support file uploads cleanly via Multer
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+        formData.append('badge_status', badge_status);
+        if (pfpFile) {
+            formData.append('pfp', pfpFile);
         }
 
-        loadFriendsData();
-      }
-      hideContextMenu();
+        try {
+            const res = await fetch(`${API_BASE}/api/auth`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                currentUser = data.user;
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('app-section').classList.remove('hidden');
+                document.getElementById('welcome-msg').innerText = `Logged in as: ${currentUser.username} [${currentUser.badge_status}]`;
+                loadConversations();
+            } else {
+                alert(data.error);
+            }
+        } catch (err) {
+            console.error("Auth error:", err);
+            alert("Failed to connect to backend server.");
+        }
     }
 
-    async function sendFriendRequest() {
-      const receiver = document.getElementById('add-friend-input').value.trim();
-      const msgDiv = document.getElementById('menu-msg');
-      msgDiv.textContent = '';
+    async function deleteAccount() {
+        if (!confirm("Are you sure you want to completely delete your account?")) return;
+        const password = prompt("Enter your password to confirm deletion:");
+        if (!password) return;
 
-      if (!receiver) return;
-
-      const res = await fetch(`${BACKEND_URL}/api/friend-request/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sender: currentUser, receiver })
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        msgDiv.style.color = '#4caf50';
-        msgDiv.textContent = `Friend request sent to ${receiver}!`;
-        document.getElementById('add-friend-input').value = '';
-      } else {
-        msgDiv.style.color = '#f44336';
-        msgDiv.textContent = data.error;
-      }
+        try {
+            const res = await fetch(`${API_BASE}/api/users/${currentUser.username}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert("Account deleted successfully.");
+                location.reload();
+            } else {
+                alert(data.error);
+            }
+        } catch (err) {
+            console.error("Delete error:", err);
+            alert("Error deleting account.");
+        }
     }
 
-    async function respondRequest(id, status) {
-      await fetch(`${BACKEND_URL}/api/friend-request/respond`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status })
-      });
-      loadFriendsData();
+    async function createConversation() {
+        const targetInput = document.getElementById('target-user').value.trim();
+        const groupNameInput = document.getElementById('group-name').value.trim();
+        if (!targetInput) return alert("Enter at least one other member username.");
+
+        let members = targetInput.split(',').map(u => u.trim()).filter(u => u.length > 0);
+        if (!members.includes(currentUser.username)) members.push(currentUser.username);
+
+        const isGroup = members.length > 2 || groupNameInput.length > 0;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/conversations`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ members, group_name: groupNameInput || null, is_group: isGroup })
+            });
+            const data = await res.json();
+            if (data.conversation_id) {
+                openChat(data.conversation_id, data.group_name);
+                loadConversations();
+            } else {
+                alert(data.error);
+            }
+        } catch (err) {
+            console.error("Conversation error:", err);
+        }
     }
 
-    function selectUser(username) {
-      activeChatUser = username;
-      document.getElementById('chat-with-display').textContent = `Chat with ${username}`;
-      
-      const input = document.getElementById('message-input');
-      input.disabled = false;
-      input.focus();
-      document.getElementById('send-btn').disabled = false;
-      document.getElementById('chat-box').innerHTML = '';
-
-      document.querySelectorAll('.user-item').forEach(el => {
-        el.classList.toggle('active', el.textContent.includes(username));
-      });
+    async function loadConversations() {
+        try {
+            const res = await fetch(`${API_BASE}/api/conversations/${currentUser.username}`);
+            const convs = await res.json();
+            const listDiv = document.getElementById('conv-list');
+            listDiv.innerHTML = "";
+            convs.forEach(c => {
+                const btn = document.createElement('button');
+                btn.innerText = c.group_name || `Chat #${c.id}`;
+                btn.style.background = "#333";
+                btn.onclick = () => openChat(c.id, c.group_name);
+                listDiv.appendChild(btn);
+            });
+        } catch (err) {
+            console.error("Load convs error:", err);
+        }
     }
 
-    function toggleMenu() {
-      const menu = document.getElementById('foldout-menu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-      loadFriendsData();
+    async function openChat(id, title) {
+        currentConvId = id;
+        document.getElementById('chat-title').innerText = title;
+        document.getElementById('active-chat-pane').classList.remove('hidden');
+        loadMessages();
     }
 
-    function toggleTheme() {
-      const body = document.body;
-      if (body.classList.contains('dark-mode')) {
-        body.classList.remove('dark-mode');
-        body.classList.add('light-mode');
-      } else {
-        body.classList.remove('light-mode');
-        body.classList.add('dark-mode');
-      }
+    async function loadMessages() {
+        if (!currentConvId) return;
+        try {
+            const res = await fetch(`${API_BASE}/api/conversations/${currentConvId}/messages`);
+            const msgs = await res.json();
+            const box = document.getElementById('msg-box');
+            box.innerHTML = "";
+            msgs.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'msg';
+                
+                const pfpElem = m.pfp_url 
+                    ? `<img src="${m.pfp_url}" alt="pfp">` 
+                    : `<div class="pfp-placeholder">${m.username.charAt(0).toUpperCase()}</div>`;
+                
+                div.innerHTML = `${pfpElem} <div><strong>${m.username}</strong> <span style="font-size:10px; color:#aaa;">[${m.badge_status || 'Member'}]</span>: ${m.message}</div>`;
+                box.appendChild(div);
+            });
+            box.scrollTop = box.scrollHeight;
+        } catch (err) {
+            console.error("Load messages error:", err);
+        }
     }
 
-    function goHome() {
-      window.location.href = 'https://chickencoopproxy.vercel.app';
+    async function sendMessage() {
+        const input = document.getElementById('msg-input');
+        const message = input.value.trim();
+        if (!message || !currentConvId) return;
+
+        try {
+            await fetch(`${API_BASE}/api/conversations/${currentConvId}/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: currentUser.username, message })
+            });
+            input.value = "";
+            loadMessages();
+        } catch (err) {
+            console.error("Send message error:", err);
+        }
     }
 
-    function logout() {
-      if (socket) socket.disconnect();
-      currentUser = null;
-      activeChatUser = null;
-      isOwner = 0;
-      isDesigner = 0;
-
-      document.getElementById('app-container').style.display = 'none';
-      document.getElementById('auth-container').style.display = 'block';
-
-      document.getElementById('auth-password').value = '';
-      document.getElementById('auth-pfp').value = '';
-      document.getElementById('auth-secret').value = '';
-      document.getElementById('error-msg').textContent = '';
+    function leaveChat() {
+        currentConvId = null;
+        document.getElementById('active-chat-pane').classList.add('hidden');
     }
 
-    function sendMessage(e) {
-      e.preventDefault();
-      const input = document.getElementById('message-input');
-      const text = input.value.trim();
-      if (!text || !activeChatUser) return;
-
-      socket.emit('private_message', {
-        sender: currentUser,
-        receiver: activeChatUser,
-        text: text
-      });
-
-      appendMessage('You', text, 'outgoing');
-      input.value = '';
-    }
-
-    function appendMessage(sender, text, type) {
-      const chatBox = document.getElementById('chat-box');
-      const div = document.createElement('div');
-      div.className = `message ${type}`;
-      div.textContent = text;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
+    // Auto-refresh messages every 3 seconds if inside an active chat
+    setInterval(() => {
+        if (currentConvId) loadMessages();
+    }, 3000);
+</script>
 
 </body>
 </html>
