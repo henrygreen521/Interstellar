@@ -65,30 +65,51 @@
     
     /* Left Sidebar (Orange) */
     .sidebar {
-      width: 260px;
+      width: 280px;
       background: #ff5722;
       color: #fff;
       display: flex;
       flex-direction: column;
     }
     .sidebar-header {
-      padding: 20px;
+      padding: 15px 20px;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 16px;
       border-bottom: 2px solid rgba(0,0,0,0.1);
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
     }
+    .user-profile-info { display: flex; align-items: center; gap: 10px; }
+    
+    /* Avatar container for corner dot overlay */
+    .avatar-container { position: relative; width: 34px; height: 34px; flex-shrink: 0; }
+    .avatar { width: 100%; height: 100%; border-radius: 50%; background: #ddd; object-fit: cover; border: 2px solid #fff; }
+    
+    .status-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid #ff5722; /* Matches sidebar background to separate it */
+    }
+    .status-dot.online { background: #4caf50; }
+    .status-dot.offline { background: #9e9e9e; }
+
     .user-list { flex: 1; overflow-y: auto; padding: 10px; }
     
     .user-item {
-      padding: 15px;
+      padding: 10px 12px;
       border-radius: 6px;
       cursor: pointer;
       margin-bottom: 5px;
       font-weight: 500;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.2s;
     }
     .user-item:hover, .user-item.active { 
       background: rgba(0, 0, 0, 0.15);
@@ -135,13 +156,13 @@
     }
     #form button:disabled { background: #aaa; cursor: not-allowed; }
 
-    /* Foldout Menu Modal/Drawer as requested in sketch */
+    /* Foldout Menu Modal */
     #foldout-menu {
       display: none;
       position: absolute;
       top: 60px;
       right: 20px;
-      width: 280px;
+      width: 320px;
       background: #fff;
       border: 1px solid #ccc;
       box-shadow: 0 4px 16px rgba(0,0,0,0.2);
@@ -153,6 +174,9 @@
     #foldout-menu h3 { margin-top: 0; font-size: 16px; color: #ff5722; }
     #foldout-menu input { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; }
     #foldout-menu button { width: 100%; padding: 8px; background: #ff5722; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    
+    .request-row { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 8px; border-radius: 6px; margin-bottom: 6px; font-size: 14px; }
+    .request-row button { width: auto; padding: 4px 10px; font-size: 12px; margin-left: 4px; }
   </style>
 </head>
 <body>
@@ -174,11 +198,15 @@
       <!-- Left Sidebar (Orange) -->
       <div class="sidebar">
         <div class="sidebar-header">
-          <span id="current-user-display"></span>
-          <!-- Back arrow logs out / goes back to login -->
-          <span style="cursor: pointer;" title="Log out" onclick="logout()">←</span>
+          <div class="user-profile-info">
+            <div class="avatar-container">
+              <img id="my-avatar" class="avatar" src="" alt="pfp" />
+            </div>
+            <span id="current-user-display"></span>
+          </div>
+          <span style="cursor: pointer; font-size: 18px;" title="Log out" onclick="logout()">🚪</span>
         </div>
-        <div style="padding: 10px 15px; font-size: 12px; font-weight: bold; opacity: 0.8;">ONLINE USERS</div>
+        <div style="padding: 10px 15px; font-size: 12px; font-weight: bold; opacity: 0.8;">FRIENDS LIST</div>
         <div id="user-list" class="user-list"></div>
       </div>
 
@@ -186,21 +214,25 @@
       <div class="chat-panel">
         <div class="chat-header">
           <span id="chat-with-display">Select a friend</span>
-          <!-- Triple-line menu icon opens the foldout menu -->
           <div class="menu-icon" title="Menu" onclick="toggleMenu()">☰</div>
         </div>
         
         <!-- Foldout Menu Drawer -->
         <div id="foldout-menu">
-          <h3>Friends & Requests</h3>
-          <div style="font-size: 13px; color: #666; margin-bottom: 10px;">Add friends by username:</div>
+          <h3>Add Friends</h3>
+          <div id="menu-msg" style="font-size: 12px; color: #ff5722; margin-bottom: 5px;"></div>
           <input type="text" id="add-friend-input" placeholder="Enter username..." />
-          <button onclick="alert('Friend request system linking up next!')">Send Friend Request</button>
+          <button onclick="sendFriendRequest()">Send Friend Request</button>
+          
+          <h3 style="margin-top: 20px;">Pending Requests</h3>
+          <div id="requests-list">
+            <div style="font-size: 13px; color: #777;">No pending requests</div>
+          </div>
         </div>
 
         <div id="chat-box">
           <div style="text-align: center; color: #888; margin-top: 50px;">
-            Click an online user on the orange sidebar to start chatting!
+            Click a friend on the orange sidebar to start chatting!
           </div>
         </div>
 
@@ -219,7 +251,10 @@
     
     let socket;
     let currentUser = null;
+    let currentPfp = null;
     let activeChatUser = null;
+    let onlineUsersList = [];
+    let cachedFriends = [];
 
     async function handleAuth(type) {
       const username = document.getElementById('auth-username').value.trim();
@@ -242,6 +277,7 @@
 
         if (data.success) {
           currentUser = data.username;
+          currentPfp = data.pfp;
           initChatApp();
         } else {
           errorDiv.textContent = data.error || 'Authentication failed.';
@@ -255,30 +291,115 @@
       document.getElementById('auth-container').style.display = 'none';
       document.getElementById('app-container').style.display = 'block';
       document.getElementById('current-user-display').textContent = currentUser;
+      document.getElementById('my-avatar').src = currentPfp;
 
       socket = io(BACKEND_URL);
       socket.emit('join', currentUser);
 
       socket.on('online_users', (users) => {
-        const userListEl = document.getElementById('user-list');
-        userListEl.innerHTML = '';
-
-        users.forEach(user => {
-          if (user === currentUser) return; 
-
-          const div = document.createElement('div');
-          div.className = `user-item ${activeChatUser === user ? 'active' : ''}`;
-          div.textContent = user;
-          div.onclick = () => selectUser(user);
-          userListEl.appendChild(div);
-        });
+        onlineUsersList = users;
+        renderSidebar();
       });
+
+      loadFriendsData();
 
       socket.on('private_message', ({ sender, text }) => {
         if (activeChatUser === sender) {
           appendMessage(sender, text, 'incoming');
         }
       });
+    }
+
+    async function loadFriendsData() {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/friends/${currentUser}`);
+        cachedFriends = await res.json();
+        renderSidebar();
+      } catch (e) {
+        console.error('Failed to load friends');
+      }
+    }
+
+    function renderSidebar() {
+      const userListEl = document.getElementById('user-list');
+      const requestsListEl = document.getElementById('requests-list');
+      
+      userListEl.innerHTML = '';
+      requestsListEl.innerHTML = '';
+
+      let pendingCount = 0;
+      let activeFriendsCount = 0;
+
+      cachedFriends.forEach(f => {
+        const friendName = f.sender === currentUser ? f.receiver : f.sender;
+        
+        if (f.status === 'accepted') {
+          activeFriendsCount++;
+          const isOnline = onlineUsersList.includes(friendName);
+          
+          const div = document.createElement('div');
+          div.className = `user-item ${activeChatUser === friendName ? 'active' : ''}`;
+          div.innerHTML = `
+            <div class="avatar-container">
+              <img class="avatar" src="${f.pfp}" />
+              <div class="status-dot ${isOnline ? 'online' : 'offline'}" title="${isOnline ? 'Online' : 'Offline'}"></div>
+            </div>
+            <span>${friendName}</span>
+          `;
+          div.onclick = () => selectUser(friendName);
+          userListEl.appendChild(div);
+        } else if (f.status === 'pending' && f.receiver === currentUser) {
+          pendingCount++;
+          const row = document.createElement('div');
+          row.className = 'request-row';
+          row.innerHTML = `<span><b>${friendName}</b></span> 
+            <div>
+              <button style="background:#4caf50; color:#fff; border:none; border-radius:4px;" onclick="respondRequest(${f.id}, 'accepted')">Accept</button>
+              <button style="background:#f44336; color:#fff; border:none; border-radius:4px;" onclick="respondRequest(${f.id}, 'rejected')">X</button>
+            </div>`;
+          requestsListEl.appendChild(row);
+        }
+      });
+
+      if (activeFriendsCount === 0) {
+        userListEl.innerHTML = `<div style="padding:10px; font-size:13px; opacity:0.8;">No friends added yet. Open ☰ menu to add!</div>`;
+      }
+      if (pendingCount === 0) {
+        requestsListEl.innerHTML = `<div style="font-size: 13px; color: #777;">No pending requests</div>`;
+      }
+    }
+
+    async function sendFriendRequest() {
+      const receiver = document.getElementById('add-friend-input').value.trim();
+      const msgDiv = document.getElementById('menu-msg');
+      msgDiv.textContent = '';
+
+      if (!receiver) return;
+
+      const res = await fetch(`${BACKEND_URL}/api/friend-request/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sender: currentUser, receiver })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        msgDiv.style.color = '#4caf50';
+        msgDiv.textContent = `Friend request sent to ${receiver}!`;
+        document.getElementById('add-friend-input').value = '';
+      } else {
+        msgDiv.style.color = '#f44336';
+        msgDiv.textContent = data.error;
+      }
+    }
+
+    async function respondRequest(id, status) {
+      await fetch(`${BACKEND_URL}/api/friend-request/respond`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status })
+      });
+      loadFriendsData();
     }
 
     function selectUser(username) {
@@ -291,15 +412,15 @@
       document.getElementById('send-btn').disabled = false;
       document.getElementById('chat-box').innerHTML = '';
 
-      // Highlights the chosen user in the orange sidebar
       document.querySelectorAll('.user-item').forEach(el => {
-        el.classList.toggle('active', el.textContent === username);
+        el.classList.toggle('active', el.textContent.includes(username));
       });
     }
 
     function toggleMenu() {
       const menu = document.getElementById('foldout-menu');
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+      loadFriendsData();
     }
 
     function logout() {
