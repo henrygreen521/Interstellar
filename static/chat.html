@@ -580,10 +580,16 @@
 function logout() {
       if (socket) socket.disconnect();
       
-      // Redirect straight to your proxy homescreen URL
-      window.location.href = 'https://chickencoopproxy.vercel.app';
-    }
+      // Clear out local variables
+      currentUser = null;
+      activeChatUser = null;
+      isOwner = 0;
+      isDesigner = 0;
 
+      // Send them to your proxy home screen, but add a reload flag 
+      // so the browser never gets stuck caching the old view
+      window.location.href = 'https://chickencoopproxy.vercel.app?logout=true';
+    }
       document.getElementById('app-container').style.display = 'none';
       document.getElementById('auth-container').style.display = 'block';
 
