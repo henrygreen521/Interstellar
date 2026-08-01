@@ -1,641 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ChickenCoop Chat</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { 
-      font-family: sans-serif; 
-      background: var(--bg-color, #111); 
-      color: var(--text-color, #fff); 
-      height: 100vh; 
-      margin: 0; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      transition: background 0.3s, color 0.3s;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChickenCoop Chat</title>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.5/dist/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #222; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Auth Screen */
+        #auth-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .auth-box { background: #333; padding: 30px; border-radius: 8px; width: 300px; text-align: center; }
+        .auth-box input { width: 90%; padding: 10px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        .auth-box button { width: 95%; padding: 10px; background: #ff6600; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
 
-    /* Theme Variables */
-    body.light-mode {
-      --bg-color: #f0f2f5;
-      --text-color: #333;
-      --panel-bg: #fff;
-      --chat-bg: #f9f9f9;
-      --header-bg: #fff;
-      --border-color: #ddd;
-    }
-    body.dark-mode {
-      --bg-color: #111;
-      --text-color: #fff;
-      --panel-bg: #1e1e1e;
-      --chat-bg: #181818;
-      --header-bg: #222;
-      --border-color: #333;
-    }
+        /* Main Chat Layout */
+        #app-container { display: flex; width: 100%; height: 100%; display: none; }
+        
+        /* Orange Sidebar */
+        .sidebar { width: 280px; background: #ff6600; display: flex; flex-direction: column; border-right: 2px solid #111; }
+        .user-profile { padding: 15px; background: #e55c00; display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.2rem; }
+        .user-profile img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .friends-list { overflow-y: auto; flex: 1; }
+        .friend-item { padding: 15px; border-bottom: 1px solid rgba(0,0,0,0.2); cursor: pointer; transition: background 0.2s; }
+        .friend-item:hover { background: rgba(0,0,0,0.1); }
 
-    /* Auth Screen / Main Landing */
-    #auth-container {
-      background: var(--panel-bg, #1a1a1a);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 30px;
-      border-radius: 14px;
-      width: 340px;
-      text-align: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    }
-    #auth-container h2 { color: #ff5722; margin-top: 0; margin-bottom: 5px; }
-    .credits { font-size: 12px; opacity: 0.6; margin-bottom: 20px; }
-    
-    #auth-container input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: var(--chat-bg, #222);
-      color: var(--text-color, #fff);
-    }
-    #auth-container button {
-      width: 100%;
-      padding: 12px;
-      background: #ff5722;
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-    .error-msg { color: #ff4444; font-size: 13px; margin-bottom: 10px; }
+        /* Chat Area */
+        .chat-area { flex: 1; display: flex; flex-direction: column; background: #333; }
+        .chat-header { padding: 15px; background: #2a2a2a; border-bottom: 2px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: bold; }
+        .menu-btn { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+        
+        .messages-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { max-width: 60%; padding: 10px; border-radius: 8px; word-break: break-word; }
+        .message.sent { background: #ff6600; align-self: flex-end; }
+        .message.received { background: #444; align-self: flex-start; }
 
-    /* App Screen */
-    #app-container {
-      display: none;
-      width: 95vw;
-      max-width: 1200px;
-      height: 90vh;
-      background: var(--panel-bg, #eee);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-      color: var(--text-color, #333);
-    }
-    .layout { display: flex; height: 100%; position: relative; }
-    
-    /* Left Sidebar (Orange) */
-    .sidebar {
-      width: 280px;
-      background: #ff5722;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-    }
-    .sidebar-header {
-      padding: 15px 20px;
-      font-weight: bold;
-      font-size: 15px;
-      border-bottom: 2px solid rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .user-profile-info { display: flex; align-items: center; gap: 10px; }
-    
-    .avatar-container { position: relative; width: 34px; height: 34px; flex-shrink: 0; }
-    .avatar { width: 100%; height: 100%; border-radius: 50%; background: #ddd; object-fit: cover; border: 2px solid #fff; }
-    
-    .status-dot {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 2px solid #ff5722;
-    }
-    .status-dot.online { background: #4caf50; }
-    .status-dot.offline { background: #9e9e9e; }
-
-    .user-list { flex: 1; overflow-y: auto; padding: 10px; }
-    
-    .user-item {
-      padding: 10px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-bottom: 5px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: background 0.2s;
-    }
-    .user-item:hover, .user-item.active { 
-      background: rgba(0, 0, 0, 0.15);
-    }
-
-    /* Badges */
-    .owner-badge {
-      background: #000;
-      color: #fff;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-      display: inline-block;
-      vertical-align: middle;
-      letter-spacing: 0.5px;
-    }
-    .designer-badge {
-      background: #ffb6c1;
-      color: #333;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-      display: inline-block;
-      vertical-align: middle;
-      letter-spacing: 0.5px;
-    }
-
-    /* Right-Click Context Menu */
-    #context-menu {
-      display: none;
-      position: absolute;
-      background: #fff;
-      border: 1px solid #ccc;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      border-radius: 6px;
-      z-index: 1000;
-      width: 140px;
-      padding: 5px 0;
-      color: #333;
-    }
-    .context-menu-item {
-      padding: 8px 15px;
-      font-size: 13px;
-      cursor: pointer;
-      font-weight: 600;
-      color: #d32f2f;
-    }
-    .context-menu-item:hover {
-      background: #f0f0f0;
-    }
-
-    /* Main Chat Panel */
-    .chat-panel { flex: 1; display: flex; flex-direction: column; background: var(--chat-bg, #e0e0e0); position: relative; }
-    
-    .chat-header {
-      padding: 15px 25px;
-      background: var(--header-bg, #f5f5f5);
-      border-bottom: 1px solid var(--border-color, #ccc);
-      font-size: 18px;
-      font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .header-actions { display: flex; align-items: center; gap: 15px; }
-    
-    .action-btn {
-      background: none;
-      border: 1px solid var(--border-color, #aaa);
-      color: var(--text-color, #333);
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .action-btn:hover {
-      background: rgba(0,0,0,0.05);
-    }
-
-    #chat-box { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-    
-    .message { max-width: 70%; padding: 12px 18px; border-radius: 8px; line-height: 1.5; font-size: 15px; color: #333; }
-    .message.incoming { background: #fff; align-self: flex-start; border: 1px solid #d0d0d0; }
-    .message.outgoing { background: #ff5722; color: #fff; align-self: flex-end; }
-    
-    #form { padding: 15px 25px; background: var(--header-bg, #f5f5f5); display: flex; gap: 15px; border-top: 1px solid var(--border-color, #ccc); }
-    #message-input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #aaa;
-      background: var(--panel-bg, #fff);
-      color: var(--text-color, #333);
-      font-size: 15px;
-    }
-    #form button {
-      padding: 0 25px;
-      background: #ff5722;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #form button:disabled { background: #aaa; cursor: not-allowed; }
-
-    /* Foldout Menu Drawer */
-    #foldout-menu {
-      display: none;
-      position: absolute;
-      top: 60px;
-      right: 20px;
-      width: 320px;
-      background: var(--panel-bg, #fff);
-      border: 1px solid var(--border-color, #ccc);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-      border-radius: 8px;
-      z-index: 100;
-      padding: 15px;
-      color: var(--text-color, #333);
-    }
-    #foldout-menu h3 { margin-top: 0; font-size: 16px; color: #ff5722; }
-    #foldout-menu input { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; background: var(--chat-bg, #fff); color: var(--text-color, #333); }
-    #foldout-menu button { width: 100%; padding: 8px; background: #ff5722; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    
-    .request-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 6px; margin-bottom: 6px; font-size: 14px; }
-    .request-row button { width: auto; padding: 4px 10px; font-size: 12px; margin-left: 4px; }
-  </style>
+        .chat-input-box { padding: 15px; background: #2a2a2a; display: flex; gap: 10px; }
+        .chat-input-box input { flex: 1; padding: 12px; border-radius: 20px; border: none; background: #1a1a1a; color: #fff; outline: none; }
+        .chat-input-box button { padding: 0 20px; background: #ff6600; border: none; color: #fff; border-radius: 20px; cursor: pointer; font-weight: bold; }
+    </style>
 </head>
-<body class="dark-mode" onclick="hideContextMenu()">
+<body>
 
-  <!-- Right-Click Context Menu -->
-  <div id="context-menu">
-    <div class="context-menu-item" onclick="removeFriendAction()">Remove Friend</div>
-  </div>
-
-  <!-- Auth Screen / Main Landing Page -->
-  <div id="auth-container">
-    <h2>ChickenCoop Chat</h2>
-    <div class="credits">made by cool guy </div>
-    <div id="error-msg" class="error-msg"></div>
-    <input type="text" id="auth-username" placeholder="Username" maxlength="15" required />
-    <input type="password" id="auth-password" placeholder="Password" required />
-    <input type="text" id="auth-pfp" placeholder="PFP Image URL (optional)" />
-    <input type="password" id="auth-secret" placeholder="Secret Code (052112 or 121813)" />
-    <button onclick="handleAuth('login')">Log In</button>
-    <button onclick="handleAuth('register')" style="background: #333; margin-top: 8px;">Sign Up</button>
-  </div>
-
-  <!-- App Screen -->
-  <div id="app-container">
-    <div class="layout">
-      
-      <!-- Left Sidebar (Orange) -->
-      <div class="sidebar">
-        <div class="sidebar-header">
-          <div class="user-profile-info">
-            <div class="avatar-container">
-              <img id="my-avatar" class="avatar" src="" alt="pfp" />
-            </div>
-            <div id="current-user-display" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;"></div>
-          </div>
-          <button class="action-btn" title="Log out to login screen" onclick="logout()" style="background: rgba(0,0,0,0.2); border: none; color: #fff; padding: 5px 10px;">Log Out</button>
+    <!-- Authentication Screen -->
+    <div id="auth-container">
+        <div class="auth-box">
+            <h2 id="auth-title">Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <input type="text" id="pfp" placeholder="Profile Picture URL (Optional)">
+            <button onclick="handleAuth()" id="auth-btn">Log In</button>
+            <p style="cursor:pointer; font-size:0.9rem; margin-top:15px; color:#aaa;" onclick="toggleAuthMode()">Need an account? Register</p>
         </div>
-        <div style="padding: 10px 15px; font-size: 12px; font-weight: bold; opacity: 0.8;">FRIENDS LIST</div>
-        <div id="user-list" class="user-list"></div>
-      </div>
-
-      <!-- Main Chat Area -->
-      <div class="chat-panel">
-        <div class="chat-header">
-          <span id="chat-with-display">Select a friend</span>
-          <div class="header-actions">
-            <button class="action-btn" onclick="goHome()">Home</button>
-            <button class="action-btn" onclick="toggleTheme()">Theme</button>
-            <button class="action-btn" onclick="toggleMenu()">Menu</button>
-          </div>
-        </div>
-        
-        <!-- Foldout Menu Drawer -->
-        <div id="foldout-menu">
-          <h3>Add Friends</h3>
-          <div id="menu-msg" style="font-size: 12px; color: #ff5722; margin-bottom: 5px;"></div>
-          <input type="text" id="add-friend-input" placeholder="Enter username..." />
-          <button onclick="sendFriendRequest()">Send Friend Request</button>
-          
-          <h3 style="margin-top: 20px;">Pending Requests</h3>
-          <div id="requests-list">
-            <div style="font-size: 13px; opacity: 0.6;">No pending requests</div>
-          </div>
-        </div>
-
-        <div id="chat-box">
-          <div style="text-align: center; color: #888; margin-top: 50px;">
-            Click a friend on the orange sidebar to start chatting!
-          </div>
-        </div>
-
-        <form id="form" onsubmit="sendMessage(event)">
-          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" disabled />
-          <button type="submit" id="send-btn" disabled>Send</button>
-        </form>
-      </div>
-
     </div>
-  </div>
 
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <script>
-    const BACKEND_URL = 'https://chickencoop-chat-server.onrender.com';
-    
-    let socket;
-    let currentUser = null;
-    let currentPfp = null;
-    let isOwner = 0;
-    let isDesigner = 0;
-    let activeChatUser = null;
-    let onlineUsersList = [];
-    let cachedFriends = [];
-    let contextMenuTargetUser = null;
-
-    async function handleAuth(type) {
-      const username = document.getElementById('auth-username').value.trim();
-      const password = document.getElementById('auth-password').value.trim();
-      const pfp = document.getElementById('auth-pfp').value.trim();
-      const secretCode = document.getElementById('auth-secret').value.trim();
-      const errorDiv = document.getElementById('error-msg');
-      errorDiv.textContent = '';
-
-      if (!username || !password) {
-        errorDiv.textContent = 'Please fill in all fields.';
-        return;
-      }
-
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/${type}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password, pfp, secretCode })
-        });
-        const data = await res.json();
-
-        if (data.success) {
-          currentUser = data.username;
-          currentPfp = data.pfp;
-          isOwner = data.is_owner;
-          isDesigner = data.is_designer;
-          initChatApp();
-        } else {
-          errorDiv.textContent = data.error || 'Authentication failed.';
-        }
-      } catch (e) {
-        errorDiv.textContent = 'Could not connect to server.';
-      }
-    }
-
-    function initChatApp() {
-      document.getElementById('auth-container').style.display = 'none';
-      document.getElementById('app-container').style.display = 'block';
-      
-      const userDisplay = document.getElementById('current-user-display');
-      let badge = '';
-      if (isOwner) badge = ' <span class="owner-badge">[OWNER]</span>';
-      else if (isDesigner) badge = ' <span class="designer-badge">[DESIGNER]</span>';
-      
-      userDisplay.innerHTML = currentUser + badge;
-      document.getElementById('my-avatar').src = currentPfp;
-
-      socket = io(BACKEND_URL);
-      socket.emit('join', currentUser);
-
-      socket.on('online_users', (users) => {
-        onlineUsersList = users;
-        renderSidebar();
-      });
-
-      loadFriendsData();
-
-      socket.on('private_message', ({ sender, text }) => {
-        if (activeChatUser === sender) {
-          appendMessage(sender, text, 'incoming');
-        }
-      });
-    }
-
-    async function loadFriendsData() {
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/friends/${currentUser}`);
-        cachedFriends = await res.json();
-        renderSidebar();
-      } catch (e) {
-        console.error('Failed to load friends');
-      }
-    }
-
-    function renderSidebar() {
-      const userListEl = document.getElementById('user-list');
-      const requestsListEl = document.getElementById('requests-list');
-      
-      userListEl.innerHTML = '';
-      requestsListEl.innerHTML = '';
-
-      let pendingCount = 0;
-      let activeFriendsCount = 0;
-
-      cachedFriends.forEach(f => {
-        const friendName = f.sender === currentUser ? f.receiver : f.sender;
-        
-        if (f.status === 'accepted') {
-          activeFriendsCount++;
-          const isOnline = onlineUsersList.includes(friendName);
-          
-          let badge = '';
-          if (f.is_owner === 1) badge = ' <span class="owner-badge">[OWNER]</span>';
-          else if (f.is_designer === 1) badge = ' <span class="designer-badge">[DESIGNER]</span>';
-          
-          const div = document.createElement('div');
-          div.className = `user-item ${activeChatUser === friendName ? 'active' : ''}`;
-          div.innerHTML = `
-            <div class="avatar-container">
-              <img class="avatar" src="${f.pfp}" />
-              <div class="status-dot ${isOnline ? 'online' : 'offline'}" title="${isOnline ? 'Online' : 'Offline'}"></div>
+    <!-- Main Application Container -->
+    <div id="app-container">
+        <!-- Orange Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="user-profile">
+                <img id="my-pfp" src="" alt="pfp">
+                <span id="my-username">Username</span>
             </div>
-            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${friendName} ${badge}</span>
-          `;
-          div.onclick = () => selectUser(friendName);
-          div.oncontextmenu = (e) => {
-            e.preventDefault();
-            showContextMenu(e, friendName);
-          };
-          userListEl.appendChild(div);
-        } else if (f.status === 'pending' && f.receiver === currentUser) {
-          pendingCount++;
-          const row = document.createElement('div');
-          row.className = 'request-row';
-          row.innerHTML = `<span><b>${friendName}</b></span> 
-            <div>
-              <button style="background:#4caf50; color:#fff; border:none; border-radius:4px;" onclick="respondRequest(${f.id}, 'accepted')">Accept</button>
-              <button style="background:#f44336; color:#fff; border:none; border-radius:4px;" onclick="respondRequest(${f.id}, 'rejected')">X</button>
-            </div>`;
-          requestsListEl.appendChild(row);
-        }
-      });
+            <div class="friends-list" id="friends-list">
+                <!-- Friends will populate here -->
+                 <div class="friend-item" onclick="selectFriend(1, 'DemoFriend')">Demo Friend (Click to chat)</div>
+            </div>
+        </div>
 
-      if (activeFriendsCount === 0) {
-        userListEl.innerHTML = `<div style="padding:10px; font-size:13px; opacity:0.8;">No friends added yet. Open Menu to add!</div>`;
-      }
-      if (pendingCount === 0) {
-        requestsListEl.innerHTML = `<div style="font-size: 13px; opacity: 0.6;">No pending requests</div>`;
-      }
-    }
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div class="chat-header">
+                <span id="chat-target-name">Select a friend to chat</span>
+                <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            </div>
+            <div class="messages-box" id="messages-box">
+                <!-- Messages go here -->
+            </div>
+            <div class="chat-input-box">
+                <input type="text" id="message-input" placeholder="Type a message..." onkeypress="checkEnter(event)">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
 
-    function showContextMenu(e, friendName) {
-      contextMenuTargetUser = friendName;
-      const menu = document.getElementById('context-menu');
-      menu.style.display = 'block';
-      menu.style.left = `${e.pageX}px`;
-      menu.style.top = `${e.pageY}px`;
-    }
+    <script>
+        const BACKEND_URL = "https://chickencoop-chat-server.onrender.com";
+        let socket;
+        let currentUser = null;
+        let currentReceiverId = null;
+        let isRegistering = false;
 
-    function hideContextMenu() {
-      const menu = document.getElementById('context-menu');
-      menu.style.display = 'none';
-    }
-
-    async function removeFriendAction() {
-      if (!contextMenuTargetUser) return;
-
-      if (confirm(`Are you sure you want to remove ${contextMenuTargetUser} from your friends list?`)) {
-        await fetch(`${BACKEND_URL}/api/friend-request/remove`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user1: currentUser, user2: contextMenuTargetUser })
-        });
-
-        if (activeChatUser === contextMenuTargetUser) {
-          activeChatUser = null;
-          document.getElementById('chat-with-display').textContent = 'Select a friend';
-          document.getElementById('chat-box').innerHTML = '<div style="text-align: center; color: #888; margin-top: 50px;">Click a friend on the orange sidebar to start chatting!</div>';
-          document.getElementById('message-input').disabled = true;
-          document.getElementById('send-btn').disabled = true;
+        function toggleAuthMode() {
+            isRegistering = !isRegistering;
+            document.getElementById('auth-title').innerText = isRegistering ? 'Register' : 'Login';
+            document.getElementById('auth-btn').innerText = isRegistering ? 'Sign Up' : 'Log In';
+            document.querySelector('.auth-box p').innerText = isRegistering ? 'Already have an account? Login' : 'Need an account? Register';
         }
 
-        loadFriendsData();
-      }
-      hideContextMenu();
-    }
+        async function handleAuth() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const pfp = document.getElementById('pfp').value;
+            const endpoint = isRegistering ? '/api/register' : '/api/login';
 
-    async function sendFriendRequest() {
-      const receiver = document.getElementById('add-friend-input').value.trim();
-      const msgDiv = document.getElementById('menu-msg');
-      msgDiv.textContent = '';
+            const res = await fetch(BACKEND_URL + endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password, pfp })
+            });
 
-      if (!receiver) return;
+            const data = await res.json();
+            if (data.error) {
+                alert(data.error);
+            } else {
+                currentUser = data.user || { id: data.userId, username, pfp: pfp || 'https://via.placeholder.com/150' };
+                initApp();
+            }
+        }
 
-      const res = await fetch(`${BACKEND_URL}/api/friend-request/send`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sender: currentUser, receiver })
-      });
-      const data = await res.json();
+        function initApp() {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            
+            document.getElementById('my-username').innerText = currentUser.username;
+            document.getElementById('my-pfp').src = currentUser.pfp;
 
-      if (data.success) {
-        msgDiv.style.color = '#4caf50';
-        msgDiv.textContent = `Friend request sent to ${receiver}!`;
-        document.getElementById('add-friend-input').value = '';
-      } else {
-        msgDiv.style.color = '#f44336';
-        msgDiv.textContent = data.error;
-      }
-    }
+            // Connect to Socket.io backend
+            socket = io(BACKEND_URL);
+            socket.emit('join_room', currentUser.id);
 
-    async function respondRequest(id, status) {
-      await fetch(`${BACKEND_URL}/api/friend-request/respond`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status })
-      });
-      loadFriendsData();
-    }
+            socket.on('receive_message', (data) => {
+                if (data.sender_id === currentReceiverId || data.receiver_id === currentReceiverId) {
+                    appendMessage(data.message, data.sender_id === currentUser.id ? 'sent' : 'received');
+                }
+            });
+        }
 
-    function selectUser(username) {
-      activeChatUser = username;
-      document.getElementById('chat-with-display').textContent = `Chat with ${username}`;
-      
-      const input = document.getElementById('message-input');
-      input.disabled = false;
-      input.focus();
-      document.getElementById('send-btn').disabled = false;
-      document.getElementById('chat-box').innerHTML = '';
+        function selectFriend(id, name) {
+            currentReceiverId = id;
+            document.getElementById('chat-target-name').innerText = name;
+            document.getElementById('messages-box').innerHTML = ''; // Clear chat view for now
+        }
 
-      document.querySelectorAll('.user-item').forEach(el => {
-        el.classList.toggle('active', el.textContent.includes(username));
-      });
-    }
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            if (!message || !currentReceiverId) return;
 
-    function toggleMenu() {
-      const menu = document.getElementById('foldout-menu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-      loadFriendsData();
-    }
+            socket.emit('send_message', {
+                sender_id: currentUser.id,
+                receiver_id: currentReceiverId,
+                message: message
+            });
 
-    function toggleTheme() {
-      const body = document.body;
-      if (body.classList.contains('dark-mode')) {
-        body.classList.remove('dark-mode');
-        body.classList.add('light-mode');
-      } else {
-        body.classList.remove('light-mode');
-        body.classList.add('dark-mode');
-      }
-    }
+            input.value = '';
+        }
 
-    function goHome() {
-      window.location.href = 'https://chickencoopproxy.vercel.app';
-    }
+        function checkEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
 
-    function logout() {
-      if (socket) socket.disconnect();
-      currentUser = null;
-      activeChatUser = null;
-      isOwner = 0;
-      isDesigner = 0;
-
-      document.getElementById('app-container').style.display = 'none';
-      document.getElementById('auth-container').style.display = 'block';
-
-      document.getElementById('auth-password').value = '';
-      document.getElementById('auth-pfp').value = '';
-      document.getElementById('auth-secret').value = '';
-      document.getElementById('error-msg').textContent = '';
-    }
-
-    function sendMessage(e) {
-      e.preventDefault();
-      const input = document.getElementById('message-input');
-      const text = input.value.trim();
-      if (!text || !activeChatUser) return;
-
-      socket.emit('private_message', {
-        sender: currentUser,
-        receiver: activeChatUser,
-        text: text
-      });
-
-      appendMessage('You', text, 'outgoing');
-      input.value = '';
-    }
-
-    function appendMessage(sender, text, type) {
-      const chatBox = document.getElementById('chat-box');
-      const div = document.createElement('div');
-      div.className = `message ${type}`;
-      div.textContent = text;
-      chatBox.appendChild(div);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
-
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.display = sidebar.style.display === 'none' ? 'flex' : 'none';
+        }
+    </script>
 </body>
 </html>
