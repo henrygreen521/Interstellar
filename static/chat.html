@@ -577,12 +577,12 @@
       }
     }
 
-    function logout() {
+function logout() {
       if (socket) socket.disconnect();
-      currentUser = null;
-      activeChatUser = null;
-      isOwner = 0;
-      isDesigner = 0;
+      
+      // Redirect straight to your proxy homescreen URL
+      window.location.href = 'https://chickencoopproxy.vercel.app';
+    }
 
       document.getElementById('app-container').style.display = 'none';
       document.getElementById('auth-container').style.display = 'block';
