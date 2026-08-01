@@ -147,6 +147,21 @@
     });
   });
 </script>
+  <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    // Find the right side of the navbar
+    const navRight = document.querySelector('.f-nav-right');
+    if (navRight) {
+      // Create the new Chat button
+      const chatLink = document.createElement('a');
+      chatLink.className = 'navbar-link';
+      chatLink.href = '/chat.html';
+      chatLink.innerHTML = '<i class="fa-solid fa-comments navbar-icon"></i>Chat';
+      // Add it to the navbar
+      navRight.appendChild(chatLink);
+    }
+  });
+</script>
 </body>
 
 </html>
