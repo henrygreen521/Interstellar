@@ -152,18 +152,22 @@
             const pfp = document.getElementById('pfp').value;
             const endpoint = isRegistering ? '/api/register' : '/api/login';
 
-            const res = await fetch(BACKEND_URL + endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password, pfp })
-            });
+            try {
+                const res = await fetch(BACKEND_URL + endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, pfp })
+                });
 
-            const data = await res.json();
-            if (data.error) {
-                alert(data.error);
-            } else {
-                currentUser = data.user || { id: data.userId, username, pfp: pfp || 'https://via.placeholder.com/150' };
-                initApp();
+                const data = await res.json();
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    currentUser = data.user || { id: data.userId, username, pfp: pfp || 'https://via.placeholder.com/150' };
+                    initApp();
+                }
+            } catch (err) {
+                alert("Error: Network issue or server unreachable");
             }
         }
 
@@ -193,43 +197,51 @@
         }
 
         async function loadFriends() {
-            const res = await fetch(`${BACKEND_URL}/api/friends/${currentUser.id}`);
-            const friends = await res.json();
-            const listEl = document.getElementById('friends-list');
-            listEl.innerHTML = '';
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/friends/${currentUser.id}`);
+                const friends = await res.json();
+                const listEl = document.getElementById('friends-list');
+                listEl.innerHTML = '';
 
-            friends.forEach(f => {
-                const item = document.createElement('div');
-                item.className = 'friend-item';
-                item.innerHTML = `<img src="${f.pfp || 'https://via.placeholder.com/150'}"> <span>${f.username}</span>`;
-                item.onclick = () => selectFriend(f);
-                listEl.appendChild(item);
-            });
+                friends.forEach(f => {
+                    const item = document.createElement('div');
+                    item.className = 'friend-item';
+                    item.innerHTML = `<img src="${f.pfp || 'https://via.placeholder.com/150'}"> <span>${f.username}</span>`;
+                    item.onclick = () => selectFriend(f);
+                    listEl.appendChild(item);
+                });
+            } catch (e) {
+                // Background poll fail safely ignored
+            }
         }
 
         async function loadRequests() {
-            const res = await fetch(`${BACKEND_URL}/api/friends/requests/${currentUser.id}`);
-            const requests = await res.json();
-            const listEl = document.getElementById('requests-list');
-            listEl.innerHTML = '';
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/friends/requests/${currentUser.id}`);
+                const requests = await res.json();
+                const listEl = document.getElementById('requests-list');
+                listEl.innerHTML = '';
 
-            if (requests.length === 0) {
-                listEl.innerHTML = '<p style="color:#888; font-size:0.9rem;">No pending requests</p>';
-                return;
+                if (requests.length === 0) {
+                    listEl.innerHTML = '<p style="color:#888; font-size:0.9rem;">No pending requests</p>';
+                    return;
+                }
+
+                requests.forEach(req => {
+                    const item = document.createElement('div');
+                    item.className = 'request-item';
+                    item.innerHTML = `
+                        <span>${req.username}</span>
+                        <div class="request-actions">
+                            <button class="accept-btn" onclick="respondRequest(${req.id}, 'accept')">✓</button>
+                            <button class="reject-btn" onclick="respondRequest(${req.id}, 'reject')">✕</button>
+                        </div>
+                    `;
+                    listEl.appendChild(item);
+                });
+            } catch (e) {
+                // Background poll fail safely ignored
             }
-
-            requests.forEach(req => {
-                const item = document.createElement('div');
-                item.className = 'request-item';
-                item.innerHTML = `
-                    <span>${req.username}</span>
-                    <div class="request-actions">
-                        <button class="accept-btn" onclick="respondRequest(${req.id}, 'accept')">✓</button>
-                        <button class="reject-btn" onclick="respondRequest(${req.id}, 'reject')">✕</button>
-                    </div>
-                `;
-                listEl.appendChild(item);
-            });
         }
 
         async function sendFriendRequest() {
@@ -241,13 +253,18 @@
             statusEl.innerText = "Searching...";
 
             try {
-                const searchRes = await fetch(`${BACKEND_URL}/api/users/search?q=${usernameQuery}`);
+                const searchRes = await fetch(`${BACKEND_URL}/api/users/search?q=${encodeURIComponent(usernameQuery)}`);
+                if (!searchRes.ok) {
+                    statusEl.style.color = "#e74c3c";
+                    statusEl.innerText = "Error";
+                    return;
+                }
                 const users = await searchRes.json();
                 const targetUser = users.find(u => u.username.toLowerCase() === usernameQuery.toLowerCase());
 
                 if (!targetUser) {
                     statusEl.style.color = "#e74c3c";
-                    statusEl.innerText = "Error: User not found";
+                    statusEl.innerText = "Error";
                     return;
                 }
 
@@ -260,41 +277,49 @@
                 const data = await res.json();
                 if (res.ok) {
                     statusEl.style.color = "#2ecc71";
-                    statusEl.innerText = "Sent!";
+                    statusEl.innerText = "Sent";
                     document.getElementById('friend-search-input').value = '';
                 } else {
                     statusEl.style.color = "#e74c3c";
-                    statusEl.innerText = "Error: " + (data.error || "Could not send");
+                    statusEl.innerText = "Error";
                 }
             } catch (err) {
                 statusEl.style.color = "#e74c3c";
-                statusEl.innerText = "Error: Network issue";
+                statusEl.innerText = "Error";
             }
         }
 
         async function respondRequest(senderId, action) {
-            await fetch(`${BACKEND_URL}/api/friends/respond`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: currentUser.id, sender_id: senderId, action })
-            });
-            loadRequests();
-            loadFriends();
+            try {
+                await fetch(`${BACKEND_URL}/api/friends/respond`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: currentUser.id, sender_id: senderId, action })
+                });
+                loadRequests();
+                loadFriends();
+            } catch (e) {
+                // Handle network error quietly or alert if needed
+            }
         }
 
         async function selectFriend(friend) {
             currentReceiver = friend;
             document.getElementById('chat-target-name').innerText = friend.username;
             
-            const res = await fetch(`${BACKEND_URL}/api/messages/${currentUser.id}/${friend.id}`);
-            const messages = await res.json();
-            
-            const box = document.getElementById('messages-box');
-            box.innerHTML = '';
-            messages.forEach(m => {
-                const isSent = m.sender_id === currentUser.id;
-                appendMessage(m.message, isSent ? 'sent' : 'received', isSent ? currentUser.pfp : friend.pfp);
-            });
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/messages/${currentUser.id}/${friend.id}`);
+                const messages = await res.json();
+                
+                const box = document.getElementById('messages-box');
+                box.innerHTML = '';
+                messages.forEach(m => {
+                    const isSent = m.sender_id === currentUser.id;
+                    appendMessage(m.message, isSent ? 'sent' : 'received', isSent ? currentUser.pfp : friend.pfp);
+                });
+            } catch (e) {
+                // Handle fetch error
+            }
         }
 
         function appendMessage(text, type, pfpUrl) {
