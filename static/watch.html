@@ -209,11 +209,10 @@
             <span>ChickenCoop</span>
         </div>
         <nav class="nav-links">
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="chat.html" class="nav-link">Chat</a>
-            <a href="watch.html" class="nav-link active">
-                <!-- Film Strip SVG with Play Icon -->
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <a href="/" class="nav-link">HOME</a>
+            <a href="/chat.html" class="nav-link">CHAT</a>
+            <a href="/watch.html" class="nav-link active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;">
                     <path d="M19 4H5C3.89 4 3 4.9 3 6V18C3 19.1 3.89 20 5 20H19C20.11 20 21 19.1 21 18V6C21 4.9 20.11 4 19 4ZM19 18H5V6H19V18Z"/>
                     <rect x="6" y="6" width="2" height="2" rx="0.5"/>
                     <rect x="11" y="6" width="2" height="2" rx="0.5"/>
@@ -222,8 +221,7 @@
                     <rect x="11" y="16" width="2" height="2" rx="0.5"/>
                     <rect x="16" y="16" width="2" height="2" rx="0.5"/>
                     <polygon points="10,9.5 15,12 10,14.5"/>
-                </svg>
-                Watch
+                </svg>WATCH
             </a>
         </nav>
     </header>
@@ -236,12 +234,11 @@
             <!-- Video Player Column -->
             <div class="player-card">
                 <div class="iframe-container">
-                    <!-- Videasy Embed iFrame Example (Replace ID/type as needed) -->
                     <iframe id="media-frame" src="https://player.videasy.net/movie/550" allowfullscreen></iframe>
                 </div>
                 <div class="player-info">
-                    <h2 id="media-title">Selected Media</h2>
-                    <p id="media-desc">Stream movies and TV shows seamlessly using the integrated player hub.</p>
+                    <h2 id="media-title">Fight Club</h2>
+                    <p id="media-desc">A depressed man suffering from insomnia meets a strange soap salesman.</p>
                 </div>
             </div>
 
@@ -269,14 +266,17 @@
             document.getElementById('media-desc').innerText = desc;
         }
 
-        // Basic filter search for the recommendation list
+        // Flexible, less-specific search filter
         const searchInput = document.getElementById('media-search');
         searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
+            const query = e.target.value.toLowerCase().trim();
+            const terms = query.split(/\s+/);
             const items = document.querySelectorAll('.rec-item');
+
             items.forEach(item => {
                 const text = item.innerText.toLowerCase();
-                item.style.display = text.includes(term) ? 'block' : 'none';
+                const matches = query === '' || terms.every(term => text.includes(term));
+                item.style.display = matches ? 'block' : 'none';
             });
         });
     </script>
