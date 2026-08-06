@@ -29,7 +29,6 @@
             flex-direction: column;
         }
 
-        /* Navbar Style matching your app */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -73,7 +72,6 @@
             color: var(--accent-color);
         }
 
-        /* Main Watch Container Layout */
         .container {
             flex: 1;
             max-width: 1400px;
@@ -100,7 +98,6 @@
             }
         }
 
-        /* Video Player Card */
         .player-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -142,7 +139,6 @@
             line-height: 1.4;
         }
 
-        /* Sidebar Panel */
         .sidebar-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -203,7 +199,6 @@
 </head>
 <body>
 
-    <!-- Navbar -->
     <header class="navbar">
         <div class="logo-area">
             <span>ChickenCoop</span>
@@ -226,12 +221,10 @@
         </nav>
     </header>
 
-    <!-- Main Content Area -->
     <main class="container">
         <h1 class="page-title">Watch</h1>
         
         <div class="watch-grid">
-            <!-- Video Player Column -->
             <div class="player-card">
                 <div class="iframe-container">
                     <iframe id="media-frame" src="https://player.videasy.net/movie/550" allowfullscreen></iframe>
@@ -242,11 +235,10 @@
                 </div>
             </div>
 
-            <!-- Sidebar Column -->
             <div class="sidebar-panel">
-                <input type="text" class="search-input" placeholder="Search Shows & Movies..." id="media-search">
-                <div class="sidebar-heading">Related Media</div>
-                <div class="recommendation-list">
+                <input type="text" class="search-input" placeholder="Type to search any movie/show..." id="media-search">
+                <div class="sidebar-heading" id="sidebar-label">Featured / Results</div>
+                <div class="recommendation-list" id="results-list">
                     <div class="rec-item" onclick="loadMedia('movie', '550', 'Fight Club', 'A depressed man suffering from insomnia meets a strange soap salesman.')">Fight Club</div>
                     <div class="rec-item" onclick="loadMedia('movie', '299536', 'Avengers: Infinity War', 'The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos.')">Avengers: Infinity War</div>
                     <div class="rec-item" onclick="loadMedia('movie', '157336', 'Interstellar', 'Interstellar chronicles the adventures of a group of explorers who make use of a newly discovered wormhole.')">Interstellar</div>
@@ -258,34 +250,71 @@
     </main>
 
     <script>
-        // Simple function to swap out the Videasy iframe source dynamically on click
         function loadMedia(type, id, title, desc) {
             const frame = document.getElementById('media-frame');
             frame.src = `https://player.videasy.net/${type}/${id}`;
             document.getElementById('media-title').innerText = title;
-            document.getElementById('media-desc').innerText = desc;
+            document.getElementById('media-desc').innerText = desc || 'Stream media seamlessly.';
         }
 
-        // Flexible search filter with debugging
+        // Live API search query handler using TMDB public multi-search
         const searchInput = document.getElementById('media-search');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                const terms = query.split(/\s+/);
-                const items = document.querySelectorAll('.rec-item');
+        const resultsList = document.getElementById('results-list');
+        const sidebarLabel = document.getElementById('sidebar-label');
+        let searchTimeout;
 
-                items.forEach(item => {
-                    const text = item.innerText.toLowerCase();
-                    const matches = query === '' || terms.every(term => text.includes(term));
-                    item.style.display = matches ? 'block' : 'none';
-                });
-            });
-        } else {
-            console.error("Search input element not found!");
-        }
-    </script>
-            });
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            clearTimeout(searchTimeout);
+
+            if (query.length < 2) {
+                sidebarLabel.innerText = "Featured Media";
+                // Reset to default list if search is cleared
+                resultsList.innerHTML = `
+                    <div class="rec-item" onclick="loadMedia('movie', '550', 'Fight Club', 'A depressed man suffering from insomnia meets a strange soap salesman.')">Fight Club</div>
+                    <div class="rec-item" onclick="loadMedia('movie', '299536', 'Avengers: Infinity War', 'The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos.')">Avengers: Infinity War</div>
+                    <div class="rec-item" onclick="loadMedia('movie', '157336', 'Interstellar', 'Interstellar chronicles the adventures of a group of explorers who make use of a newly discovered wormhole.')">Interstellar</div>
+                    <div class="rec-item" onclick="loadMedia('tv', '1399/1/1', 'Game of Thrones (S1 E1)', 'Nine noble families fight for control over the lands of Westeros.')">Game of Thrones</div>
+                    <div class="rec-item" onclick="loadMedia('tv', '66732/1/1', 'Stranger Things (S1 E1)', 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.')">Stranger Things</div>
+                `;
+                return;
+            }
+
+            sidebarLabel.innerText = "Search Results";
+            resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 5px;">Searching...</div>';
+
+            // Debounce the API search call so it doesn't spam requests on every single keystroke
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const response = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=2df35560b370129f1092e44d32049d59&query=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    
+                    resultsList.innerHTML = '';
+                    const items = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
+
+                    if (items.length === 0) {
+                        resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 5px;">No results found.</div>';
+                        return;
+                    }
+
+                    items.forEach(item => {
+                        const title = item.title || item.name;
+                        const year = (item.release_date || item.date || item.first_air_date || '').substring(0, 4);
+                        const mediaType = item.media_type;
+                        const id = mediaType === 'tv' ? `${item.id}/1/1` : item.id;
+                        const desc = item.overview || 'No description available.';
+
+                        const div = document.createElement('div');
+                        div.className = 'rec-item';
+                        div.innerText = `${title} ${year ? '(' + year + ')' : ''} [${mediaType.toUpperCase()}]`;
+                        div.onclick = () => loadMedia(mediaType, id, title, desc);
+                        resultsList.appendChild(div);
+                    });
+                } catch (err) {
+                    resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 5px;">Error fetching results.</div>';
+                }
+            }, 300);
         });
-    
+    </script>
 </body>
 </html>
