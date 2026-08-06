@@ -152,13 +152,30 @@
     // Find the right side of the navbar
     const navRight = document.querySelector('.f-nav-right');
     if (navRight) {
-      // Create the new Chat button
+      // Create the Chat button
       const chatLink = document.createElement('a');
       chatLink.className = 'navbar-link';
       chatLink.href = '/chat.html';
       chatLink.innerHTML = '<i class="fa-solid fa-comments navbar-icon"></i>Chat';
-      // Add it to the navbar
       navRight.appendChild(chatLink);
+
+      // Create the Watch button with your custom film-strip SVG icon
+      const watchLink = document.createElement('a');
+      watchLink.className = 'navbar-link';
+      watchLink.href = '/watch.html';
+      watchLink.innerHTML = `
+        <svg class="navbar-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; margin-right: 4px;">
+          <path d="M19 4H5C3.89 4 3 4.9 3 6V18C3 19.1 3.89 20 5 20H19C20.11 20 21 19.1 21 18V6C21 4.9 20.11 4 19 4ZM19 18H5V6H19V18Z"/>
+          <rect x="6" y="6" width="2" height="2" rx="0.5"/>
+          <rect x="11" y="6" width="2" height="2" rx="0.5"/>
+          <rect x="16" y="6" width="2" height="2" rx="0.5"/>
+          <rect x="6" y="16" width="2" height="2" rx="0.5"/>
+          <rect x="11" y="16" width="2" height="2" rx="0.5"/>
+          <rect x="16" y="16" width="2" height="2" rx="0.5"/>
+          <polygon points="10,9.5 15,12 10,14.5"/>
+        </svg>Watch
+      `;
+      navRight.appendChild(watchLink);
     }
   });
 </script>
