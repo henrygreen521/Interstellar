@@ -236,84 +236,71 @@
             </div>
 
             <div class="sidebar-panel">
-                <input type="text" class="search-input" placeholder="Type to search any movie/show..." id="media-search">
-                <div class="sidebar-heading" id="sidebar-label">Featured / Results</div>
+                <input type="text" class="search-input" placeholder="Search library..." id="media-search">
+                <div class="sidebar-heading">Media Library</div>
                 <div class="recommendation-list" id="results-list">
-                    <div class="rec-item" onclick="loadMedia('movie', '550', 'Fight Club', 'A depressed man suffering from insomnia meets a strange soap salesman.')">Fight Club</div>
-                    <div class="rec-item" onclick="loadMedia('movie', '299536', 'Avengers: Infinity War', 'The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos.')">Avengers: Infinity War</div>
-                    <div class="rec-item" onclick="loadMedia('movie', '157336', 'Interstellar', 'Interstellar chronicles the adventures of a group of explorers who make use of a newly discovered wormhole.')">Interstellar</div>
-                    <div class="rec-item" onclick="loadMedia('tv', '1399/1/1', 'Game of Thrones (S1 E1)', 'Nine noble families fight for control over the lands of Westeros.')">Game of Thrones</div>
-                    <div class="rec-item" onclick="loadMedia('tv', '66732/1/1', 'Stranger Things (S1 E1)', 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.')">Stranger Things</div>
+                    <!-- Items populated dynamically via script -->
                 </div>
             </div>
         </div>
     </main>
 
     <script>
+        // Expanded built-in media library mapping titles, types, and Videasy IDs
+        const mediaLibrary = [
+            { type: 'movie', id: '550', title: 'Fight Club', desc: 'A depressed man suffering from insomnia meets a strange soap salesman.' },
+            { type: 'movie', id: '299536', title: 'Avengers: Infinity War', desc: 'The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos.' },
+            { type: 'movie', id: '157336', title: 'Interstellar', desc: 'Interstellar chronicles the adventures of a group of explorers who make use of a newly discovered wormhole.' },
+            { type: 'tv', id: '1399/1/1', title: 'Game of Thrones (S1 E1)', desc: 'Nine noble families fight for control over the lands of Westeros.' },
+            { type: 'tv', id: '66732/1/1', title: 'Stranger Things (S1 E1)', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.' },
+            { type: 'movie', id: '27205', title: 'Inception', desc: 'A thief who steals corporate secrets through the use of dream-sharing technology.' },
+            { type: 'movie', id: '155', title: 'The Dark Knight', desc: 'Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent.' },
+            { type: 'movie', id: '680', title: 'Pulp Fiction', desc: 'The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.' },
+            { type: 'tv', id: '1396/1/1', title: 'Breaking Bad (S1 E1)', desc: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.' },
+            { type: 'tv', id: '85552/1/1', title: 'Euphoria (S1 E1)', desc: 'A look at life through a group of high school students as they grapple with issues of drugs, sex, and identity.' }
+        ];
+
+        const resultsList = document.getElementById('results-list');
+        const searchInput = document.getElementById('media-search');
+        const frame = document.getElementById('media-frame');
+        const mediaTitle = document.getElementById('media-title');
+        const mediaDesc = document.getElementById('media-desc');
+
         function loadMedia(type, id, title, desc) {
-            const frame = document.getElementById('media-frame');
             frame.src = `https://player.videasy.net/${type}/${id}`;
-            document.getElementById('media-title').innerText = title;
-            document.getElementById('media-desc').innerText = desc || 'Stream media seamlessly.';
+            mediaTitle.innerText = title;
+            mediaDesc.innerText = desc;
         }
 
-        // Live API search query handler using TMDB public multi-search
-        const searchInput = document.getElementById('media-search');
-        const resultsList = document.getElementById('results-list');
-        const sidebarLabel = document.getElementById('sidebar-label');
-        let searchTimeout;
-
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.trim();
-            clearTimeout(searchTimeout);
-
-            if (query.length < 2) {
-                sidebarLabel.innerText = "Featured Media";
-                // Reset to default list if search is cleared
-                resultsList.innerHTML = `
-                    <div class="rec-item" onclick="loadMedia('movie', '550', 'Fight Club', 'A depressed man suffering from insomnia meets a strange soap salesman.')">Fight Club</div>
-                    <div class="rec-item" onclick="loadMedia('movie', '299536', 'Avengers: Infinity War', 'The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos.')">Avengers: Infinity War</div>
-                    <div class="rec-item" onclick="loadMedia('movie', '157336', 'Interstellar', 'Interstellar chronicles the adventures of a group of explorers who make use of a newly discovered wormhole.')">Interstellar</div>
-                    <div class="rec-item" onclick="loadMedia('tv', '1399/1/1', 'Game of Thrones (S1 E1)', 'Nine noble families fight for control over the lands of Westeros.')">Game of Thrones</div>
-                    <div class="rec-item" onclick="loadMedia('tv', '66732/1/1', 'Stranger Things (S1 E1)', 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.')">Stranger Things</div>
-                `;
+        function renderList(items) {
+            resultsList.innerHTML = '';
+            if (items.length === 0) {
+                resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 8px;">No matching titles found.</div>';
                 return;
             }
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'rec-item';
+                div.innerText = item.title;
+                div.onclick = () => loadMedia(item.type, item.id, item.title, item.desc);
+                resultsList.appendChild(div);
+            });
+        }
 
-            sidebarLabel.innerText = "Search Results";
-            resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 5px;">Searching...</div>';
+        // Initial render
+        renderList(mediaLibrary);
 
-            // Debounce the API search call so it doesn't spam requests on every single keystroke
-            searchTimeout = setTimeout(async () => {
-                try {
-                    const response = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=2df35560b370129f1092e44d32049d59&query=${encodeURIComponent(query)}`);
-                    const data = await response.json();
-                    
-                    resultsList.innerHTML = '';
-                    const items = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
+        // Flexible multi-word filter logic
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const terms = query.split(/\s+/);
 
-                    if (items.length === 0) {
-                        resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 5px;">No results found.</div>';
-                        return;
-                    }
+            const filtered = mediaLibrary.filter(item => {
+                const text = item.title.toLowerCase() + ' ' + item.desc.toLowerCase();
+                return query === '' || terms.every(term => text.includes(term));
+            });
 
-                    items.forEach(item => {
-                        const title = item.title || item.name;
-                        const year = (item.release_date || item.date || item.first_air_date || '').substring(0, 4);
-                        const mediaType = item.media_type;
-                        const id = mediaType === 'tv' ? `${item.id}/1/1` : item.id;
-                        const desc = item.overview || 'No description available.';
-
-                        const div = document.createElement('div');
-                        div.className = 'rec-item';
-                        div.innerText = `${title} ${year ? '(' + year + ')' : ''} [${mediaType.toUpperCase()}]`;
-                        div.onclick = () => loadMedia(mediaType, id, title, desc);
-                        resultsList.appendChild(div);
-                    });
-                } catch (err) {
-                    resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 5px;">Error fetching results.</div>';
-                }
-            }, 300);
+            renderList(filtered);
         });
     </script>
 </body>
