@@ -98,6 +98,12 @@
             }
         }
 
+        .player-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         .player-card {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -126,19 +132,66 @@
 
         .player-info {
             padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
-        .player-info h2 {
+        .player-text h2 {
             font-size: 1.3rem;
             margin-bottom: 8px;
         }
 
-        .player-info p {
+        .player-text p {
             color: var(--text-muted);
             font-size: 0.9rem;
             line-height: 1.4;
         }
 
+        /* Episode Controls Panel for TV Shows */
+        .episodes-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: none; /* Hidden by default, shown for TV shows */
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .episodes-header {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .episode-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ep-btn {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .ep-btn:hover, .ep-btn.active {
+            background-color: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+        }
+
+        /* Sidebar Panel */
         .sidebar-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -146,29 +199,24 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
             height: fit-content;
         }
 
-        .search-input {
-            width: 100%;
-            padding: 12px 16px;
+        .search-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
             background-color: var(--bg-color);
+            padding: 8px 12px;
+            border-radius: 6px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-main);
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .search-input:focus {
-            border-color: var(--accent-color);
+            text-align: center;
         }
 
         .sidebar-heading {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--text-muted);
+            color: var(--text-main);
             margin-top: 4px;
         }
 
@@ -176,7 +224,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 450px;
+            max-height: 500px;
             overflow-y: auto;
         }
 
@@ -191,9 +239,10 @@
             transition: all 0.2s;
         }
 
-        .rec-item:hover {
+        .rec-item:hover, .rec-item.active {
             color: var(--text-main);
             border-color: var(--border-color);
+            background-color: #252525;
         }
     </style>
 </head>
@@ -225,83 +274,112 @@
         <h1 class="page-title">Watch</h1>
         
         <div class="watch-grid">
-            <div class="player-card">
-                <div class="iframe-container">
-                    <iframe id="media-frame" src="https://player.videasy.net/movie/550" allowfullscreen></iframe>
+            <!-- Player and Show Controls Section -->
+            <div class="player-section">
+                <div class="player-card">
+                    <div class="iframe-container">
+                        <iframe id="media-frame" src="https://player.videasy.net/movie/550" allowfullscreen></iframe>
+                    </div>
+                    <div class="player-info">
+                        <div class="player-text">
+                            <h2 id="media-title">Fight Club</h2>
+                            <p id="media-desc">A depressed man suffering from insomnia meets a strange soap salesman.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="player-info">
-                    <h2 id="media-title">Fight Club</h2>
-                    <p id="media-desc">A depressed man suffering from insomnia meets a strange soap salesman.</p>
+
+                <!-- TV Show Episode Selector (Appears for TV series) -->
+                <div class="episodes-panel" id="episodes-panel">
+                    <div class="episodes-header">
+                        <span id="show-season-title">Season 1 Episodes</span>
+                    </div>
+                    <div class="episode-buttons" id="episode-buttons-container">
+                        <!-- Populated dynamically -->
+                    </div>
                 </div>
             </div>
 
+            <!-- Sidebar Library -->
             <div class="sidebar-panel">
-                <input type="text" class="search-input" placeholder="Search library..." id="media-search">
+                <div class="search-hint">💡 Tip: Press <b>Ctrl + F</b> to search library</div>
                 <div class="sidebar-heading">Media Library</div>
-                <div class="recommendation-list" id="results-list">
-                    <!-- Items populated dynamically via script -->
-                </div>
+                <div class="recommendation-list" id="results-list"></div>
             </div>
         </div>
     </main>
 
     <script>
-        // Expanded built-in media library mapping titles, types, and Videasy IDs
         const mediaLibrary = [
             { type: 'movie', id: '550', title: 'Fight Club', desc: 'A depressed man suffering from insomnia meets a strange soap salesman.' },
             { type: 'movie', id: '299536', title: 'Avengers: Infinity War', desc: 'The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos.' },
             { type: 'movie', id: '157336', title: 'Interstellar', desc: 'Interstellar chronicles the adventures of a group of explorers who make use of a newly discovered wormhole.' },
-            { type: 'tv', id: '1399/1/1', title: 'Game of Thrones (S1 E1)', desc: 'Nine noble families fight for control over the lands of Westeros.' },
-            { type: 'tv', id: '66732/1/1', title: 'Stranger Things (S1 E1)', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.' },
+            { type: 'tv', id: '1399', title: 'Game of Thrones', desc: 'Nine noble families fight for control over the lands of Westeros.', seasons: 8, episodesPerSeason: 10 },
+            { type: 'tv', id: '66732', title: 'Stranger Things', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.', seasons: 4, episodesPerSeason: 8 },
             { type: 'movie', id: '27205', title: 'Inception', desc: 'A thief who steals corporate secrets through the use of dream-sharing technology.' },
             { type: 'movie', id: '155', title: 'The Dark Knight', desc: 'Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent.' },
             { type: 'movie', id: '680', title: 'Pulp Fiction', desc: 'The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.' },
-            { type: 'tv', id: '1396/1/1', title: 'Breaking Bad (S1 E1)', desc: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.' },
-            { type: 'tv', id: '85552/1/1', title: 'Euphoria (S1 E1)', desc: 'A look at life through a group of high school students as they grapple with issues of drugs, sex, and identity.' }
+            { type: 'tv', id: '1396', title: 'Breaking Bad', desc: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.', seasons: 5, episodesPerSeason: 10 },
+            { type: 'tv', id: '85552', title: 'Euphoria', desc: 'A look at life through a group of high school students as they grapple with issues of drugs, sex, and identity.', seasons: 2, episodesPerSeason: 8 }
         ];
 
         const resultsList = document.getElementById('results-list');
-        const searchInput = document.getElementById('media-search');
         const frame = document.getElementById('media-frame');
         const mediaTitle = document.getElementById('media-title');
         const mediaDesc = document.getElementById('media-desc');
+        const episodesPanel = document.getElementById('episodes-panel');
+        const episodeButtonsContainer = document.getElementById('episode-buttons-container');
+        const showSeasonTitle = document.getElementById('show-season-title');
 
-        function loadMedia(type, id, title, desc) {
-            frame.src = `https://player.videasy.net/${type}/${id}`;
-            mediaTitle.innerText = title;
-            mediaDesc.innerText = desc;
+        function loadMedia(item) {
+            mediaTitle.innerText = item.title;
+            mediaDesc.innerText = item.desc;
+
+            if (item.type === 'tv') {
+                // Default to Season 1, Episode 1 for TV shows
+                frame.src = `https://player.videasy.net/tv/${item.id}/1/1`;
+                renderEpisodes(item, 1);
+                episodesPanel.style.display = 'flex';
+            } else {
+                frame.src = `https://player.videasy.net/movie/${item.id}`;
+                episodesPanel.style.display = 'none';
+            }
+
+            // Highlight active item in sidebar
+            document.querySelectorAll('.rec-item').forEach(el => el.classList.remove('active'));
+            event && event.currentTarget && event.currentTarget.classList.add('active');
         }
 
-        function renderList(items) {
-            resultsList.innerHTML = '';
-            if (items.length === 0) {
-                resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 8px;">No matching titles found.</div>';
-                return;
+        function renderEpisodes(show, seasonNum) {
+            episodeButtonsContainer.innerHTML = '';
+            showSeasonTitle.innerText = `${show.title} - Season ${seasonNum} Episodes`;
+
+            const totalEp = show.episodesPerSeason || 8;
+            for (let ep = 1; ep <= totalEp; ep++) {
+                const btn = document.createElement('button');
+                btn.className = `ep-btn ${ep === 1 ? 'active' : ''}`;
+                btn.innerText = `Ep ${ep}`;
+                btn.onclick = () => {
+                    frame.src = `https://player.videasy.net/tv/${show.id}/${seasonNum}/${ep}`;
+                    document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                };
+                episodeButtonsContainer.appendChild(btn);
             }
-            items.forEach(item => {
+        }
+
+        function renderLibrary() {
+            resultsList.innerHTML = '';
+            mediaLibrary.forEach((item, index) => {
                 const div = document.createElement('div');
-                div.className = 'rec-item';
+                div.className = `rec-item ${index === 0 ? 'active' : ''}`;
                 div.innerText = item.title;
-                div.onclick = () => loadMedia(item.type, item.id, item.title, item.desc);
+                div.onclick = (e) => loadMedia(item);
                 resultsList.appendChild(div);
             });
         }
 
-        // Initial render
-        renderList(mediaLibrary);
-
-        // Flexible multi-word filter logic
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const terms = query.split(/\s+/);
-
-            const filtered = mediaLibrary.filter(item => {
-                const text = item.title.toLowerCase() + ' ' + item.desc.toLowerCase();
-                return query === '' || terms.every(term => text.includes(term));
-            });
-
-            renderList(filtered);
-        });
+        // Initialize library list
+        renderLibrary();
     </script>
 </body>
 </html>
