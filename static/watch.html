@@ -132,9 +132,6 @@
 
         .player-info {
             padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
         }
 
         .player-text h2 {
@@ -148,13 +145,68 @@
             line-height: 1.4;
         }
 
-        /* Episode Controls Panel for TV Shows */
+        /* Custom ID Loader Bar */
+        .custom-load-box {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .custom-load-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .custom-input {
+            flex: 1;
+            padding: 10px 14px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .custom-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .type-select {
+            padding: 10px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .load-btn {
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .load-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* TV Show Episode Panel */
         .episodes-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 16px 20px;
-            display: none; /* Hidden by default, shown for TV shows */
+            display: none;
             flex-direction: column;
             gap: 12px;
         }
@@ -163,22 +215,21 @@
             font-size: 1rem;
             font-weight: 600;
             color: var(--text-main);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .episode-buttons {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            max-height: 120px;
+            overflow-y: auto;
         }
 
         .ep-btn {
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
             color: var(--text-muted);
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.85rem;
@@ -224,7 +275,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 500px;
+            max-height: 450px;
             overflow-y: auto;
         }
 
@@ -274,35 +325,43 @@
         <h1 class="page-title">Watch</h1>
         
         <div class="watch-grid">
-            <!-- Player and Show Controls Section -->
             <div class="player-section">
                 <div class="player-card">
                     <div class="iframe-container">
-                        <iframe id="media-frame" src="https://player.videasy.net/movie/550" allowfullscreen></iframe>
+                        <iframe id="media-frame" src="" allowfullscreen></iframe>
                     </div>
                     <div class="player-info">
                         <div class="player-text">
-                            <h2 id="media-title">Fight Club</h2>
-                            <p id="media-desc">A depressed man suffering from insomnia meets a strange soap salesman.</p>
+                            <h2 id="media-title">Custom / Selected Media</h2>
+                            <p id="media-desc">Stream anything seamlessly through your secure proxy tunnel.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- TV Show Episode Selector (Appears for TV series) -->
+                <!-- Custom TMDB ID loader to watch *anything* -->
+                <div class="custom-load-box">
+                    <div class="sidebar-heading" style="font-size:0.9rem;">Load Any Movie or Show (TMDB ID)</div>
+                    <div class="custom-load-row">
+                        <select id="custom-type" class="type-select">
+                            <option value="movie">Movie</option>
+                            <option value="tv">TV Show</option>
+                        </select>
+                        <input type="text" id="custom-id-input" class="custom-input" placeholder="Enter TMDB ID (e.g. 550 for Fight Club)">
+                        <button class="load-btn" onclick="loadCustomMedia()">Load</button>
+                    </div>
+                </div>
+
+                <!-- Episode Selector Panel -->
                 <div class="episodes-panel" id="episodes-panel">
-                    <div class="episodes-header">
-                        <span id="show-season-title">Season 1 Episodes</span>
-                    </div>
-                    <div class="episode-buttons" id="episode-buttons-container">
-                        <!-- Populated dynamically -->
-                    </div>
+                    <div class="episodes-header" id="show-season-title">Season 1 Episodes</div>
+                    <div class="episode-buttons" id="episode-buttons-container"></div>
                 </div>
             </div>
 
-            <!-- Sidebar Library -->
+            <!-- Sidebar Quick Shortcuts -->
             <div class="sidebar-panel">
-                <div class="search-hint">💡 Tip: Press <b>Ctrl + F</b> to search library</div>
-                <div class="sidebar-heading">Media Library</div>
+                <div class="search-hint">💡 Tip: Press <b>Ctrl + F</b> to search shortcuts</div>
+                <div class="sidebar-heading">Quick Shortcuts</div>
                 <div class="recommendation-list" id="results-list"></div>
             </div>
         </div>
@@ -314,12 +373,10 @@
             { type: 'movie', id: '299536', title: 'Avengers: Infinity War', desc: 'The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos.' },
             { type: 'movie', id: '157336', title: 'Interstellar', desc: 'Interstellar chronicles the adventures of a group of explorers who make use of a newly discovered wormhole.' },
             { type: 'tv', id: '1399', title: 'Game of Thrones', desc: 'Nine noble families fight for control over the lands of Westeros.', seasons: 8, episodesPerSeason: 10 },
-            { type: 'tv', id: '66732', title: 'Stranger Things', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.', seasons: 4, episodesPerSeason: 8 },
+            { type: 'tv', id: '66732', title: 'Stranger Things', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.', seasons: 4, episodesPerSeason: 9 },
             { type: 'movie', id: '27205', title: 'Inception', desc: 'A thief who steals corporate secrets through the use of dream-sharing technology.' },
             { type: 'movie', id: '155', title: 'The Dark Knight', desc: 'Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent.' },
-            { type: 'movie', id: '680', title: 'Pulp Fiction', desc: 'The lives of two mob hitmen, a boxer, a gangster and his wife intertwine in four tales of violence and redemption.' },
-            { type: 'tv', id: '1396', title: 'Breaking Bad', desc: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.', seasons: 5, episodesPerSeason: 10 },
-            { type: 'tv', id: '85552', title: 'Euphoria', desc: 'A look at life through a group of high school students as they grapple with issues of drugs, sex, and identity.', seasons: 2, episodesPerSeason: 8 }
+            { type: 'tv', id: '1396', title: 'Breaking Bad', desc: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.', seasons: 5, episodesPerSeason: 13 }
         ];
 
         const resultsList = document.getElementById('results-list');
@@ -330,36 +387,65 @@
         const episodeButtonsContainer = document.getElementById('episode-buttons-container');
         const showSeasonTitle = document.getElementById('show-season-title');
 
+        function getProxyUrl(rawUrl) {
+            try {
+                if (typeof __uv$config !== 'undefined' && typeof __uv$config.encodeUrl === 'function') {
+                    return __uv$config.prefix + __uv$config.encodeUrl(rawUrl);
+                }
+            } catch (e) {}
+            return '/service/' + encodeURIComponent(rawUrl);
+        }
+
         function loadMedia(item) {
             mediaTitle.innerText = item.title;
             mediaDesc.innerText = item.desc;
 
+            let targetUrl = '';
             if (item.type === 'tv') {
-                // Default to Season 1, Episode 1 for TV shows
-                frame.src = `https://player.videasy.net/tv/${item.id}/1/1`;
+                targetUrl = `https://player.videasy.net/tv/${item.id}/1/1`;
                 renderEpisodes(item, 1);
                 episodesPanel.style.display = 'flex';
             } else {
-                frame.src = `https://player.videasy.net/movie/${item.id}`;
+                targetUrl = `https://player.videasy.net/movie/${item.id}`;
                 episodesPanel.style.display = 'none';
             }
 
-            // Highlight active item in sidebar
-            document.querySelectorAll('.rec-item').forEach(el => el.classList.remove('active'));
-            event && event.currentTarget && event.currentTarget.classList.add('active');
+            frame.src = getProxyUrl(targetUrl);
+        }
+
+        function loadCustomMedia() {
+            const type = document.getElementById('custom-type').value;
+            const id = document.getElementById('custom-id-input').value.trim();
+            if (!id) return;
+
+            mediaTitle.innerText = `Custom ${type.toUpperCase()} (ID: ${id})`;
+            mediaDesc.innerText = `Manually loaded stream via Videasy.`;
+
+            let targetUrl = '';
+            if (type === 'tv') {
+                targetUrl = `https://player.videasy.net/tv/${id}/1/1`;
+                renderEpisodes({ id: id, title: `Show ${id}`, seasons: 1, episodesPerSeason: 12 }, 1);
+                episodesPanel.style.display = 'flex';
+            } else {
+                targetUrl = `https://player.videasy.net/movie/${id}`;
+                episodesPanel.style.display = 'none';
+            }
+
+            frame.src = getProxyUrl(targetUrl);
         }
 
         function renderEpisodes(show, seasonNum) {
             episodeButtonsContainer.innerHTML = '';
             showSeasonTitle.innerText = `${show.title} - Season ${seasonNum} Episodes`;
 
-            const totalEp = show.episodesPerSeason || 8;
+            const totalEp = show.episodesPerSeason || 10;
             for (let ep = 1; ep <= totalEp; ep++) {
                 const btn = document.createElement('button');
                 btn.className = `ep-btn ${ep === 1 ? 'active' : ''}`;
                 btn.innerText = `Ep ${ep}`;
                 btn.onclick = () => {
-                    frame.src = `https://player.videasy.net/tv/${show.id}/${seasonNum}/${ep}`;
+                    const targetUrl = `https://player.videasy.net/tv/${show.id}/${seasonNum}/${ep}`;
+                    frame.src = getProxyUrl(targetUrl);
                     document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                 };
@@ -369,17 +455,18 @@
 
         function renderLibrary() {
             resultsList.innerHTML = '';
-            mediaLibrary.forEach((item, index) => {
+            mediaLibrary.forEach((item) => {
                 const div = document.createElement('div');
-                div.className = `rec-item ${index === 0 ? 'active' : ''}`;
+                div.className = 'rec-item';
                 div.innerText = item.title;
-                div.onclick = (e) => loadMedia(item);
+                div.onclick = () => loadMedia(item);
                 resultsList.appendChild(div);
             });
         }
 
-        // Initialize library list
+        // Initialize default view with the first shortcut loaded
         renderLibrary();
+        loadMedia(mediaLibrary[0]);
     </script>
 </body>
 </html>
