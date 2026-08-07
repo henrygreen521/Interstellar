@@ -389,11 +389,11 @@
 
         function getProxyUrl(rawUrl) {
             try {
-                if (typeof __uv$config !== 'undefined' && typeof __uv$config.encodeUrl === 'function') {
+                if (typeof __uv$config !== 'undefined' && typeof __uv$config.encodeUrl === 'function' && typeof __uv$config.prefix === 'string') {
                     return __uv$config.prefix + __uv$config.encodeUrl(rawUrl);
                 }
             } catch (e) {}
-            return '/service/' + encodeURIComponent(rawUrl);
+            return rawUrl;
         }
 
         function loadMedia(item) {
@@ -464,7 +464,7 @@
             });
         }
 
-        // Initialize default view with the first shortcut loaded
+        // Initialize default view
         renderLibrary();
         loadMedia(mediaLibrary[0]);
     </script>
