@@ -145,18 +145,18 @@
             line-height: 1.4;
         }
 
-        /* Custom ID Loader Bar */
-        .custom-load-box {
+        /* Custom ID Loader & Search Tool Box */
+        .panel-box {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 16px 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .custom-load-row {
+        .input-row {
             display: flex;
             gap: 10px;
         }
@@ -185,7 +185,7 @@
             outline: none;
         }
 
-        .load-btn {
+        .action-btn {
             padding: 10px 20px;
             background-color: var(--accent-color);
             border: none;
@@ -196,11 +196,52 @@
             transition: opacity 0.2s;
         }
 
-        .load-btn:hover {
+        .action-btn:hover {
             opacity: 0.9;
         }
 
-        /* TV Show Episode Panel */
+        /* Search Results for TMDB Finder */
+        .search-results-box {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .search-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background-color: var(--panel-bg);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .small-btn {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            background: var(--border-color);
+            color: var(--text-main);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .small-btn.primary {
+            background: var(--accent-color);
+        }
+
+        /* TV Show Episode & Season Controls Panel */
         .episodes-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -211,18 +252,19 @@
             gap: 12px;
         }
 
-        .episodes-header {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-main);
+        .episodes-controls-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .episode-buttons {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-            max-height: 120px;
+            max-height: 150px;
             overflow-y: auto;
+            padding-right: 4px;
         }
 
         .ep-btn {
@@ -234,6 +276,8 @@
             cursor: pointer;
             font-size: 0.85rem;
             transition: all 0.2s;
+            min-width: 44px;
+            text-align: center;
         }
 
         .ep-btn:hover, .ep-btn.active {
@@ -242,7 +286,7 @@
             border-color: var(--accent-color);
         }
 
-        /* Sidebar Panel */
+        /* Sidebar Shortcuts Panel */
         .sidebar-panel {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -275,7 +319,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 450px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
@@ -332,28 +376,47 @@
                     </div>
                     <div class="player-info">
                         <div class="player-text">
-                            <h2 id="media-title">Custom / Selected Media</h2>
-                            <p id="media-desc">Stream anything seamlessly through your secure proxy tunnel.</p>
+                            <h2 id="media-title">Select or Load Media</h2>
+                            <p id="media-desc">Stream anything securely through your proxy tunnel.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Custom TMDB ID loader to watch *anything* -->
-                <div class="custom-load-box">
-                    <div class="sidebar-heading" style="font-size:0.9rem;">Load Any Movie or Show (TMDB ID)</div>
-                    <div class="custom-load-row">
+                <!-- TMDB ID Search & Finder Tool -->
+                <div class="panel-box">
+                    <div class="sidebar-heading" style="font-size:0.9rem;">Find Movie / Show TMDB ID</div>
+                    <div class="input-row">
+                        <select id="search-type" class="type-select">
+                            <option value="movie">Movie</option>
+                            <option value="tv">TV Show</option>
+                        </select>
+                        <input type="text" id="search-query-input" class="custom-input" placeholder="Search title (e.g. Breaking Bad)...">
+                        <button class="action-btn" onclick="searchTMDB()">Search ID</button>
+                    </div>
+                    <div class="search-results-box" id="search-results-box"></div>
+                </div>
+
+                <!-- Custom Direct ID Loader -->
+                <div class="panel-box">
+                    <div class="sidebar-heading" style="font-size:0.9rem;">Direct ID Loader</div>
+                    <div class="input-row">
                         <select id="custom-type" class="type-select">
                             <option value="movie">Movie</option>
                             <option value="tv">TV Show</option>
                         </select>
-                        <input type="text" id="custom-id-input" class="custom-input" placeholder="Enter TMDB ID (e.g. 550 for Fight Club)">
-                        <button class="load-btn" onclick="loadCustomMedia()">Load</button>
+                        <input type="text" id="custom-id-input" class="custom-input" placeholder="Enter TMDB ID...">
+                        <button class="action-btn" onclick="loadCustomMedia()">Load</button>
                     </div>
                 </div>
 
-                <!-- Episode Selector Panel -->
+                <!-- TV Show Season & Episode Panel -->
                 <div class="episodes-panel" id="episodes-panel">
-                    <div class="episodes-header" id="show-season-title">Season 1 Episodes</div>
+                    <div class="episodes-controls-top">
+                        <span class="sidebar-heading" id="show-season-title" style="margin:0;">Episodes</span>
+                        <select id="season-select" class="type-select" onchange="changeSeason()" style="padding: 6px 10px; font-size: 0.85rem;">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
                     <div class="episode-buttons" id="episode-buttons-container"></div>
                 </div>
             </div>
@@ -372,11 +435,9 @@
             { type: 'movie', id: '550', title: 'Fight Club', desc: 'A depressed man suffering from insomnia meets a strange soap salesman.' },
             { type: 'movie', id: '299536', title: 'Avengers: Infinity War', desc: 'The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos.' },
             { type: 'movie', id: '157336', title: 'Interstellar', desc: 'Interstellar chronicles the adventures of a group of explorers who make use of a newly discovered wormhole.' },
-            { type: 'tv', id: '1399', title: 'Game of Thrones', desc: 'Nine noble families fight for control over the lands of Westeros.', seasons: 8, episodesPerSeason: 10 },
-            { type: 'tv', id: '66732', title: 'Stranger Things', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.', seasons: 4, episodesPerSeason: 9 },
-            { type: 'movie', id: '27205', title: 'Inception', desc: 'A thief who steals corporate secrets through the use of dream-sharing technology.' },
-            { type: 'movie', id: '155', title: 'The Dark Knight', desc: 'Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent.' },
-            { type: 'tv', id: '1396', title: 'Breaking Bad', desc: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.', seasons: 5, episodesPerSeason: 13 }
+            { type: 'tv', id: '1399', title: 'Game of Thrones', desc: 'Nine noble families fight for control over the lands of Westeros.', seasons: 8, episodesPerSeason: [10,10,10,10,10,7,6,6] },
+            { type: 'tv', id: '66732', title: 'Stranger Things', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.', seasons: 4, episodesPerSeason: [8,9,8,9] },
+            { type: 'tv', id: '1396', title: 'Breaking Bad', desc: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.', seasons: 5, episodesPerSeason: [7,13,13,13,16] }
         ];
 
         const resultsList = document.getElementById('results-list');
@@ -386,6 +447,10 @@
         const episodesPanel = document.getElementById('episodes-panel');
         const episodeButtonsContainer = document.getElementById('episode-buttons-container');
         const showSeasonTitle = document.getElementById('show-season-title');
+        const seasonSelect = document.getElementById('season-select');
+        const searchResultsBox = document.getElementById('search-results-box');
+
+        let currentActiveShow = null;
 
         function getProxyUrl(rawUrl) {
             try {
@@ -396,16 +461,65 @@
             return rawUrl;
         }
 
+        // Search TMDB API securely through proxy for IDs and Copy button
+        async function searchTMDB() {
+            const type = document.getElementById('search-type').value;
+            const query = document.getElementById('search-query-input').value.trim();
+            if (!query) return;
+
+            searchResultsBox.style.display = 'flex';
+            searchResultsBox.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:4px;">Searching...</div>';
+
+            try {
+                const tmdbUrl = `https://api.themoviedb.org/3/search/${type}?api_key=2df4484ea0cd1a977536d75d33f7c460&query=${encodeURIComponent(query)}`;
+                const proxyFetchUrl = getProxyUrl(tmdbUrl);
+                
+                const res = await fetch(proxyFetchUrl);
+                const data = await res.json();
+
+                if (!data.results || data.results.length === 0) {
+                    searchResultsBox.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:4px;">No results found. Try direct ID loader.</div>';
+                    return;
+                }
+
+                searchResultsBox.innerHTML = '';
+                data.results.slice(0, 5).forEach(item => {
+                    const titleName = item.title || item.name;
+                    const dateYear = (item.release_date || item.first_air_date || '').substring(0, 4);
+                    
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.innerHTML = `
+                        <span><b>${titleName}</b> (${dateYear}) [ID: ${item.id}]</span>
+                        <div class="result-actions">
+                            <button class="small-btn" onclick="navigator.clipboard.writeText('${item.id}'); alert('Copied ID: ${item.id}');">Copy ID</button>
+                            <button class="small-btn primary" onclick="loadFromSearch('${type}', '${item.id}', '${titleName.replace(/'/g, "\\'")}', '${(item.overview || '').replace(/'/g, "\\'")}')">Watch</button>
+                        </div>
+                    `;
+                    searchResultsBox.appendChild(div);
+                });
+            } catch (err) {
+                searchResultsBox.innerHTML = '<div style="color:#ff5722; font-size:0.85rem; padding:4px;">Search error or proxy restriction. Use Direct ID loader.</div>';
+            }
+        }
+
+        function loadFromSearch(type, id, title, overview) {
+            const item = { type, id, title, desc: overview, seasons: 5, episodesPerSeason: [12,12,12,12,12] };
+            loadMedia(item);
+        }
+
         function loadMedia(item) {
             mediaTitle.innerText = item.title;
-            mediaDesc.innerText = item.desc;
+            mediaDesc.innerText = item.desc || 'No description available.';
 
             let targetUrl = '';
             if (item.type === 'tv') {
+                currentActiveShow = item;
                 targetUrl = `https://player.videasy.net/tv/${item.id}/1/1`;
-                renderEpisodes(item, 1);
+                setupSeasonsAndEpisodes(item, 1);
                 episodesPanel.style.display = 'flex';
             } else {
+                currentActiveShow = null;
                 targetUrl = `https://player.videasy.net/movie/${item.id}`;
                 episodesPanel.style.display = 'none';
             }
@@ -418,31 +532,49 @@
             const id = document.getElementById('custom-id-input').value.trim();
             if (!id) return;
 
-            mediaTitle.innerText = `Custom ${type.toUpperCase()} (ID: ${id})`;
-            mediaDesc.innerText = `Manually loaded stream via Videasy.`;
-
-            let targetUrl = '';
-            if (type === 'tv') {
-                targetUrl = `https://player.videasy.net/tv/${id}/1/1`;
-                renderEpisodes({ id: id, title: `Show ${id}`, seasons: 1, episodesPerSeason: 12 }, 1);
-                episodesPanel.style.display = 'flex';
-            } else {
-                targetUrl = `https://player.videasy.net/movie/${id}`;
-                episodesPanel.style.display = 'none';
-            }
-
-            frame.src = getProxyUrl(targetUrl);
+            const item = { type, id, title: `Custom ${type.toUpperCase()} (${id})`, desc: 'Manually loaded media stream.', seasons: 5, episodesPerSeason: [12,12,12,12,12] };
+            loadMedia(item);
         }
 
-        function renderEpisodes(show, seasonNum) {
-            episodeButtonsContainer.innerHTML = '';
-            showSeasonTitle.innerText = `${show.title} - Season ${seasonNum} Episodes`;
+        function setupSeasonsAndEpisodes(show, selectedSeasonNum) {
+            seasonSelect.innerHTML = '';
+            const totalSeasons = show.seasons || 5;
+            
+            for (let s = 1; s <= totalSeasons; s++) {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.innerText = `Season ${s}`;
+                if (s === selectedSeasonNum) opt.selected = true;
+                seasonSelect.appendChild(opt);
+            }
 
-            const totalEp = show.episodesPerSeason || 10;
-            for (let ep = 1; ep <= totalEp; ep++) {
+            renderEpisodesForSeason(show, selectedSeasonNum);
+        }
+
+        function changeSeason() {
+            if (!currentActiveShow) return;
+            const selectedSeason = parseInt(seasonSelect.value);
+            renderEpisodesForSeason(currentActiveShow, selectedSeason);
+        }
+
+        function renderEpisodesForSeason(show, seasonNum) {
+            episodeButtonsContainer.innerHTML = '';
+            showSeasonTitle.innerText = `${show.title} - Season ${seasonNum}`;
+
+            // Determine episode count safely
+            let epCount = 12;
+            if (show.episodesPerSeason) {
+                if (Array.isArray(show.episodesPerSeason)) {
+                    epCount = show.episodesPerSeason[seasonNum - 1] || 12;
+                } else {
+                    epCount = show.episodesPerSeason;
+                }
+            }
+
+            for (let ep = 1; ep <= epCount; ep++) {
                 const btn = document.createElement('button');
                 btn.className = `ep-btn ${ep === 1 ? 'active' : ''}`;
-                btn.innerText = `Ep ${ep}`;
+                btn.innerText = ep;
                 btn.onclick = () => {
                     const targetUrl = `https://player.videasy.net/tv/${show.id}/${seasonNum}/${ep}`;
                     frame.src = getProxyUrl(targetUrl);
@@ -451,6 +583,10 @@
                 };
                 episodeButtonsContainer.appendChild(btn);
             }
+
+            // Load episode 1 of the selected season automatically
+            const targetUrl = `https://player.videasy.net/tv/${show.id}/${seasonNum}/1`;
+            frame.src = getProxyUrl(targetUrl);
         }
 
         function renderLibrary() {
