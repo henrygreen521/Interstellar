@@ -436,7 +436,6 @@
     </main>
 
     <script>
-       <script>
         let mediaLibrary = JSON.parse(localStorage.getItem('chickenCoopShortcuts')) || [];
 
         const resultsList = document.getElementById('results-list');
@@ -491,7 +490,7 @@
                 title: `TMDB-ID-${id}`, 
                 desc: `Custom loaded ${type} with ID ${id}.`, 
                 seasons: 10, 
-                episodesPerSeason: 50 // Increased fallback cap to 50 episodes per season
+                episodesPerSeason: 50 
             };
             loadMedia(item);
         }
@@ -521,7 +520,7 @@
             episodeButtonsContainer.innerHTML = '';
             showSeasonTitle.innerText = `${show.title} - Season ${seasonNum}`;
 
-            let epCount = 30; // Default high cap so long shows/animes never cut off
+            let epCount = 30;
             if (show.episodesPerSeason) {
                 if (Array.isArray(show.episodesPerSeason)) {
                     epCount = show.episodesPerSeason[seasonNum - 1] || 30;
