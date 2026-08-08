@@ -132,6 +132,9 @@
 
         .player-info {
             padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         .player-text h2 {
@@ -145,7 +148,26 @@
             line-height: 1.4;
         }
 
-        /* Custom ID Loader & Search Tool Box */
+        .star-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            transition: color 0.2s, transform 0.2s;
+            padding: 4px;
+        }
+
+        .star-btn:hover {
+            color: #ffc107;
+            transform: scale(1.1);
+        }
+
+        .star-btn.favorited {
+            color: #ffc107;
+        }
+
+        /* Custom ID Loader Box */
         .panel-box {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -198,47 +220,6 @@
 
         .action-btn:hover {
             opacity: 0.9;
-        }
-
-        /* Search Results for TMDB Finder */
-        .search-results-box {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            background-color: var(--bg-color);
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .search-result-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 10px;
-            background-color: var(--panel-bg);
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
-
-        .result-actions {
-            display: flex;
-            gap: 6px;
-        }
-
-        .small-btn {
-            padding: 4px 8px;
-            font-size: 0.75rem;
-            background: var(--border-color);
-            color: var(--text-main);
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .small-btn.primary {
-            background: var(--accent-color);
         }
 
         /* TV Show Episode & Season Controls Panel */
@@ -332,12 +313,27 @@
             color: var(--text-muted);
             border: 1px solid transparent;
             transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .rec-item:hover, .rec-item.active {
             color: var(--text-main);
             border-color: var(--border-color);
             background-color: #252525;
+        }
+
+        .delete-shortcut {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 2px 6px;
+        }
+        .delete-shortcut:hover {
+            color: #ff5722;
         }
     </style>
 </head>
@@ -376,24 +372,11 @@
                     </div>
                     <div class="player-info">
                         <div class="player-text">
-                            <h2 id="media-title">Select or Load Media</h2>
-                            <p id="media-desc">Stream anything securely through your proxy tunnel.</p>
+                            <h2 id="media-title">Load Media</h2>
+                            <p id="media-desc">Enter any TMDB ID below to start streaming.</p>
                         </div>
+                        <button class="star-btn" id="star-btn" onclick="toggleFavorite()" title="Save to Quick Shortcuts">⭐</button>
                     </div>
-                </div>
-
-                <!-- TMDB ID Search & Finder Tool -->
-                <div class="panel-box">
-                    <div class="sidebar-heading" style="font-size:0.9rem;">Find Movie / Show TMDB ID</div>
-                    <div class="input-row">
-                        <select id="search-type" class="type-select">
-                            <option value="movie">Movie</option>
-                            <option value="tv">TV Show</option>
-                        </select>
-                        <input type="text" id="search-query-input" class="custom-input" placeholder="Search title (e.g. Breaking Bad)...">
-                        <button class="action-btn" onclick="searchTMDB()">Search ID</button>
-                    </div>
-                    <div class="search-results-box" id="search-results-box"></div>
                 </div>
 
                 <!-- Custom Direct ID Loader -->
@@ -404,7 +387,7 @@
                             <option value="movie">Movie</option>
                             <option value="tv">TV Show</option>
                         </select>
-                        <input type="text" id="custom-id-input" class="custom-input" placeholder="Enter TMDB ID...">
+                        <input type="text" id="custom-id-input" class="custom-input" placeholder="Enter TMDB ID (e.g. 550)...">
                         <button class="action-btn" onclick="loadCustomMedia()">Load</button>
                     </div>
                 </div>
@@ -421,24 +404,20 @@
                 </div>
             </div>
 
-            <!-- Sidebar Quick Shortcuts -->
+            <!-- Sidebar Quick Shortcuts (Starts Empty) -->
             <div class="sidebar-panel">
                 <div class="search-hint">💡 Tip: Press <b>Ctrl + F</b> to search shortcuts</div>
                 <div class="sidebar-heading">Quick Shortcuts</div>
-                <div class="recommendation-list" id="results-list"></div>
+                <div class="recommendation-list" id="results-list">
+                    <div style="color: var(--text-muted); font-size: 0.85rem; padding: 4px;" id="empty-notice">No shortcuts saved yet. Star a loaded stream!</div>
+                </div>
             </div>
         </div>
     </main>
 
     <script>
-        const mediaLibrary = [
-            { type: 'movie', id: '550', title: 'Fight Club', desc: 'A depressed man suffering from insomnia meets a strange soap salesman.' },
-            { type: 'movie', id: '299536', title: 'Avengers: Infinity War', desc: 'The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos.' },
-            { type: 'movie', id: '157336', title: 'Interstellar', desc: 'Interstellar chronicles the adventures of a group of explorers who make use of a newly discovered wormhole.' },
-            { type: 'tv', id: '1399', title: 'Game of Thrones', desc: 'Nine noble families fight for control over the lands of Westeros.', seasons: 8, episodesPerSeason: [10,10,10,10,10,7,6,6] },
-            { type: 'tv', id: '66732', title: 'Stranger Things', desc: 'When a young boy vanishes, a small town uncovers a mystery involving secret experiments.', seasons: 4, episodesPerSeason: [8,9,8,9] },
-            { type: 'tv', id: '1396', title: 'Breaking Bad', desc: 'A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine.', seasons: 5, episodesPerSeason: [7,13,13,13,16] }
-        ];
+        // Shortcuts array starts completely empty (saved in localStorage)
+        let mediaLibrary = JSON.parse(localStorage.getItem('chickenCoopShortcuts')) || [];
 
         const resultsList = document.getElementById('results-list');
         const frame = document.getElementById('media-frame');
@@ -448,9 +427,9 @@
         const episodeButtonsContainer = document.getElementById('episode-buttons-container');
         const showSeasonTitle = document.getElementById('show-season-title');
         const seasonSelect = document.getElementById('season-select');
-        const searchResultsBox = document.getElementById('search-results-box');
+        const starBtn = document.getElementById('star-btn');
 
-        let currentActiveShow = null;
+        let currentActiveItem = null;
 
         function getProxyUrl(rawUrl) {
             try {
@@ -461,70 +440,23 @@
             return rawUrl;
         }
 
-        // Search TMDB API securely through proxy for IDs and Copy button
-        async function searchTMDB() {
-            const type = document.getElementById('search-type').value;
-            const query = document.getElementById('search-query-input').value.trim();
-            if (!query) return;
-
-            searchResultsBox.style.display = 'flex';
-            searchResultsBox.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:4px;">Searching...</div>';
-
-            try {
-                const tmdbUrl = `https://api.themoviedb.org/3/search/${type}?api_key=2df4484ea0cd1a977536d75d33f7c460&query=${encodeURIComponent(query)}`;
-                const proxyFetchUrl = getProxyUrl(tmdbUrl);
-                
-                const res = await fetch(proxyFetchUrl);
-                const data = await res.json();
-
-                if (!data.results || data.results.length === 0) {
-                    searchResultsBox.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:4px;">No results found. Try direct ID loader.</div>';
-                    return;
-                }
-
-                searchResultsBox.innerHTML = '';
-                data.results.slice(0, 5).forEach(item => {
-                    const titleName = item.title || item.name;
-                    const dateYear = (item.release_date || item.first_air_date || '').substring(0, 4);
-                    
-                    const div = document.createElement('div');
-                    div.className = 'search-result-item';
-                    div.innerHTML = `
-                        <span><b>${titleName}</b> (${dateYear}) [ID: ${item.id}]</span>
-                        <div class="result-actions">
-                            <button class="small-btn" onclick="navigator.clipboard.writeText('${item.id}'); alert('Copied ID: ${item.id}');">Copy ID</button>
-                            <button class="small-btn primary" onclick="loadFromSearch('${type}', '${item.id}', '${titleName.replace(/'/g, "\\'")}', '${(item.overview || '').replace(/'/g, "\\'")}')">Watch</button>
-                        </div>
-                    `;
-                    searchResultsBox.appendChild(div);
-                });
-            } catch (err) {
-                searchResultsBox.innerHTML = '<div style="color:#ff5722; font-size:0.85rem; padding:4px;">Search error or proxy restriction. Use Direct ID loader.</div>';
-            }
-        }
-
-        function loadFromSearch(type, id, title, overview) {
-            const item = { type, id, title, desc: overview, seasons: 5, episodesPerSeason: [12,12,12,12,12] };
-            loadMedia(item);
-        }
-
         function loadMedia(item) {
+            currentActiveItem = item;
             mediaTitle.innerText = item.title;
-            mediaDesc.innerText = item.desc || 'No description available.';
+            mediaDesc.innerText = item.desc || 'Manually loaded stream via Videasy.';
 
             let targetUrl = '';
             if (item.type === 'tv') {
-                currentActiveShow = item;
                 targetUrl = `https://player.videasy.net/tv/${item.id}/1/1`;
                 setupSeasonsAndEpisodes(item, 1);
                 episodesPanel.style.display = 'flex';
             } else {
-                currentActiveShow = null;
                 targetUrl = `https://player.videasy.net/movie/${item.id}`;
                 episodesPanel.style.display = 'none';
             }
 
             frame.src = getProxyUrl(targetUrl);
+            updateStarState();
         }
 
         function loadCustomMedia() {
@@ -532,7 +464,14 @@
             const id = document.getElementById('custom-id-input').value.trim();
             if (!id) return;
 
-            const item = { type, id, title: `Custom ${type.toUpperCase()} (${id})`, desc: 'Manually loaded media stream.', seasons: 5, episodesPerSeason: [12,12,12,12,12] };
+            const item = { 
+                type, 
+                id, 
+                title: `TMDB-ID-${id}`, 
+                desc: `Custom loaded ${type} with ID ${id}.`, 
+                seasons: 5, 
+                episodesPerSeason: [12,12,12,12,12] 
+            };
             loadMedia(item);
         }
 
@@ -552,16 +491,15 @@
         }
 
         function changeSeason() {
-            if (!currentActiveShow) return;
+            if (!currentActiveItem) return;
             const selectedSeason = parseInt(seasonSelect.value);
-            renderEpisodesForSeason(currentActiveShow, selectedSeason);
+            renderEpisodesForSeason(currentActiveItem, selectedSeason);
         }
 
         function renderEpisodesForSeason(show, seasonNum) {
             episodeButtonsContainer.innerHTML = '';
             showSeasonTitle.innerText = `${show.title} - Season ${seasonNum}`;
 
-            // Determine episode count safely
             let epCount = 12;
             if (show.episodesPerSeason) {
                 if (Array.isArray(show.episodesPerSeason)) {
@@ -583,26 +521,73 @@
                 };
                 episodeButtonsContainer.appendChild(btn);
             }
+        }
 
-            // Load episode 1 of the selected season automatically
-            const targetUrl = `https://player.videasy.net/tv/${show.id}/${seasonNum}/1`;
-            frame.src = getProxyUrl(targetUrl);
+        function toggleFavorite() {
+            if (!currentActiveItem) return;
+
+            const existingIndex = mediaLibrary.findIndex(i => i.id === currentActiveItem.id && i.type === currentActiveItem.type);
+
+            if (existingIndex > -1) {
+                // Remove if already starred
+                mediaLibrary.splice(existingIndex, 1);
+            } else {
+                // Prompt for custom name, fallback to TMDB-ID-<ID>
+                let defaultName = currentActiveItem.title.startsWith('TMDB-ID-') ? `TMDB-ID-${currentActiveItem.id}` : currentActiveItem.title;
+                let customName = prompt("Enter a custom name for this shortcut:", defaultName);
+                if (customName === null) return; // Cancelled
+
+                currentActiveItem.title = customName.trim() !== '' ? customName.trim() : `TMDB-ID-${currentActiveItem.id}`;
+                mediaLibrary.push(currentActiveItem);
+            }
+
+            localStorage.setItem('chickenCoopShortcuts', JSON.stringify(mediaLibrary));
+            renderLibrary();
+            updateStarState();
+        }
+
+        function updateStarState() {
+            if (!currentActiveItem) {
+                starBtn.classList.remove('favorited');
+                return;
+            }
+            const isFav = mediaLibrary.some(i => i.id === currentActiveItem.id && i.type === currentActiveItem.type);
+            if (isFav) {
+                starBtn.classList.add('favorited');
+            } else {
+                starBtn.classList.remove('favorited');
+            }
+        }
+
+        function deleteShortcut(event, id, type) {
+            event.stopPropagation();
+            mediaLibrary = mediaLibrary.filter(i => !(i.id === id && i.type === type));
+            localStorage.setItem('chickenCoopShortcuts', JSON.stringify(mediaLibrary));
+            renderLibrary();
+            updateStarState();
         }
 
         function renderLibrary() {
             resultsList.innerHTML = '';
+            if (mediaLibrary.length === 0) {
+                resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 4px;">No shortcuts saved yet. Star a loaded stream!</div>';
+                return;
+            }
+
             mediaLibrary.forEach((item) => {
                 const div = document.createElement('div');
                 div.className = 'rec-item';
-                div.innerText = item.title;
+                div.innerHTML = `
+                    <span>${item.title}</span>
+                    <button class="delete-shortcut" onclick="deleteShortcut(event, '${item.id}', '${item.type}')" title="Remove">✕</button>
+                `;
                 div.onclick = () => loadMedia(item);
                 resultsList.appendChild(div);
             });
         }
 
-        // Initialize default view
+        // Initialize empty view
         renderLibrary();
-        loadMedia(mediaLibrary[0]);
     </script>
 </body>
 </html>
