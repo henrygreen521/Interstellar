@@ -436,6 +436,7 @@
     </main>
 
     <script>
+       <script>
         let mediaLibrary = JSON.parse(localStorage.getItem('chickenCoopShortcuts')) || [];
 
         const resultsList = document.getElementById('results-list');
@@ -476,6 +477,7 @@
 
             frame.src = getProxyUrl(targetUrl);
             updateStarState();
+            renderLibrary();
         }
 
         function loadCustomMedia() {
@@ -488,15 +490,15 @@
                 id, 
                 title: `TMDB-ID-${id}`, 
                 desc: `Custom loaded ${type} with ID ${id}.`, 
-                seasons: 8, 
-                episodesPerSeason: [15,15,15,15,15,15,15,15] 
+                seasons: 10, 
+                episodesPerSeason: 50 // Increased fallback cap to 50 episodes per season
             };
             loadMedia(item);
         }
 
         function setupSeasonsAndEpisodes(show, selectedSeasonNum) {
             seasonSelect.innerHTML = '';
-            const totalSeasons = show.seasons || 8;
+            const totalSeasons = show.seasons || 10;
             
             for (let s = 1; s <= totalSeasons; s++) {
                 const opt = document.createElement('option');
@@ -519,10 +521,10 @@
             episodeButtonsContainer.innerHTML = '';
             showSeasonTitle.innerText = `${show.title} - Season ${seasonNum}`;
 
-            let epCount = 15;
+            let epCount = 30; // Default high cap so long shows/animes never cut off
             if (show.episodesPerSeason) {
                 if (Array.isArray(show.episodesPerSeason)) {
-                    epCount = show.episodesPerSeason[seasonNum - 1] || 15;
+                    epCount = show.episodesPerSeason[seasonNum - 1] || 30;
                 } else {
                     epCount = show.episodesPerSeason;
                 }
