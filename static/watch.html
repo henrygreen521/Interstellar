@@ -153,18 +153,34 @@
             border: none;
             cursor: pointer;
             color: var(--text-muted);
-            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
             transition: color 0.2s, transform 0.2s;
-            padding: 4px;
+        }
+
+        .star-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            transition: all 0.2s;
         }
 
         .star-btn:hover {
-            color: #ffc107;
+            color: var(--text-main);
             transform: scale(1.1);
         }
 
         .star-btn.favorited {
-            color: #ffc107;
+            color: var(--text-main);
+        }
+
+        .star-btn.favorited svg {
+            fill: var(--text-main);
+            stroke: var(--text-main);
         }
 
         /* Custom ID Loader Box */
@@ -375,7 +391,11 @@
                             <h2 id="media-title">Load Media</h2>
                             <p id="media-desc">Enter any TMDB ID below to start streaming.</p>
                         </div>
-                        <button class="star-btn" id="star-btn" onclick="toggleFavorite()" title="Save to Quick Shortcuts">⭐</button>
+                        <button class="star-btn" id="star-btn" onclick="toggleFavorite()" title="Save to Quick Shortcuts">
+                            <svg viewBox="0 0 24 24">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -416,7 +436,6 @@
     </main>
 
     <script>
-        // Shortcuts array starts completely empty (saved in localStorage)
         let mediaLibrary = JSON.parse(localStorage.getItem('chickenCoopShortcuts')) || [];
 
         const resultsList = document.getElementById('results-list');
@@ -469,15 +488,15 @@
                 id, 
                 title: `TMDB-ID-${id}`, 
                 desc: `Custom loaded ${type} with ID ${id}.`, 
-                seasons: 5, 
-                episodesPerSeason: [12,12,12,12,12] 
+                seasons: 8, 
+                episodesPerSeason: [15,15,15,15,15,15,15,15] 
             };
             loadMedia(item);
         }
 
         function setupSeasonsAndEpisodes(show, selectedSeasonNum) {
             seasonSelect.innerHTML = '';
-            const totalSeasons = show.seasons || 5;
+            const totalSeasons = show.seasons || 8;
             
             for (let s = 1; s <= totalSeasons; s++) {
                 const opt = document.createElement('option');
@@ -500,10 +519,10 @@
             episodeButtonsContainer.innerHTML = '';
             showSeasonTitle.innerText = `${show.title} - Season ${seasonNum}`;
 
-            let epCount = 12;
+            let epCount = 15;
             if (show.episodesPerSeason) {
                 if (Array.isArray(show.episodesPerSeason)) {
-                    epCount = show.episodesPerSeason[seasonNum - 1] || 12;
+                    epCount = show.episodesPerSeason[seasonNum - 1] || 15;
                 } else {
                     epCount = show.episodesPerSeason;
                 }
@@ -529,13 +548,14 @@
             const existingIndex = mediaLibrary.findIndex(i => i.id === currentActiveItem.id && i.type === currentActiveItem.type);
 
             if (existingIndex > -1) {
-                // Remove if already starred
                 mediaLibrary.splice(existingIndex, 1);
             } else {
-                // Prompt for custom name, fallback to TMDB-ID-<ID>
-                let defaultName = currentActiveItem.title.startsWith('TMDB-ID-') ? `TMDB-ID-${currentActiveItem.id}` : currentActiveItem.title;
+                let defaultName = currentActiveItem.title;
+                if (!defaultName || defaultName === 'Load Media') {
+                    defaultName = `TMDB-ID-${currentActiveItem.id}`;
+                }
                 let customName = prompt("Enter a custom name for this shortcut:", defaultName);
-                if (customName === null) return; // Cancelled
+                if (customName === null) return;
 
                 currentActiveItem.title = customName.trim() !== '' ? customName.trim() : `TMDB-ID-${currentActiveItem.id}`;
                 mediaLibrary.push(currentActiveItem);
@@ -547,7 +567,7 @@
         }
 
         function updateStarState() {
-            if (!currentActiveItem) {
+            if (!currentActiveItem || !currentActiveItem.id) {
                 starBtn.classList.remove('favorited');
                 return;
             }
@@ -577,6 +597,9 @@
             mediaLibrary.forEach((item) => {
                 const div = document.createElement('div');
                 div.className = 'rec-item';
+                if (currentActiveItem && currentActiveItem.id === item.id && currentActiveItem.type === item.type) {
+                    div.classList.add('active');
+                }
                 div.innerHTML = `
                     <span>${item.title}</span>
                     <button class="delete-shortcut" onclick="deleteShortcut(event, '${item.id}', '${item.type}')" title="Remove">✕</button>
@@ -586,7 +609,7 @@
             });
         }
 
-        // Initialize empty view
+        // Initialize view
         renderLibrary();
     </script>
 </body>
