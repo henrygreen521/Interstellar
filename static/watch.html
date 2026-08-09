@@ -493,7 +493,6 @@
 
         function loadMedia(item) {
             if (!item || !item.id) return;
-            // Give sensible defaults if none are set
             if (!item.seasons) item.seasons = 3;
             if (!item.episodesPerSeason) item.episodesPerSeason = 24;
 
@@ -525,7 +524,6 @@
             const id = idInput.value.trim();
             if (!id) return;
 
-            // Instantly loads with clean smart defaults (no annoying popups)
             const item = { 
                 type: type, 
                 id: id, 
@@ -561,19 +559,39 @@
 
         function adjustLimits() {
             if (!currentActiveItem || currentActiveItem.type !== 'tv') return;
-            const sInput = prompt("Set total seasons:", currentActiveItem.seasons || 3);
+            
+            let currentSeasons = currentActiveItem.seasons || 3;
+            const sInput = prompt("Set total seasons:", currentSeasons);
             if (sInput === null) return;
-            const eInput = prompt("Set episodes per season:", currentActiveItem.episodesPerSeason || 24);
+            const newSeasons = parseInt(sInput) || 3;
+
+            let defaultEpVal = 24;
+            if (Array.isArray(currentActiveItem.episodesPerSeason)) {
+                defaultEpVal = currentActiveItem.episodesPerSeason.join(', ');
+            } else {
+                defaultEpVal = currentActiveItem.episodesPerSeason || 24;
+            }
+
+            const eInput = prompt(`Set episodes per season (enter one number for all, or comma-separated for each season, e.g. 10, 12, 8):`, defaultEpVal);
             if (eInput === null) return;
 
-            currentActiveItem.seasons = parseInt(sInput) || 3;
-            currentActiveItem.episodesPerSeason = parseInt(eInput) || 24;
+            let parsedEpisodes;
+            if (eInput.includes(',')) {
+                parsedEpisodes = eInput.split(',').map(n => parseInt(n.trim()) || 12);
+            } else {
+                parsedEpisodes = parseInt(eInput) || 24;
+            }
 
-            // Update active item in storage if it's saved
+            currentActiveItem.seasons = newSeasons;
+            currentActiveItem.episodesPerSeason = parsedEpisodes;
+
+            // Update active item in shortcuts if saved
             const idx = mediaLibrary.findIndex(i => i.id === currentActiveItem.id && i.type === currentActiveItem.type);
             if (idx > -1) {
                 mediaLibrary[idx] = currentActiveItem;
-                localStorage.setItem('chickenCoopShortcuts', JSON.stringify(mediaLibrary));
+                try {
+                    localStorage.setItem('chickenCoopShortcuts', JSON.stringify(mediaLibrary));
+                } catch(e) {}
             }
 
             setupSeasonsAndEpisodes(currentActiveItem, 1);
@@ -588,7 +606,7 @@
             let epCount = 24;
             if (show.episodesPerSeason) {
                 if (Array.isArray(show.episodesPerSeason)) {
-                    epCount = show.episodesPerSeason[seasonNum - 1] || 24;
+                    epCount = show.episodesPerSeason[seasonNum - 1] || 12;
                 } else {
                     epCount = show.episodesPerSeason;
                 }
