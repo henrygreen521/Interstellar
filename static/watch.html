@@ -255,6 +255,26 @@
             align-items: center;
         }
 
+        .ep-controls-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gear-btn {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .gear-btn:hover {
+            color: var(--text-main);
+            border-color: var(--accent-color);
+        }
+
         .episode-buttons {
             display: flex;
             gap: 8px;
@@ -416,9 +436,10 @@
                 <div class="episodes-panel" id="episodes-panel">
                     <div class="episodes-controls-top">
                         <span class="sidebar-heading" id="show-season-title" style="margin:0;">Episodes</span>
-                        <select id="season-select" class="type-select" onchange="changeSeason()" style="padding: 6px 10px; font-size: 0.85rem;">
-                            <!-- Populated dynamically -->
-                        </select>
+                        <div class="ep-controls-right">
+                            <select id="season-select" class="type-select" onchange="changeSeason()" style="padding: 6px 10px; font-size: 0.85rem;"></select>
+                            <button class="gear-btn" onclick="adjustLimits()" title="Change Seasons/Episodes Count">⚙️</button>
+                        </div>
                     </div>
                     <div class="episode-buttons" id="episode-buttons-container"></div>
                 </div>
@@ -472,6 +493,10 @@
 
         function loadMedia(item) {
             if (!item || !item.id) return;
+            // Give sensible defaults if none are set
+            if (!item.seasons) item.seasons = 3;
+            if (!item.episodesPerSeason) item.episodesPerSeason = 24;
+
             currentActiveItem = item;
             mediaTitle.innerText = item.title || `TMDB-ID-${item.id}`;
             mediaDesc.innerText = item.desc || 'Manually loaded stream via Videasy.';
@@ -500,13 +525,14 @@
             const id = idInput.value.trim();
             if (!id) return;
 
+            // Instantly loads with clean smart defaults (no annoying popups)
             const item = { 
                 type: type, 
                 id: id, 
                 title: `TMDB-ID-${id}`, 
                 desc: `Custom loaded ${type} with ID ${id}.`, 
-                seasons: 10, 
-                episodesPerSeason: 50 
+                seasons: 3, 
+                episodesPerSeason: 24 
             };
             loadMedia(item);
         }
@@ -514,12 +540,12 @@
         function setupSeasonsAndEpisodes(show, selectedSeasonNum) {
             if (!seasonSelect) return;
             seasonSelect.innerHTML = '';
-            const totalSeasons = show.seasons || 10;
+            const totalSeasons = show.seasons || 3;
             
             for (let s = 1; s <= totalSeasons; s++) {
                 const opt = document.createElement('option');
                 opt.value = s;
-                opt.innerText = `Season ${s}`;
+                opt.innerText = `S${s}`;
                 if (s === selectedSeasonNum) opt.selected = true;
                 seasonSelect.appendChild(opt);
             }
@@ -533,15 +559,36 @@
             renderEpisodesForSeason(currentActiveItem, selectedSeason);
         }
 
+        function adjustLimits() {
+            if (!currentActiveItem || currentActiveItem.type !== 'tv') return;
+            const sInput = prompt("Set total seasons:", currentActiveItem.seasons || 3);
+            if (sInput === null) return;
+            const eInput = prompt("Set episodes per season:", currentActiveItem.episodesPerSeason || 24);
+            if (eInput === null) return;
+
+            currentActiveItem.seasons = parseInt(sInput) || 3;
+            currentActiveItem.episodesPerSeason = parseInt(eInput) || 24;
+
+            // Update active item in storage if it's saved
+            const idx = mediaLibrary.findIndex(i => i.id === currentActiveItem.id && i.type === currentActiveItem.type);
+            if (idx > -1) {
+                mediaLibrary[idx] = currentActiveItem;
+                localStorage.setItem('chickenCoopShortcuts', JSON.stringify(mediaLibrary));
+            }
+
+            setupSeasonsAndEpisodes(currentActiveItem, 1);
+        }
+        window.adjustLimits = adjustLimits;
+
         function renderEpisodesForSeason(show, seasonNum) {
             if (!episodeButtonsContainer || !showSeasonTitle) return;
             episodeButtonsContainer.innerHTML = '';
-            showSeasonTitle.innerText = `${show.title} - Season ${seasonNum}`;
+            showSeasonTitle.innerText = `${show.title} - S${seasonNum}`;
 
-            let epCount = 30;
+            let epCount = 24;
             if (show.episodesPerSeason) {
                 if (Array.isArray(show.episodesPerSeason)) {
-                    epCount = show.episodesPerSeason[seasonNum - 1] || 30;
+                    epCount = show.episodesPerSeason[seasonNum - 1] || 24;
                 } else {
                     epCount = show.episodesPerSeason;
                 }
@@ -587,7 +634,6 @@
             renderLibrary();
             updateStarState();
         }
-
         window.toggleFavorite = toggleFavorite;
 
         function updateStarState() {
@@ -613,7 +659,6 @@
             renderLibrary();
             updateStarState();
         }
-
         window.deleteShortcut = deleteShortcut;
 
         function renderLibrary() {
