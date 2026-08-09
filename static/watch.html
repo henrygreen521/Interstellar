@@ -425,9 +425,9 @@
                     <div class="input-row">
                         <select id="custom-type" class="type-select">
                             <option value="movie">Movie</option>
-                            <option value="tv">TV Show</option>
+                            <option value="tv" selected>TV Show</option>
                         </select>
-                        <input type="text" id="custom-id-input" class="custom-input" placeholder="Enter TMDB ID (e.g. 550)...">
+                        <input type="text" id="custom-id-input" class="custom-input" placeholder="Enter TMDB ID (e.g. 45790)...">
                         <button class="action-btn" onclick="loadCustomMedia()">Load</button>
                     </div>
                 </div>
@@ -493,8 +493,16 @@
 
         function loadMedia(item) {
             if (!item || !item.id) return;
-            if (!item.seasons) item.seasons = 3;
-            if (!item.episodesPerSeason) item.episodesPerSeason = 24;
+
+            // Hardcoded override for JoJo's Bizarre Adventure (ID: 45790)
+            if (String(item.id) === '45790') {
+                item.title = "JoJo's Bizarre Adventure";
+                item.seasons = 6;
+                item.episodesPerSeason = [26, 48, 39, 39, 38, 1];
+            } else {
+                if (!item.seasons) item.seasons = 3;
+                if (!item.episodesPerSeason) item.episodesPerSeason = 24;
+            }
 
             currentActiveItem = item;
             mediaTitle.innerText = item.title || `TMDB-ID-${item.id}`;
@@ -527,7 +535,7 @@
             const item = { 
                 type: type, 
                 id: id, 
-                title: `TMDB-ID-${id}`, 
+                title: String(id) === '45790' ? "JoJo's Bizarre Adventure" : `TMDB-ID-${id}`, 
                 desc: `Custom loaded ${type} with ID ${id}.`, 
                 seasons: 3, 
                 episodesPerSeason: 24 
@@ -543,7 +551,7 @@
             for (let s = 1; s <= totalSeasons; s++) {
                 const opt = document.createElement('option');
                 opt.value = s;
-                opt.innerText = `S${s}`;
+                opt.innerText = `Season ${s}`;
                 if (s === selectedSeasonNum) opt.selected = true;
                 seasonSelect.appendChild(opt);
             }
@@ -572,7 +580,7 @@
                 defaultEpVal = currentActiveItem.episodesPerSeason || 24;
             }
 
-            const eInput = prompt(`Set episodes per season (enter one number for all, or comma-separated for each season, e.g. 10, 12, 8):`, defaultEpVal);
+            const eInput = prompt(`Set episodes per season (one number for all, or comma-separated, e.g. 26, 48, 39):`, defaultEpVal);
             if (eInput === null) return;
 
             let parsedEpisodes;
@@ -585,7 +593,6 @@
             currentActiveItem.seasons = newSeasons;
             currentActiveItem.episodesPerSeason = parsedEpisodes;
 
-            // Update active item in shortcuts if saved
             const idx = mediaLibrary.findIndex(i => i.id === currentActiveItem.id && i.type === currentActiveItem.type);
             if (idx > -1) {
                 mediaLibrary[idx] = currentActiveItem;
@@ -601,7 +608,7 @@
         function renderEpisodesForSeason(show, seasonNum) {
             if (!episodeButtonsContainer || !showSeasonTitle) return;
             episodeButtonsContainer.innerHTML = '';
-            showSeasonTitle.innerText = `${show.title} - S${seasonNum}`;
+            showSeasonTitle.innerText = `${show.title} - Season ${seasonNum}`;
 
             let epCount = 24;
             if (show.episodesPerSeason) {
