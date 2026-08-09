@@ -436,7 +436,13 @@
     </main>
 
     <script>
-        let mediaLibrary = JSON.parse(localStorage.getItem('chickenCoopShortcuts')) || [];
+        let mediaLibrary = [];
+        try {
+            const saved = localStorage.getItem('chickenCoopShortcuts');
+            if (saved) mediaLibrary = JSON.parse(saved);
+        } catch(e) {
+            mediaLibrary = [];
+        }
 
         const resultsList = document.getElementById('results-list');
         const frame = document.getElementById('media-frame');
@@ -465,33 +471,38 @@
         }
 
         function loadMedia(item) {
+            if (!item || !item.id) return;
             currentActiveItem = item;
-            mediaTitle.innerText = item.title;
+            mediaTitle.innerText = item.title || `TMDB-ID-${item.id}`;
             mediaDesc.innerText = item.desc || 'Manually loaded stream via Videasy.';
 
             let targetUrl = '';
             if (item.type === 'tv') {
                 targetUrl = `https://player.videasy.net/tv/${item.id}/1/1`;
                 setupSeasonsAndEpisodes(item, 1);
-                episodesPanel.style.display = 'flex';
+                if (episodesPanel) episodesPanel.style.display = 'flex';
             } else {
                 targetUrl = `https://player.videasy.net/movie/${item.id}`;
-                episodesPanel.style.display = 'none';
+                if (episodesPanel) episodesPanel.style.display = 'none';
             }
 
-            frame.src = getProxyUrl(targetUrl);
+            if (frame) frame.src = getProxyUrl(targetUrl);
             updateStarState();
             renderLibrary();
         }
 
         function loadCustomMedia() {
-            const type = document.getElementById('custom-type').value;
-            const id = document.getElementById('custom-id-input').value.trim();
+            const typeSelect = document.getElementById('custom-type');
+            const idInput = document.getElementById('custom-id-input');
+            if (!typeSelect || !idInput) return;
+
+            const type = typeSelect.value;
+            const id = idInput.value.trim();
             if (!id) return;
 
             const item = { 
-                type, 
-                id, 
+                type: type, 
+                id: id, 
                 title: `TMDB-ID-${id}`, 
                 desc: `Custom loaded ${type} with ID ${id}.`, 
                 seasons: 10, 
@@ -501,6 +512,7 @@
         }
 
         function setupSeasonsAndEpisodes(show, selectedSeasonNum) {
+            if (!seasonSelect) return;
             seasonSelect.innerHTML = '';
             const totalSeasons = show.seasons || 10;
             
@@ -516,12 +528,13 @@
         }
 
         function changeSeason() {
-            if (!currentActiveItem) return;
+            if (!currentActiveItem || !seasonSelect) return;
             const selectedSeason = parseInt(seasonSelect.value);
             renderEpisodesForSeason(currentActiveItem, selectedSeason);
         }
 
         function renderEpisodesForSeason(show, seasonNum) {
+            if (!episodeButtonsContainer || !showSeasonTitle) return;
             episodeButtonsContainer.innerHTML = '';
             showSeasonTitle.innerText = `${show.title} - Season ${seasonNum}`;
 
@@ -540,7 +553,7 @@
                 btn.innerText = ep;
                 btn.onclick = () => {
                     const targetUrl = `https://player.videasy.net/tv/${show.id}/${seasonNum}/${ep}`;
-                    frame.src = getProxyUrl(targetUrl);
+                    if (frame) frame.src = getProxyUrl(targetUrl);
                     document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                 };
@@ -549,7 +562,7 @@
         }
 
         function toggleFavorite() {
-            if (!currentActiveItem) return;
+            if (!currentActiveItem || !currentActiveItem.id) return;
 
             const existingIndex = mediaLibrary.findIndex(i => i.id === currentActiveItem.id && i.type === currentActiveItem.type);
 
@@ -557,7 +570,7 @@
                 mediaLibrary.splice(existingIndex, 1);
             } else {
                 let defaultName = currentActiveItem.title;
-                if (!defaultName || defaultName === 'Load Media') {
+                if (!defaultName || defaultName === 'Load Media' || defaultName.startsWith('Load')) {
                     defaultName = `TMDB-ID-${currentActiveItem.id}`;
                 }
                 let customName = prompt("Enter a custom name for this shortcut:", defaultName);
@@ -567,12 +580,18 @@
                 mediaLibrary.push(currentActiveItem);
             }
 
-            localStorage.setItem('chickenCoopShortcuts', JSON.stringify(mediaLibrary));
+            try {
+                localStorage.setItem('chickenCoopShortcuts', JSON.stringify(mediaLibrary));
+            } catch(e) {}
+            
             renderLibrary();
             updateStarState();
         }
 
+        window.toggleFavorite = toggleFavorite;
+
         function updateStarState() {
+            if (!starBtn) return;
             if (!currentActiveItem || !currentActiveItem.id) {
                 starBtn.classList.remove('favorited');
                 return;
@@ -588,14 +607,19 @@
         function deleteShortcut(event, id, type) {
             event.stopPropagation();
             mediaLibrary = mediaLibrary.filter(i => !(i.id === id && i.type === type));
-            localStorage.setItem('chickenCoopShortcuts', JSON.stringify(mediaLibrary));
+            try {
+                localStorage.setItem('chickenCoopShortcuts', JSON.stringify(mediaLibrary));
+            } catch(e) {}
             renderLibrary();
             updateStarState();
         }
 
+        window.deleteShortcut = deleteShortcut;
+
         function renderLibrary() {
+            if (!resultsList) return;
             resultsList.innerHTML = '';
-            if (mediaLibrary.length === 0) {
+            if (!mediaLibrary || mediaLibrary.length === 0) {
                 resultsList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 4px;" id="empty-notice">No shortcuts saved yet. Star a loaded stream!</div>';
                 return;
             }
