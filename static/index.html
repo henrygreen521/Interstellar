@@ -10,6 +10,42 @@
   <title id="t">Home</title>
   
   <style>
+    /* Custom full-screen cover to block template flash instantly */
+    #coop-preload-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #121212;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 999999;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    #coop-preload-overlay.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .preload-brand {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #ff5722;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .preload-badge {
+      background: #ff5722;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 1.5rem;
+    }
+
     #splash {
       visibility: hidden;
     }
@@ -24,11 +60,19 @@
 </head>
 
 <body class="center" onload="SplashT">
+  <!-- Instant Preload Mask to hide template loading -->
+  <div id="coop-preload-overlay">
+    <div class="preload-brand">
+      <div class="preload-badge">CC</div>
+      <span>ChickenCoop</span>
+    </div>
+  </div>
+
   <div class="f-nav"></div>
   <div id="particles-js">
     <script rel="preload" src="https://cdn.jsdelivr.net/particles.js/2.0.0/"></script>
     <div class="main">
-      <h1 class="title">&#73;&#110;&#116;&#101;&#114;&#115;&#116;&#101;&#108;&#108;&#97;&#114;</h1>
+      <h1 class="title">&#73;&#110;&#116;&#101;&#114;&#115;&#116;&#101;&#108;&#108;&#97;</h1>
       <p id="splash"></p>
       <div class="search-container">
         <form id="fv" method="POST">
@@ -49,6 +93,15 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
+    // Hide the preload overlay smoothly right away
+    setTimeout(() => {
+      const overlay = document.getElementById('coop-preload-overlay');
+      if (overlay) {
+        overlay.classList.add('fade-out');
+        setTimeout(() => overlay.remove(), 300);
+      }
+    }, 400);
+
     // 1. Branding & Cloak Protection Script
     const text = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
     const logo = '<img src="/assets/media/icons/cooplogo2.webp" style="max-height: 90px;">';
@@ -149,19 +202,16 @@
 </script>
   <script>
   window.addEventListener('DOMContentLoaded', () => {
-    // Find the right side of the navbar
     const navRight = document.querySelector('.f-nav-right');
     if (navRight) {
-      // Create the Chat button
       const chatLink = document.createElement('a');
       chatLink.className = 'navbar-link';
       chatLink.href = '/chat.html';
       chatLink.innerHTML = '<i class="fa-solid fa-comments navbar-icon"></i>Chat';
       navRight.appendChild(chatLink);
 
-    // Create the Watch button matching the exact style of the other navbar items
       const watchLink = document.createElement('a');
-      watchLink.className = 'navbar-link'; // Or whatever class your links use
+      watchLink.className = 'navbar-link';
       watchLink.href = '/watch.html';
       watchLink.innerHTML = `
         <svg class="navbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;">
