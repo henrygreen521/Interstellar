@@ -10,40 +10,69 @@
   <title id="t">Home</title>
   
   <style>
-    /* Custom full-screen cover to block template flash instantly */
+    /* Splash Screen with Dynamic Gradient Sweep and Logo Glow Tracking */
     #coop-preload-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: #121212;
+      background-color: #000000;
+      /* Smooth 15% gradient blend band for a soft edge effect */
+      background-image: linear-gradient(
+        to right, 
+        #ff5722 0%, 
+        #ff5722 calc(var(--load-progress, 0%) - 7.5%), 
+        #000000 calc(var(--load-progress, 0%) + 7.5%), 
+        #000000 100%
+      );
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 999999;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
     #coop-preload-overlay.fade-out {
       opacity: 0;
       visibility: hidden;
     }
-    .preload-brand {
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #ff5722;
-      letter-spacing: -0.5px;
+    .splash-content {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 20px;
     }
-    .preload-badge {
-      background: #ff5722;
-      color: #fff;
-      padding: 4px 12px;
-      border-radius: 8px;
-      font-size: 1.5rem;
+    .preload-logo {
+      max-height: 80px;
+      width: auto;
+      object-fit: contain;
+      /* Dynamic glow tracks the edge position via JavaScript */
+      filter: var(--logo-glow, drop-shadow(0 0 12px rgba(255, 87, 34, 0.4)));
+      transition: filter 0.05s linear;
+    }
+    .progress-track {
+      width: 260px;
+      height: 16px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid #ff5722;
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 2px;
+    }
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background-color: #ff5722;
+      border-radius: 6px;
+      transition: width 0.05s linear;
+    }
+    .loading-text {
+      color: #ff5722;
+      font-family: inherit;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      font-weight: 600;
     }
 
     #splash {
@@ -60,11 +89,14 @@
 </head>
 
 <body class="center" onload="SplashT">
-  <!-- Instant Preload Mask to hide template loading -->
+  <!-- Interactive Mockup Preload Overlay -->
   <div id="coop-preload-overlay">
-    <div class="preload-brand">
-      <div class="preload-badge">CC</div>
-      <span>ChickenCoop</span>
+    <div class="splash-content">
+      <img src="assets/media/icons/cooplogo2.webp" alt="ChickenCoop Logo" class="preload-logo" id="preload-logo-img" />
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-bar-fill"></div>
+      </div>
+      <div class="loading-text" id="loading-percentage">Loading... [0]%</div>
     </div>
   </div>
 
@@ -72,7 +104,7 @@
   <div id="particles-js">
     <script rel="preload" src="https://cdn.jsdelivr.net/particles.js/2.0.0/"></script>
     <div class="main">
-      <h1 class="title">&#73;&#110;&#116;&#101;&#114;&#115;&#116;&#101;&#108;&#108;&#97;</h1>
+      <h1 class="title">&#73;&#110;&#116;&#101;&#114;&#115;&#101;&#108;&#108;&#97;</h1>
       <p id="splash"></p>
       <div class="search-container">
         <form id="fv" method="POST">
@@ -93,14 +125,49 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
-    // Hide the preload overlay smoothly right away
-    setTimeout(() => {
-      const overlay = document.getElementById('coop-preload-overlay');
-      if (overlay) {
-        overlay.classList.add('fade-out');
-        setTimeout(() => overlay.remove(), 300);
+    // 2.5-Second Progress Bar & Synchronized Glow Tracking
+    const duration = 2500;
+    const startTime = performance.now();
+    const overlay = document.getElementById('coop-preload-overlay');
+    const fill = document.getElementById('progress-bar-fill');
+    const percentText = document.getElementById('loading-percentage');
+    const logoImg = document.getElementById('preload-logo-img');
+
+    function updateProgress(currentTime) {
+      const elapsed = currentTime - startTime;
+      let progress = Math.min((elapsed / duration) * 100, 100);
+      const rounded = Math.floor(progress);
+
+      if (fill) fill.style.width = progress + '%';
+      if (percentText) percentText.textContent = `Loading... [${rounded}]%`;
+      if (overlay) overlay.style.setProperty('--load-progress', progress + '%');
+
+      // Perfect Edge Tracking: If the progress edge hasn't reached the center logo (~50%),
+      // the logo sits on black and gets a faint orange glow. Once past 50%, it sits on orange
+      // and shifts to a sharp black shadow glow that tracks precisely with the sweep.
+      if (logoImg) {
+        if (progress < 42) {
+          logoImg.style.filter = 'drop-shadow(0 0 14px rgba(255, 87, 34, 0.45))';
+        } else if (progress <= 58) {
+          // Right on the active gradient blending edge
+          logoImg.style.filter = 'drop-shadow(0 0 18px rgba(0, 0, 0, 0.75))';
+        } else {
+          logoImg.style.filter = 'drop-shadow(0 0 14px rgba(0, 0, 0, 0.65))';
+        }
       }
-    }, 400);
+
+      if (progress < 100) {
+        requestAnimationFrame(updateProgress);
+      } else {
+        setTimeout(() => {
+          if (overlay) {
+            overlay.classList.add('fade-out');
+            setTimeout(() => overlay.remove(), 400);
+          }
+        }, 150);
+      }
+    }
+    requestAnimationFrame(updateProgress);
 
     // 1. Branding & Cloak Protection Script
     const text = 'follow "@jake_be_jakeing_it, @henrygreen521, @youmustbedeliskid and @joshgaming396 on tt" | thank @_mngoo for the logo | w coop';
