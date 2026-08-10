@@ -296,6 +296,22 @@
     }
   });
 </script>
+  <script>
+  // Block only the annoying startup alert prompt
+  const originalAlert = window.alert;
+  window.alert = function(msg) {
+    if (typeof msg === 'string' && msg.toLowerCase().includes('popups')) {
+      console.log("Suppressed startup popup warning.");
+      return; // Silently swallows the startup warning
+    }
+    return originalAlert.apply(this, arguments);
+  };
+
+  // Automatically bypass or disable the automatic about:blank cloak check on load
+  window.addEventListener('DOMContentLoaded', () => {
+    localStorage.setItem('aboutBlank', 'false'); // Stops template from forcing it automatically
+  });
+</script>
 </body>
 
 </html>
