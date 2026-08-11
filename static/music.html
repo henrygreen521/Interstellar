@@ -53,6 +53,28 @@
       border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
 
+    .sidebar-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .account-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .account-btn:hover {
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+    }
+
     .playlist-header {
       font-size: 11px;
       text-transform: uppercase;
@@ -125,6 +147,7 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s;
+      position: relative;
     }
 
     .track-card:hover {
@@ -155,6 +178,24 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-bottom: 8px;
+    }
+
+    .add-playlist-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-sub);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .add-playlist-btn:hover {
+      border-color: var(--accent-orange);
+      color: var(--text-main);
     }
 
     /* Persistent Bottom Player Bar */
@@ -181,7 +222,7 @@
       border-radius: 4px;
       object-fit: cover;
       background: #222;
-      display: none; /* Hidden by default until a song plays to prevent broken image icon */
+      display: none;
     }
 
     .np-details .np-title {
@@ -239,6 +280,97 @@
 
     .extra-controls {
       width: 30%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    /* Auth Modal Overlay */
+    #authModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999999;
+      backdrop-filter: blur(5px);
+    }
+
+    .auth-box {
+      background: #181818;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 32px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .auth-box h3 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    .auth-box input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #242424;
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .auth-box input:focus {
+      border-color: var(--accent-orange);
+    }
+
+    .auth-btn {
+      background-color: var(--accent-orange);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: opacity 0.2s;
+    }
+
+    .auth-btn:hover {
+      opacity: 0.9;
+    }
+
+    .auth-switch {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+
+    .auth-switch span {
+      color: var(--accent-orange);
+      text-decoration: underline;
+    }
+
+    .auth-error {
+      color: #ff5722;
+      font-size: 12px;
+      text-align: center;
+      margin: 0;
     }
   </style>
 </head>
@@ -250,10 +382,13 @@
   <div class="music-container">
     <!-- Sidebar -->
     <aside>
-      <div style="font-weight: bold; color: var(--accent-orange); letter-spacing: 0.5px;">LIBRARY</div>
+      <div class="sidebar-header-row">
+        <div style="font-weight: bold; color: var(--accent-orange); letter-spacing: 0.5px;">LIBRARY</div>
+        <button class="account-btn" id="accountBtn" onclick="openAuthModal()">Login</button>
+      </div>
       <div class="playlist-header">Playlists</div>
       <ul class="playlist-section" id="playlistList">
-        <li style="color: #666;">Loading playlists...</li>
+        <li style="color: #666;" onclick="openAuthModal()">Login to view playlists</li>
       </ul>
     </aside>
 
@@ -290,41 +425,79 @@
       </div>
     </div>
 
-    <div class="extra-controls"></div>
+    <div class="extra-controls" id="userStatusDisplay">
+      <span>Guest Mode</span>
+    </div>
   </footer>
 
+  <!-- Auth Modal -->
+  <div id="authModal">
+    <div class="auth-box">
+      <h3 id="authTitle">Login to Coop Music</h3>
+      <p class="auth-error" id="authError"></p>
+      <input type="text" id="authUsername" placeholder="Username" autocomplete="off" />
+      <input type="password" id="authPassword" placeholder="Password" />
+      <button class="auth-btn" id="authSubmitBtn" onclick="handleAuthSubmit()">Log In</button>
+      <div class="auth-switch" onclick="toggleAuthMode()">
+        Don't have an account? <span id="authSwitchText">Register</span>
+      </div>
+      <div style="text-align:center; margin-top:-8px;">
+        <span style="font-size:11px; color:#666; cursor:pointer;" onclick="closeAuthModal()">Cancel</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Hidden Audio Element routing through Render Proxy -->
-  <audio id="audioPlayer" ontimeupdate="updateProgress()" onended="trackEnded()"></audio>
+  <audio id="audioPlayer" ontimeupdate="updateProgress()"></audio>
 
   <!-- Navbar Injection & Customization Scripts -->
   <script src="/assets/js/mg-pxy.js"></script>
   <script src="/assets/js/h1.js"></script>
   
   <script>
+    const API_BASE = "https://chickencoop-chat-server.onrender.com";
+    const audio = document.getElementById('audioPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const searchInput = document.getElementById('musicSearchInput');
+    const tracksGrid = document.getElementById('tracksGrid');
+
+    let currentUser = JSON.parse(localStorage.getItem('chickencoop_user')) || null;
+    let isRegisterMode = false;
+
     window.addEventListener('DOMContentLoaded', () => {
+      // Find the correct navbar right container matching your global nav structure
       const navRight = document.querySelector('.f-nav-right') || document.querySelector('.f-nav');
       if (navRight) {
-        // Create Home Button
-        const homeLink = document.createElement('a');
-        homeLink.className = 'navbar-link';
-        homeLink.href = 'https://chickencoopproxy.vercel.app';
-        homeLink.innerHTML = `
-          <svg class="navbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-          </svg>HOME
-        `;
-        navRight.appendChild(homeLink);
+        // Prevent duplicate insertion if scripts reload
+        if (!document.getElementById('coopCustomNavLinks')) {
+          const navWrapper = document.createElement('div');
+          navWrapper.id = 'coopCustomNavLinks';
+          navWrapper.style.cssText = "display: flex; align-items: center; gap: 12px; margin-left: auto;";
 
-        // Create Music Button
-        const musicLink = document.createElement('a');
-        musicLink.className = 'navbar-link';
-        musicLink.href = '/music.html';
-        musicLink.innerHTML = `
-          <svg class="navbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;">
-            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-          </svg>MUSIC
-        `;
-        navRight.appendChild(musicLink);
+          // Create Home Button matching your site's standard navbar-link class & font styling
+          const homeLink = document.createElement('a');
+          homeLink.className = 'navbar-link';
+          homeLink.href = 'https://chickencoopproxy.vercel.app';
+          homeLink.innerHTML = `
+            <svg class="navbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>HOME
+          `;
+
+          // Create Music Button matching your site's standard navbar-link class & font styling
+          const musicLink = document.createElement('a');
+          musicLink.className = 'navbar-link';
+          musicLink.href = '/music.html';
+          musicLink.innerHTML = `
+            <svg class="navbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;">
+              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>MUSIC
+          `;
+
+          navWrapper.appendChild(homeLink);
+          navWrapper.appendChild(musicLink);
+          navRight.appendChild(navWrapper);
+        }
       }
 
       // Title Protection
@@ -338,18 +511,97 @@
         const titleTag = document.getElementById('t');
         if (titleTag && titleTag.textContent !== 'Coop Music') titleTag.textContent = 'Coop Music';
       }, 200);
+
+      checkUserSession();
     });
-  </script>
 
-  <!-- Music Player & Proxy Integration Script -->
-  <script>
-    const API_BASE = window.location.origin;
-    const audio = document.getElementById('audioPlayer');
-    const playBtn = document.getElementById('playBtn');
-    const searchInput = document.getElementById('musicSearchInput');
-    const tracksGrid = document.getElementById('tracksGrid');
+    function checkUserSession() {
+      const accountBtn = document.getElementById('accountBtn');
+      const userStatusDisplay = document.getElementById('userStatusDisplay');
 
-    let currentUserId = localStorage.getItem('chickencoop_user_id') || 1;
+      if (currentUser) {
+        accountBtn.innerText = currentUser.username;
+        accountBtn.onclick = logoutUser;
+        userStatusDisplay.innerHTML = `<span style="color:var(--accent-orange);">@${currentUser.username}</span>`;
+        loadPlaylists();
+      } else {
+        accountBtn.innerText = 'Login';
+        accountBtn.onclick = openAuthModal;
+        userStatusDisplay.innerHTML = `<span>Guest Mode</span>`;
+      }
+    }
+
+    function openAuthModal() {
+      document.getElementById('authModal').style.display = 'flex';
+      document.getElementById('authError').innerText = '';
+      document.getElementById('authUsername').value = '';
+      document.getElementById('authPassword').value = '';
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authModal').style.display = 'none';
+    }
+
+    function toggleAuthMode() {
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('authTitle').innerText = isRegisterMode ? 'Create Coop Account' : 'Login to Coop Music';
+      document.getElementById('authSubmitBtn').innerText = isRegisterMode ? 'Register' : 'Log In';
+      document.getElementById('authSwitchText').innerText = isRegisterMode ? 'Log In' : 'Register';
+      document.getElementById('authError').innerText = '';
+    }
+
+    async function handleAuthSubmit() {
+      const username = document.getElementById('authUsername').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+      const errorEl = document.getElementById('authError');
+
+      if (!username || !password) {
+        errorEl.innerText = 'Please fill out all fields.';
+        return;
+      }
+
+      const endpoint = isRegisterMode ? '/api/register' : '/api/login';
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorEl.innerText = data.error || 'Authentication failed.';
+          return;
+        }
+
+        if (isRegisterMode) {
+          currentUser = { id: data.userId, username };
+        } else {
+          currentUser = data.user;
+        }
+
+        localStorage.setItem('chickencoop_user', JSON.stringify(currentUser));
+        closeAuthModal();
+        checkUserSession();
+      } catch (e) {
+        errorEl.innerText = 'Server connection error.';
+      }
+    }
+
+    function logoutUser() {
+      localStorage.removeItem('chickencoop_user');
+      currentUser = null;
+      checkUserSession();
+      document.getElementById('playlistList').innerHTML = '<li style="color:#666;" onclick="openAuthModal()">Login to view playlists</li>';
+    }
+
+    function requireAuth(callback) {
+      if (!currentUser) {
+        openAuthModal();
+        return;
+      }
+      callback();
+    }
 
     searchInput.addEventListener('keypress', async (e) => {
       if (e.key === 'Enter') {
@@ -383,10 +635,67 @@
           <img src="${track.thumbnail || track.cover || 'https://via.placeholder.com/150'}" alt="Cover">
           <div class="track-title">${track.title}</div>
           <div class="track-artist">${track.artist || track.channelTitle || 'Unknown Artist'}</div>
+          <button class="add-playlist-btn" onclick="event.stopPropagation(); promptAddToPlaylist('${encodeURIComponent(track.title)}', '${encodeURIComponent(track.artist || track.channelTitle || 'Unknown Artist')}', '${encodeURIComponent(track.streamUrl || track.url)}', '${encodeURIComponent(track.thumbnail || track.cover || '')}')">+ Add to Playlist</button>
         `;
         card.onclick = () => playTrack(track.streamUrl || track.url, track.title, track.artist || track.channelTitle, track.thumbnail || track.cover);
         tracksGrid.appendChild(card);
       });
+    }
+
+    async function promptAddToPlaylist(title, artist, url, thumb) {
+      requireAuth(async () => {
+        try {
+          const res = await fetch(`${API_BASE}/api/playlists/${currentUser.id}`);
+          const playlists = await res.json();
+          
+          if (playlists.length === 0) {
+            const name = prompt("You have no playlists yet. Enter a name to create your first playlist:");
+            if (!name) return;
+            const createRes = await fetch(`${API_BASE}/api/playlists`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: currentUser.id, name })
+            });
+            const createData = await createRes.json();
+            if (createData.success) {
+              addTrackToPlaylistId(createData.playlistId, title, artist, url, thumb);
+            }
+            return;
+          }
+
+          let plListStr = playlists.map(p => `${p.id}: ${p.name}`).join('\n');
+          const chosenId = prompt(`Select a playlist ID to add track:\n\n${plListStr}`);
+          if (!chosenId) return;
+
+          addTrackToPlaylistId(parseInt(chosenId), title, artist, url, thumb);
+        } catch (e) {
+          alert('Could not load playlists.');
+        }
+      });
+    }
+
+    async function addTrackToPlaylistId(playlistId, title, artist, url, thumb) {
+      try {
+        const res = await fetch(`${API_BASE}/api/playlists/tracks`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            playlist_id: playlistId,
+            title: decodeURIComponent(title),
+            artist: decodeURIComponent(artist),
+            audio_url: decodeURIComponent(url),
+            thumbnail: decodeURIComponent(thumb)
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Track added to playlist successfully!');
+        } else {
+          alert('Failed to add track.');
+        }
+      } catch (e) {
+        alert('Server error adding track.');
+      }
     }
 
     async function playTrack(rawUrl, title, artist, thumbnail) {
@@ -395,7 +704,6 @@
         return;
       }
 
-      // Routes stream traffic through your Render backend proxy endpoint
       audio.src = `${API_BASE}/api/music/stream?url=${encodeURIComponent(rawUrl)}`;
       try {
         await audio.play();
@@ -444,8 +752,9 @@
     }
 
     async function loadPlaylists() {
+      if (!currentUser) return;
       try {
-        const res = await fetch(`${API_BASE}/api/playlists/${currentUserId}`);
+        const res = await fetch(`${API_BASE}/api/playlists/${currentUser.id}`);
         const playlists = await res.json();
         const listEl = document.getElementById('playlistList');
         listEl.innerHTML = '';
@@ -462,8 +771,6 @@
         document.getElementById('playlistList').innerHTML = '<li style="color:#666;">Offline mode</li>';
       }
     }
-
-    loadPlaylists();
   </script>
 </body>
 
