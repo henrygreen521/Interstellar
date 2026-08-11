@@ -40,7 +40,7 @@
       grid-template-columns: 240px 1fr;
       flex: 1;
       overflow: hidden;
-      margin-top: 60px; /* leaves room for top navbar */
+      margin-top: 60px;
     }
 
     /* Sidebar */
@@ -465,16 +465,13 @@
     let isRegisterMode = false;
 
     window.addEventListener('DOMContentLoaded', () => {
-      // Find the correct navbar right container matching your global nav structure
       const navRight = document.querySelector('.f-nav-right') || document.querySelector('.f-nav');
       if (navRight) {
-        // Prevent duplicate insertion if scripts reload
         if (!document.getElementById('coopCustomNavLinks')) {
           const navWrapper = document.createElement('div');
           navWrapper.id = 'coopCustomNavLinks';
           navWrapper.style.cssText = "display: flex; align-items: center; gap: 12px; margin-left: auto;";
 
-          // Create Home Button matching your site's standard navbar-link class & font styling
           const homeLink = document.createElement('a');
           homeLink.className = 'navbar-link';
           homeLink.href = 'https://chickencoopproxy.vercel.app';
@@ -484,7 +481,6 @@
             </svg>HOME
           `;
 
-          // Create Music Button matching your site's standard navbar-link class & font styling
           const musicLink = document.createElement('a');
           musicLink.className = 'navbar-link';
           musicLink.href = '/music.html';
@@ -612,7 +608,8 @@
         tracksGrid.innerHTML = '<p style="color:#b3b3b3;">Searching tracks...</p>';
 
         try {
-          const res = await fetch(`https://api.monochrome.tf/search?q=${encodeURIComponent(query)}`);
+          // Routes search through your Render backend proxy
+          const res = await fetch(`${API_BASE}/api/music/search?q=${encodeURIComponent(query)}`);
           const data = await res.json();
           renderTracks(data.tracks || data.results || []);
         } catch (err) {
