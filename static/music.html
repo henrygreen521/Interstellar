@@ -7,7 +7,7 @@
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="shortcut icon" id="tab-favicon" href="favicon.png" />
-  <title id="t">ChickenCoop Beats</title>
+  <title id="t">Coop Music</title>
   
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/h.css?v=01" />
@@ -315,28 +315,28 @@
         `;
         navRight.appendChild(homeLink);
 
-        // Create Music/Beats Button
+        // Create Music Button
         const musicLink = document.createElement('a');
         musicLink.className = 'navbar-link';
         musicLink.href = '/music.html';
         musicLink.innerHTML = `
           <svg class="navbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-          </svg>BEATS
+          </svg>MUSIC
         `;
         navRight.appendChild(musicLink);
       }
 
       // Title Protection
       setInterval(() => {
-        if (document.title !== 'ChickenCoop Beats') {
+        if (document.title !== 'Coop Music') {
           Object.defineProperty(document, 'title', {
-            get: () => 'ChickenCoop Beats',
+            get: () => 'Coop Music',
             set: () => {}
           });
         }
         const titleTag = document.getElementById('t');
-        if (titleTag && titleTag.textContent !== 'ChickenCoop Beats') titleTag.textContent = 'ChickenCoop Beats';
+        if (titleTag && titleTag.textContent !== 'Coop Music') titleTag.textContent = 'Coop Music';
       }, 200);
     });
   </script>
