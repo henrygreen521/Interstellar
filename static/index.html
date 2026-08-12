@@ -304,6 +304,16 @@
       `;
       navRight.appendChild(musicLink);
     }
+
+    // Automatically strip out ONLY the unwanted default apps navbar link (leaving games alone)
+    setTimeout(() => {
+      document.querySelectorAll('.navbar-link, a').forEach(el => {
+        const text = el.textContent.trim().toLowerCase();
+        if (text === 'apps' || text === 'app') {
+          el.remove();
+        }
+      });
+    }, 50);
   });
 </script>
   <script>
