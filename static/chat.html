@@ -22,35 +22,90 @@
         /* Left Sidebar (Orange) */
         .sidebar { width: 280px; background: #ff6600; display: flex; flex-direction: column; border-right: 2px solid #111; z-index: 10; }
         .user-profile { padding: 15px; background: #e55c00; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #111; }
-        .user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .user-info { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
         .user-info img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; background: #333; }
         .logout-btn { background: #222; border: none; color: #fff; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; text-decoration: none; display: inline-block; }
         
+        .sidebar-section-title { padding: 10px 15px; font-size: 0.8rem; text-transform: uppercase; background: #d45200; font-weight: bold; letter-spacing: 0.5px; }
         .friends-list { overflow-y: auto; flex: 1; }
-        .friend-item { padding: 15px; border-bottom: 2px solid #111; cursor: pointer; display: flex; align-items: center; gap: 10px; font-weight: bold; transition: background 0.2s; background: #ff6600; }
+        .friend-item { padding: 12px 15px; border-bottom: 2px solid #111; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-weight: bold; transition: background 0.2s; background: #ff6600; }
         .friend-item:hover { background: #e55c00; }
-        .friend-item img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #333; }
+        .friend-left { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .friend-left img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #333; flex-shrink: 0; }
+        
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #555; display: inline-block; flex-shrink: 0; }
+        .status-dot.online { background: #2ecc71; box-shadow: 0 0 6px #2ecc71; }
 
         /* Chat Area */
         .chat-area { flex: 1; display: flex; flex-direction: column; background: #333; position: relative; }
         .chat-header { padding: 12px 15px; background: #2a2a2a; border-bottom: 2px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 1.2rem; font-weight: bold; }
         .chat-header-info { display: flex; flex-direction: column; gap: 2px; }
-        .typing-indicator { font-size: 0.75rem; color: #ff6600; font-style: italic; min-height: 14px; display: none; }
         .menu-btn { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
         
+        .messages-container-wrapper { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
         .messages-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        
+        /* Bouncing Dots Typing Indicator in Bottom Left */
+        .typing-indicator-container {
+            position: absolute;
+            bottom: 10px;
+            left: 20px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(25, 25, 25, 0.85);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #444;
+            font-size: 0.85rem;
+            color: #ccc;
+            z-index: 5;
+            backdrop-filter: blur(4px);
+        }
+        .typing-pfp {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #222;
+        }
+        .bouncing-dots {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            margin-left: 2px;
+        }
+        .bouncing-dots span {
+            width: 5px;
+            height: 5px;
+            background-color: #ff6600;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .bouncing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .bouncing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+
         .message-wrapper { display: flex; align-items: flex-end; gap: 8px; max-width: 60%; }
         .message-wrapper.sent { align-self: flex-end; flex-direction: row-reverse; }
         .message-wrapper.received { align-self: flex-start; }
         
-        .msg-pfp { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; background: #222; }
+        .msg-pfp { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; background: #222; cursor: pointer; flex-shrink: 0; }
         .message { padding: 10px 14px; border-radius: 8px; word-break: break-word; color: #fff; }
         .message.sent { background: #ff6600; }
         .message.received { background: #444; }
+        .message img { max-width: 200px; border-radius: 6px; display: block; margin-top: 4px; }
 
-        .chat-input-box { padding: 15px; background: #2a2a2a; display: flex; gap: 10px; }
-        .chat-input-box input { flex: 1; padding: 12px; border-radius: 20px; border: none; background: #1a1a1a; color: #fff; outline: none; }
-        .chat-input-box button { padding: 0 20px; background: #ff6600; border: none; color: #fff; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .chat-input-box { padding: 15px; background: #2a2a2a; display: flex; gap: 10px; align-items: center; }
+        .chat-input-box input[type="text"] { flex: 1; padding: 12px; border-radius: 20px; border: none; background: #1a1a1a; color: #fff; outline: none; }
+        .file-input-btn { background: #444; color: #fff; border: none; padding: 10px 14px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+        .file-input-btn:hover { background: #555; }
+        .chat-input-box button.send-btn { padding: 0 20px; height: 42px; background: #ff6600; border: none; color: #fff; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
         /* Right Collapsing Menu */
         .right-menu { position: absolute; top: 0; right: -320px; width: 320px; height: 100%; background: #252525; border-left: 2px solid #111; transition: right 0.3s ease; display: flex; flex-direction: column; z-index: 50; padding: 20px; overflow-y: auto; }
@@ -69,6 +124,14 @@
         .request-actions { display: flex; gap: 5px; }
         .accept-btn { background: #2ecc71; border: none; color: #fff; padding: 5px 8px; border-radius: 3px; cursor: pointer; font-weight: bold; }
         .reject-btn { background: #e74c3c; border: none; color: #fff; padding: 5px 8px; border-radius: 3px; cursor: pointer; font-weight: bold; }
+
+        /* Profile Modal */
+        #profile-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .profile-card { background: #252525; border: 1px solid #444; padding: 30px; border-radius: 12px; width: 300px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .profile-card img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; background: #111; border: 2px solid #ff6600; }
+        .profile-card h2 { margin: 0; font-size: 1.4rem; }
+        .profile-card p { color: #aaa; font-size: 0.9rem; margin: 0; }
+        .profile-card button { padding: 8px 16px; background: #ff6600; border: none; color: #fff; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -87,17 +150,37 @@
         </div>
     </div>
 
+    <!-- Profile Viewer Modal -->
+    <div id="profile-modal" onclick="closeProfileModal()">
+        <div class="profile-card" onclick="event.stopPropagation()">
+            <img id="modal-pfp" src="" alt="Profile Picture">
+            <h2 id="modal-username">Username</h2>
+            <p id="modal-status">No status set</p>
+            <button onclick="closeProfileModal()">Close</button>
+        </div>
+    </div>
+
     <!-- Main Application Container -->
     <div id="app-container">
         <!-- Left Sidebar -->
         <div class="sidebar">
             <div class="user-profile">
-                <div class="user-info">
+                <div class="user-info" onclick="openMyProfile()">
                     <img id="my-pfp" src="" alt="pfp">
                     <span id="my-username">User</span>
                 </div>
                 <a href="https://chickencoopproxy.vercel.app" class="logout-btn">Logout</a>
             </div>
+            
+            <div class="sidebar-section-title">Rooms</div>
+            <div class="friend-item" onclick="selectGlobalChat()">
+                <div class="friend-left">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background: #ff6600; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;">🌍</div>
+                    <span>Global Chatroom</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section-title">Direct Messages</div>
             <div class="friends-list" id="friends-list">
                 <!-- Friends populated here -->
             </div>
@@ -107,17 +190,34 @@
         <div class="chat-area">
             <div class="chat-header">
                 <div class="chat-header-info">
-                    <span id="chat-target-name">Select a friend to chat</span>
-                    <span id="typing-indicator" class="typing-indicator"></span>
+                    <span id="chat-target-name">Select a friend or room to chat</span>
                 </div>
                 <button class="menu-btn" onclick="toggleRightMenu()">☰</button>
             </div>
-            <div class="messages-box" id="messages-box">
-                <!-- Messages go here -->
+            
+            <div class="messages-container-wrapper">
+                <div class="messages-box" id="messages-box">
+                    <!-- Messages go here -->
+                </div>
+                
+                <!-- Bottom-Left Typing Indicator with PFP and Bouncing Dots -->
+                <div id="typing-indicator" class="typing-indicator-container">
+                    <img id="typing-pfp" class="typing-pfp" src="" alt="">
+                    <span id="typing-text">username is typing</span>
+                    <div class="bouncing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
             </div>
+
             <div class="chat-input-box">
+                <label class="file-input-btn">
+                    📷<input type="file" id="image-file-input" accept="image/*" style="display:none" onchange="sendImageMessage(event)">
+                </label>
                 <input type="text" id="message-input" placeholder="Type a message..." oninput="emitTyping()" onkeypress="checkEnter(event)">
-                <button onclick="sendMessage()">Send</button>
+                <button class="send-btn" onclick="sendMessage()">Send</button>
             </div>
 
             <!-- Right Collapsing Menu -->
@@ -136,6 +236,12 @@
                 <div id="requests-list">
                     <!-- Pending friend requests populate here -->
                 </div>
+
+                <h3 style="margin-top:20px;">Create Group Chat</h3>
+                <div class="search-group">
+                    <input type="text" id="group-name-input" placeholder="Group name...">
+                    <button onclick="createGroupChat()">Create</button>
+                </div>
             </div>
         </div>
     </div>
@@ -144,10 +250,12 @@
         const BACKEND_URL = "https://chickencoop-chat-server.onrender.com";
         let socket;
         let currentUser = null;
-        let currentReceiver = null;
+        let currentChatType = null; // 'global', 'dm', 'group'
+        let currentReceiver = null; // friend object or group object
         let isRegistering = false;
         let uploadedPfpData = "";
         let typingTimer = null;
+        let onlineUsers = new Set();
 
         function toggleAuthMode() {
             isRegistering = !isRegistering;
@@ -186,7 +294,7 @@
                 if (data.error) {
                     alert(data.error);
                 } else {
-                    currentUser = data.user || { id: data.userId, username, pfp };
+                    currentUser = data.user;
                     initApp();
                 }
             } catch (err) {
@@ -203,38 +311,62 @@
             const myPfpImg = document.getElementById('my-pfp');
             const fallbackMyPfp = `https://api.dicebear.com/7.x/identicon/svg?seed=${currentUser.username}`;
             myPfpImg.src = currentUser.pfp || fallbackMyPfp;
-            myPfpImg.onerror = () => {
-                myPfpImg.onerror = null;
-                myPfpImg.src = fallbackMyPfp;
-            };
+            myPfpImg.onerror = () => { myPfpImg.onerror = null; myPfpImg.src = fallbackMyPfp; };
 
             socket = io(BACKEND_URL);
             socket.emit('join_room', currentUser.id);
 
+            socket.on('presence_update', (data) => {
+                if (data.status === 'online') onlineUsers.add(data.userId);
+                else onlineUsers.delete(data.userId);
+                updatePresenceUI();
+            });
+
             socket.on('receive_message', (data) => {
-                if (currentReceiver && (data.sender_id === currentReceiver.id || data.receiver_id === currentReceiver.id)) {
+                if (currentChatType === 'dm' && currentReceiver && (data.sender_id === currentReceiver.id || data.receiver_id === currentReceiver.id)) {
                     const isSent = data.sender_id === currentUser.id;
-                    appendMessage(data.message, isSent ? 'sent' : 'received', isSent ? currentUser.pfp : currentReceiver.pfp);
+                    appendMessage(data.message, isSent ? 'sent' : 'received', isSent ? currentUser.pfp : currentReceiver.pfp, data.sender_id);
+                }
+            });
+
+            socket.on('receive_global_message', (data) => {
+                if (currentChatType === 'global') {
+                    const isSent = data.sender_id === currentUser.id;
+                    appendMessage(data.message, isSent ? 'sent' : 'received', data.pfp, data.sender_id);
+                }
+            });
+
+            socket.on('receive_group_message', (data) => {
+                if (currentChatType === 'group' && currentReceiver && data.group_id === currentReceiver.id) {
+                    const isSent = data.sender_id === currentUser.id;
+                    appendMessage(data.message, isSent ? 'sent' : 'received', data.pfp, data.sender_id);
                 }
             });
 
             socket.on('display_typing', (data) => {
-                if (currentReceiver && data.sender_id === currentReceiver.id) {
-                    const typingEl = document.getElementById('typing-indicator');
-                    typingEl.innerText = `${currentReceiver.username} is typing...`;
-                    typingEl.style.display = 'block';
+                if (currentChatType === 'dm' && currentReceiver && data.sender_id === currentReceiver.id) {
+                    const typingContainer = document.getElementById('typing-indicator');
+                    const typingText = document.getElementById('typing-text');
+                    const typingPfp = document.getElementById('typing-pfp');
+                    
+                    const fallback = `https://api.dicebear.com/7.x/identicon/svg?seed=${currentReceiver.username}`;
+                    typingPfp.src = currentReceiver.pfp || fallback;
+                    typingPfp.onerror = () => { typingPfp.onerror = null; typingPfp.src = fallback; };
+                    
+                    typingText.innerText = `${currentReceiver.username} is typing`;
+                    typingContainer.style.display = 'flex';
                 }
             });
 
             socket.on('hide_typing', (data) => {
-                if (currentReceiver && data.sender_id === currentReceiver.id) {
-                    const typingEl = document.getElementById('typing-indicator');
-                    typingEl.style.display = 'none';
+                if (currentChatType === 'dm' && currentReceiver && data.sender_id === currentReceiver.id) {
+                    document.getElementById('typing-indicator').style.display = 'none';
                 }
             });
 
             loadFriends();
             loadRequests();
+            selectGlobalChat();
             
             setInterval(() => {
                 loadFriends();
@@ -242,8 +374,22 @@
             }, 5000);
         }
 
+        function updatePresenceUI() {
+            document.querySelectorAll('.friend-item').forEach(item => {
+                const userId = item.getAttribute('data-userid');
+                const dot = item.querySelector('.status-dot');
+                if (dot && userId) {
+                    if (onlineUsers.has(parseInt(userId))) {
+                        dot.classList.add('online');
+                    } else {
+                        dot.classList.remove('online');
+                    }
+                }
+            });
+        }
+
         function emitTyping() {
-            if (!currentReceiver || !currentUser) return;
+            if (currentChatType !== 'dm' || !currentReceiver || !currentUser) return;
             socket.emit('typing', { sender_id: currentUser.id, receiver_id: currentReceiver.id });
 
             clearTimeout(typingTimer);
@@ -262,12 +408,18 @@
                 friends.forEach(f => {
                     const item = document.createElement('div');
                     item.className = 'friend-item';
+                    item.setAttribute('data-userid', f.id);
                     const fallback = `https://api.dicebear.com/7.x/identicon/svg?seed=${f.username}`;
                     const avatarUrl = f.pfp || fallback;
                     
+                    const isOnline = onlineUsers.has(f.id) ? 'online' : '';
+
                     item.innerHTML = `
-                        <img src="${avatarUrl}" onerror="this.onerror=null; this.src='${fallback}';"> 
-                        <span>${f.username}</span>
+                        <div class="friend-left">
+                            <img src="${avatarUrl}" onerror="this.onerror=null; this.src='${fallback}';"> 
+                            <span>${f.username}</span>
+                        </div>
+                        <span class="status-dot ${isOnline}"></span>
                     `;
                     item.onclick = () => selectFriend(f);
                     listEl.appendChild(item);
@@ -358,7 +510,42 @@
             } catch (e) {}
         }
 
+        async function createGroupChat() {
+            const name = document.getElementById('group-name-input').value.trim();
+            if (!name) return;
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/groups/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, admin_id: currentUser.id, member_ids: [] })
+                });
+                if (res.ok) {
+                    document.getElementById('group-name-input').value = '';
+                    alert('Group created successfully!');
+                }
+            } catch (e) {}
+        }
+
+        async function selectGlobalChat() {
+            currentChatType = 'global';
+            currentReceiver = null;
+            document.getElementById('chat-target-name').innerText = '🌍 Global Chatroom';
+            document.getElementById('typing-indicator').style.display = 'none';
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/messages/global`);
+                const messages = await res.json();
+                const box = document.getElementById('messages-box');
+                box.innerHTML = '';
+                messages.forEach(m => {
+                    const isSent = m.sender_id === currentUser.id;
+                    appendMessage(m.message, isSent ? 'sent' : 'received', m.pfp, m.sender_id);
+                });
+            } catch (e) {}
+        }
+
         async function selectFriend(friend) {
+            currentChatType = 'dm';
             currentReceiver = friend;
             document.getElementById('chat-target-name').innerText = friend.username;
             document.getElementById('typing-indicator').style.display = 'none';
@@ -366,39 +553,69 @@
             try {
                 const res = await fetch(`${BACKEND_URL}/api/messages/${currentUser.id}/${friend.id}`);
                 const messages = await res.json();
-                
                 const box = document.getElementById('messages-box');
                 box.innerHTML = '';
                 
                 messages.forEach(m => {
                     const isSent = m.sender_id === currentUser.id;
                     const pfpSource = isSent ? currentUser.pfp : friend.pfp;
-                    appendMessage(m.message, isSent ? 'sent' : 'received', pfpSource);
+                    appendMessage(m.message, isSent ? 'sent' : 'received', pfpSource, m.sender_id);
                 });
-            } catch (e) {
-                console.error("Error loading messages", e);
-            }
+            } catch (e) {}
         }
 
-        function appendMessage(text, type, pfpUrl) {
+        async function viewUserProfile(userId) {
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/users/search?q=`);
+                const users = await res.json();
+                const target = users.find(u => u.id === userId);
+                if (target) {
+                    const fallback = `https://api.dicebear.com/7.x/identicon/svg?seed=${target.username}`;
+                    document.getElementById('modal-pfp').src = target.pfp || fallback;
+                    document.getElementById('modal-username').innerText = target.username;
+                    document.getElementById('modal-status').innerText = target.status_text || 'No status set';
+                    document.getElementById('profile-modal').style.display = 'flex';
+                }
+            } catch (e) {}
+        }
+
+        function openMyProfile() {
+            const fallback = `https://api.dicebear.com/7.x/identicon/svg?seed=${currentUser.username}`;
+            document.getElementById('modal-pfp').src = currentUser.pfp || fallback;
+            document.getElementById('modal-username').innerText = currentUser.username;
+            document.getElementById('modal-status').innerText = currentUser.status_text || 'No status set';
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        function appendMessage(content, type, pfpUrl, senderId) {
             const box = document.getElementById('messages-box');
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper ${type}`;
 
-            const usernameForFallback = type === 'sent' ? currentUser.username : (currentReceiver ? currentReceiver.username : 'user');
-            const fallbackPfp = `https://api.dicebear.com/7.x/identicon/svg?seed=${usernameForFallback}`;
+            const fallbackPfp = `https://api.dicebear.com/7.x/identicon/svg?seed=user`;
             
             const pfpImg = document.createElement('img');
             pfpImg.className = 'msg-pfp';
             pfpImg.src = pfpUrl || fallbackPfp;
-            pfpImg.onerror = () => {
-                pfpImg.onerror = null;
-                pfpImg.src = fallbackPfp;
-            };
+            pfpImg.onerror = () => { pfpImg.onerror = null; pfpImg.src = fallbackPfp; };
+            if (senderId) {
+                pfpImg.onclick = () => viewUserProfile(senderId);
+            }
 
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${type}`;
-            msgDiv.innerText = text;
+
+            if (content.startsWith('data:image')) {
+                const img = document.createElement('img');
+                img.src = content;
+                msgDiv.appendChild(img);
+            } else {
+                msgDiv.innerText = content;
+            }
 
             if (type === 'received') {
                 wrapper.appendChild(pfpImg);
@@ -415,17 +632,49 @@
         function sendMessage() {
             const input = document.getElementById('message-input');
             const message = input.value.trim();
-            if (!message || !currentReceiver) return;
+            if (!message) return;
 
-            socket.emit('send_message', {
-                sender_id: currentUser.id,
-                receiver_id: currentReceiver.id,
-                message: message
-            });
-
-            socket.emit('stop_typing', { sender_id: currentUser.id, receiver_id: currentReceiver.id });
+            if (currentChatType === 'global') {
+                socket.emit('send_global_message', {
+                    sender_id: currentUser.id,
+                    message: message,
+                    username: currentUser.username,
+                    pfp: currentUser.pfp
+                });
+            } else if (currentChatType === 'dm') {
+                socket.emit('send_message', {
+                    sender_id: currentUser.id,
+                    receiver_id: currentReceiver.id,
+                    message: message
+                });
+                socket.emit('stop_typing', { sender_id: currentUser.id, receiver_id: currentReceiver.id });
+            }
 
             input.value = '';
+        }
+
+        function sendImageMessage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                if (currentChatType === 'global') {
+                    socket.emit('send_global_message', {
+                        sender_id: currentUser.id,
+                        message: base64Image,
+                        username: currentUser.username,
+                        pfp: currentUser.pfp
+                    });
+                } else if (currentChatType === 'dm') {
+                    socket.emit('send_message', {
+                        sender_id: currentUser.id,
+                        receiver_id: currentReceiver.id,
+                        message: base64Image
+                    });
+                }
+            };
+            reader.readAsDataURL(file);
         }
 
         function checkEnter(e) {
