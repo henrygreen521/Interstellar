@@ -303,6 +303,12 @@
         </svg>BEATS
       `;
       navRight.appendChild(musicLink);
+
+      const whiteboardLink = document.createElement('a');
+      whiteboardLink.className = 'navbar-link';
+      whiteboardLink.href = '/whiteboard.html';
+      whiteboardLink.innerHTML = '<i class="fa-solid fa-pen-to-square navbar-icon"></i>Whiteboard';
+      navRight.appendChild(whiteboardLink);
     }
 
     // Automatically strip out ONLY the unwanted default apps navbar link (leaving games alone)
