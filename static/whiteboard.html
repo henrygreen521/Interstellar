@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChickenCoop Whiteboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://chickencoop-chat-server.onrender.com/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-[#111111] text-white h-screen flex flex-col m-0 overflow-hidden">
+
+    <!-- LOGIN OVERLAY -->
+    <div id="login-modal" class="fixed inset-0 bg-[#111] z-50 flex items-center justify-center">
+        <div class="bg-[#1a1a1a] border border-[#2a2a2a] p-8 rounded-lg w-96 shadow-xl">
+            <h2 class="text-xl font-bold text-emerald-500 mb-6 text-center">Login to Whiteboard</h2>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase">Username</label>
+                    <input type="text" id="login-username" required class="w-full bg-[#111] border border-[#2a2a2a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase">Password</label>
+                    <input type="password" id="login-password" required class="w-full bg-[#111] border border-[#2a2a2a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded text-sm font-medium transition">Login</button>
+            </form>
+            <p id="login-error" class="text-red-500 text-xs mt-3 text-center"></p>
+        </div>
+    </div>
+
+    <!-- MAIN WHITEBOARD INTERFACE -->
+    <div id="app-container" class="hidden flex-1 flex flex-col h-full overflow-hidden">
+        <!-- Top Navbar -->
+        <header class="bg-[#1a1a1a] border-b border-[#2a2a2a] px-4 py-2.5 flex items-center justify-between shrink-0">
+            <div class="flex items-center space-x-4">
+                <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white transition font-bold text-lg">☰</button>
+                <a href="/" class="text-sm font-semibold text-gray-400 hover:text-white transition">← Back to Chat</a>
+                <h1 class="font-bold text-lg text-emerald-500 tracking-wide">ChickenCoop Whiteboard</h1>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button onclick="clearCanvas()" class="bg-red-700 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-semibold transition">Clear Board</button>
+                <span id="current-username" class="text-sm font-medium text-gray-300"></span>
+            </div>
+        </header>
+
+        <!-- Workspace Area with Sidebar -->
+        <div class="flex-1 flex relative overflow-hidden">
+            
+            <!-- Friends & Invites Sidebar -->
+            <aside id="sidebar" class="w-80 bg-[#161616] border-r border-[#222] flex flex-col transition-all duration-200">
+                <div class="p-3 border-b border-[#222]">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Add Friend by Username</h2>
+                    <div class="flex gap-2">
+                        <input type="text" id="search-username" placeholder="Search user..." class="flex-1 bg-[#111] border border-[#2a2a2a] rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        <button onclick="sendFriendRequest()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-xs font-medium">Add</button>
+                    </div>
+                    <p id="search-feedback" class="text-xs mt-1 text-gray-400"></p>
+                </div>
+
+                <div class="p-3 border-b border-[#222] bg-[#181818]">
+                    <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Your Friends (Invite to Board)</h2>
+                </div>
+                
+                <div id="friends-list" class="flex-1 overflow-y-auto p-2 space-y-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <main class="flex-1 relative bg-[#0d0d0d]">
+                <canvas id="whiteboard-canvas" class="w-full h-full cursor-crosshair"></canvas>
+            </main>
+        </div>
+    </div>
+
+    <!-- Notification Toast for Invites -->
+    <div id="invite-toast" class="hidden fixed bottom-5 right-5 bg-indigo-900 border border-indigo-700 p-4 rounded-lg shadow-xl z-50 flex items-center space-x-4">
+        <span id="invite-text" class="text-sm text-indigo-100 font-medium">Whiteboard Invite!</span>
+        <button onclick="acceptInvite()" class="bg-white text-indigo-900 px-3 py-1 rounded text-xs font-bold">Join</button>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://chickencoop-chat-server.onrender.com';
+        let socket;
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+        // Check login state on load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (currentUser) {
+                document.getElementById('login-modal').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                document.getElementById('current-username').textContent = currentUser.username;
+                initApp();
+            }
+        });
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    document.getElementById('login-modal').classList.add('hidden');
+                    document.getElementById('app-container').classList.remove('hidden');
+                    document.getElementById('current-username').textContent = currentUser.username;
+                    initApp();
+                } else {
+                    document.getElementById('login-error').textContent = data.error || 'Login failed';
+                }
+            } catch (err) {
+                document.getElementById('login-error').textContent = 'Server connection error';
+            }
+        }
+
+        function initApp() {
+            socket = io(BACKEND_URL);
+            socket.emit('join_room', currentUser.id);
+            socket.emit('join_whiteboard');
+
+            loadFriends();
+            initCanvas();
+        }
+
+        // --- Sidebar & Friends Logic ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
+        async function loadFriends() {
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/friends/${currentUser.id}`);
+                const friends = await res.json();
+                const list = document.getElementById('friends-list');
+                list.innerHTML = '';
+                
+                if (friends.length === 0) {
+                    list.innerHTML = `<p class="text-xs text-gray-500 p-2">No friends added yet.</p>`;
+                    return;
+                }
+
+                friends.forEach(friend => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center justify-between p-2 hover:bg-[#202020] rounded transition";
+                    div.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <img src="${friend.pfp || 'https://via.placeholder.com/32'}" class="w-7 h-7 rounded-full object-cover">
+                            <span class="text-sm text-gray-200">${friend.username}</span>
+                        </div>
+                        <button onclick="sendWhiteboardInvite(${friend.id})" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded text-xs font-medium">Invite</button>
+                    `;
+                    list.appendChild(div);
+                });
+            } catch (err) {
+                console.error('Failed to load friends');
+            }
+        }
+
+        async function sendFriendRequest() {
+            const query = document.getElementById('search-username').value;
+            const feedback = document.getElementById('search-feedback');
+            if (!query) return;
+
+            try {
+                const searchRes = await fetch(`${BACKEND_URL}/api/users/search?q=${query}`);
+                const users = await searchRes.json();
+                const target = users.find(u => u.username === query);
+
+                if (!target) {
+                    feedback.textContent = "User not found";
+                    feedback.className = "text-xs mt-1 text-red-500";
+                    return;
+                }
+
+                const res = await fetch(`${BACKEND_URL}/api/friends/request`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sender_id: currentUser.id, receiver_id: target.id })
+                });
+
+                if (res.ok) {
+                    feedback.textContent = "Request sent!";
+                    feedback.className = "text-xs mt-1 text-emerald-500";
+                    document.getElementById('search-username').value = '';
+                } else {
+                    feedback.textContent = "Failed to send request";
+                    feedback.className = "text-xs mt-1 text-red-500";
+                }
+            } catch (err) {
+                feedback.textContent = "Error searching user";
+                feedback.className = "text-xs mt-1 text-red-500";
+            }
+        }
+
+        function sendWhiteboardInvite(friendId) {
+            socket.emit('send_game_invite', {
+                sender_id: currentUser.id,
+                receiver_id: friendId,
+                game_name: "Whiteboard Session"
+            });
+            alert("Invite sent!");
+        }
+
+        // --- Whiteboard Canvas Logic ---
+        function initCanvas() {
+            const canvas = document.getElementById('whiteboard-canvas');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#10B981';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+
+            let painting = false;
+
+            canvas.onmousedown = (e) => { painting = true; draw(e); };
+            canvas.onmouseup = () => { painting = false; ctx.beginPath(); };
+            canvas.onmousemove = draw;
+
+            function draw(e) {
+                if (!painting && e.type !== 'mousedown') return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+
+                socket.emit('draw_line', { x, y });
+            }
+
+            socket.on('draw_line', (data) => {
+                ctx.lineTo(data.x, data.y);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(data.x, data.y);
+            });
+
+            socket.on('clear_whiteboard', () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            });
+        }
+
+        function clearCanvas() {
+            const canvas = document.getElementById('whiteboard-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            socket.emit('clear_whiteboard');
+        }
+
+        // Handle incoming invites via toast notification
+        let incomingSender = null;
+        socket.on('receive_game_invite', (data) => {
+            incomingSender = data.sender_id;
+            const toast = document.getElementById('invite-toast');
+            const text = document.getElementById('invite-text');
+            text.textContent = `Invite to ${data.game_name || 'activity'}!`;
+            toast.classList.remove('hidden');
+        });
+
+        function acceptInvite() {
+            document.getElementById('invite-toast').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
