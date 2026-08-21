@@ -10,6 +10,51 @@
   <title id="t">Home</title>
   
   <style>
+    /* --- STAGE 0: THE GLITCH INTRO SCREEN --- */
+    #glitch-intro-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('assets/media/icons/block.jpg') no-repeat center center fixed;
+      background-size: cover;
+      z-index: 1000000;
+    }
+
+    .glitch-active {
+      animation: glitch-anim 0.4s steps(2, end) forwards;
+    }
+
+    @keyframes glitch-anim {
+      0% {
+        transform: translate(0, 0);
+        filter: none;
+      }
+      20% {
+        transform: translate(-12px, 6px);
+        filter: hue-rotate(90deg) invert(1) contrast(200%);
+      }
+      40% {
+        transform: translate(15px, -8px);
+        opacity: 0.7;
+        filter: blur(3px);
+      }
+      60% {
+        transform: translate(-8px, 12px);
+        filter: hue-rotate(180deg) saturate(300%);
+      }
+      80% {
+        transform: translate(10px, -4px);
+        opacity: 0.3;
+      }
+      100% {
+        transform: translate(0, 0);
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
     /* Splash Screen with Dynamic Gradient Sweep and Logo Glow Tracking */
     #coop-preload-overlay {
       position: fixed;
@@ -47,8 +92,8 @@
       max-height: 80px;
       width: auto;
       object-fit: contain;
-      /* Dynamic glow tracks the edge position via JavaScript */
-      filter: var(--logo-glow, drop-shadow(0 0 12px rgba(255, 87, 34, 0.4)));
+      /* Dynamic glow tracks the edge position via JavaScript (made slightly brighter) */
+      filter: var(--logo-glow, drop-shadow(0 0 20px rgba(255, 87, 34, 0.7)));
       transition: filter 0.05s linear;
     }
     .progress-track {
@@ -89,6 +134,9 @@
 </head>
 
 <body class="center" onload="SplashT">
+  <!-- Glitch Intro Screen -->
+  <div id="glitch-intro-screen"></div>
+
   <!-- Interactive Mockup Preload Overlay -->
   <div id="coop-preload-overlay">
     <div class="splash-content">
@@ -125,6 +173,15 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
+    // 1. Glitch Intro Timer: Display block.jpg for 1.2s, then trigger glitch transition
+    setTimeout(() => {
+      const glitchScreen = document.getElementById('glitch-intro-screen');
+      if (glitchScreen) {
+        glitchScreen.classList.add('glitch-active');
+        setTimeout(() => glitchScreen.remove(), 400);
+      }
+    }, 1200);
+
     // 2.5-Second Progress Bar & Synchronized Glow Tracking
     const duration = 2500;
     const startTime = performance.now();
@@ -142,17 +199,14 @@
       if (percentText) percentText.textContent = `Loading... [${rounded}]%`;
       if (overlay) overlay.style.setProperty('--load-progress', progress + '%');
 
-      // Perfect Edge Tracking: If the progress edge hasn't reached the center logo (~50%),
-      // the logo sits on black and gets a faint orange glow. Once past 50%, it sits on orange
-      // and shifts to a sharp black shadow glow that tracks precisely with the sweep.
+      // Perfect Edge Tracking with brighter glow values
       if (logoImg) {
         if (progress < 42) {
-          logoImg.style.filter = 'drop-shadow(0 0 14px rgba(255, 87, 34, 0.45))';
+          logoImg.style.filter = 'drop-shadow(0 0 22px rgba(255, 87, 34, 0.75))';
         } else if (progress <= 58) {
-          // Right on the active gradient blending edge
-          logoImg.style.filter = 'drop-shadow(0 0 18px rgba(0, 0, 0, 0.75))';
+          logoImg.style.filter = 'drop-shadow(0 0 24px rgba(0, 0, 0, 0.85))';
         } else {
-          logoImg.style.filter = 'drop-shadow(0 0 14px rgba(0, 0, 0, 0.65))';
+          logoImg.style.filter = 'drop-shadow(0 0 22px rgba(0, 0, 0, 0.75))';
         }
       }
 
