@@ -12,17 +12,17 @@
     <!-- LOGIN OVERLAY -->
     <div id="login-modal" class="fixed inset-0 bg-[#111] z-50 flex items-center justify-center">
         <div class="bg-[#1a1a1a] border border-[#2a2a2a] p-8 rounded-lg w-96 shadow-xl">
-            <h2 class="text-xl font-bold text-emerald-500 mb-6 text-center">Login to Whiteboard</h2>
+            <h2 class="text-xl font-bold text-orange-500 mb-6 text-center">Login to Whiteboard</h2>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase">Username</label>
-                    <input type="text" id="login-username" required class="w-full bg-[#111] border border-[#2a2a2a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="login-username" required class="w-full bg-[#111] border border-[#2a2a2a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase">Password</label>
-                    <input type="password" id="login-password" required class="w-full bg-[#111] border border-[#2a2a2a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                    <input type="password" id="login-password" required class="w-full bg-[#111] border border-[#2a2a2a] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500">
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded text-sm font-medium transition">Login</button>
+                <button type="submit" class="w-full bg-orange-600 hover:bg-orange-500 text-white py-2 rounded text-sm font-medium transition">Login</button>
             </form>
             <p id="login-error" class="text-red-500 text-xs mt-3 text-center"></p>
         </div>
@@ -35,7 +35,7 @@
             <div class="flex items-center space-x-4">
                 <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white transition font-bold text-lg">☰</button>
                 <a href="/" class="text-sm font-semibold text-gray-400 hover:text-white transition">← Back to Chat</a>
-                <h1 class="font-bold text-lg text-emerald-500 tracking-wide">ChickenCoop Whiteboard</h1>
+                <h1 class="font-bold text-lg text-orange-500 tracking-wide">ChickenCoop Whiteboard</h1>
             </div>
             <div class="flex items-center space-x-3">
                 <button onclick="clearCanvas()" class="bg-red-700 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-semibold transition">Clear Board</button>
@@ -51,8 +51,8 @@
                 <div class="p-3 border-b border-[#222]">
                     <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Add Friend by Username</h2>
                     <div class="flex gap-2">
-                        <input type="text" id="search-username" placeholder="Search user..." class="flex-1 bg-[#111] border border-[#2a2a2a] rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-emerald-500">
-                        <button onclick="sendFriendRequest()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-xs font-medium">Add</button>
+                        <input type="text" id="search-username" placeholder="Search user..." class="flex-1 bg-[#111] border border-[#2a2a2a] rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-orange-500">
+                        <button onclick="sendFriendRequest()" class="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1 rounded text-xs font-medium">Add</button>
                     </div>
                     <p id="search-feedback" class="text-xs mt-1 text-gray-400"></p>
                 </div>
@@ -73,10 +73,16 @@
         </div>
     </div>
 
-    <!-- Notification Toast for Invites -->
-    <div id="invite-toast" class="hidden fixed bottom-5 right-5 bg-indigo-900 border border-indigo-700 p-4 rounded-lg shadow-xl z-50 flex items-center space-x-4">
-        <span id="invite-text" class="text-sm text-indigo-100 font-medium">Whiteboard Invite!</span>
-        <button onclick="acceptInvite()" class="bg-white text-indigo-900 px-3 py-1 rounded text-xs font-bold">Join</button>
+    <!-- Notification Toast / Popup for Invites -->
+    <div id="invite-toast" class="hidden fixed bottom-5 right-5 bg-[#1a1a1a] border border-orange-500/50 p-4 rounded-lg shadow-2xl z-50 flex items-center space-x-4">
+        <div>
+            <p class="text-xs text-orange-400 font-bold uppercase tracking-wider">Incoming Invite</p>
+            <span id="invite-text" class="text-sm text-gray-200 font-medium">Whiteboard Invite!</span>
+        </div>
+        <div class="flex space-x-2">
+            <button onclick="acceptInvite()" class="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 rounded text-xs font-bold transition">Join</button>
+            <button onclick="dismissInvite()" class="bg-[#2a2a2a] hover:bg-[#333] text-gray-300 px-3 py-1.5 rounded text-xs font-bold transition">Ignore</button>
+        </div>
     </div>
 
     <script>
@@ -128,6 +134,14 @@
 
             loadFriends();
             initCanvas();
+
+            // Setup incoming invite listener inside initApp so socket is active
+            socket.on('receive_game_invite', (data) => {
+                const toast = document.getElementById('invite-toast');
+                const text = document.getElementById('invite-text');
+                text.textContent = `${data.game_name || 'Activity'} invite received!`;
+                toast.classList.remove('hidden');
+            });
         }
 
         // --- Sidebar & Friends Logic ---
@@ -156,7 +170,7 @@
                             <img src="${friend.pfp || 'https://via.placeholder.com/32'}" class="w-7 h-7 rounded-full object-cover">
                             <span class="text-sm text-gray-200">${friend.username}</span>
                         </div>
-                        <button onclick="sendWhiteboardInvite(${friend.id})" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded text-xs font-medium">Invite</button>
+                        <button onclick="sendWhiteboardInvite(${friend.id})" class="bg-orange-600 hover:bg-orange-500 text-white px-2 py-1 rounded text-xs font-medium">Invite</button>
                     `;
                     list.appendChild(div);
                 });
@@ -189,7 +203,7 @@
 
                 if (res.ok) {
                     feedback.textContent = "Request sent!";
-                    feedback.className = "text-xs mt-1 text-emerald-500";
+                    feedback.className = "text-xs mt-1 text-orange-500";
                     document.getElementById('search-username').value = '';
                 } else {
                     feedback.textContent = "Failed to send request";
@@ -216,7 +230,7 @@
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
             const ctx = canvas.getContext('2d');
-            ctx.strokeStyle = '#10B981';
+            ctx.strokeStyle = '#f97316'; // Orange brush to match theme
             ctx.lineWidth = 3;
             ctx.lineCap = 'round';
 
@@ -259,17 +273,13 @@
             socket.emit('clear_whiteboard');
         }
 
-        // Handle incoming invites via toast notification
-        let incomingSender = null;
-        socket.on('receive_game_invite', (data) => {
-            incomingSender = data.sender_id;
-            const toast = document.getElementById('invite-toast');
-            const text = document.getElementById('invite-text');
-            text.textContent = `Invite to ${data.game_name || 'activity'}!`;
-            toast.classList.remove('hidden');
-        });
-
+        // --- Invite Popup Handlers ---
         function acceptInvite() {
+            document.getElementById('invite-toast').classList.add('hidden');
+            // Add custom action logic here when accepting (e.g. joining a session route)
+        }
+
+        function dismissInvite() {
             document.getElementById('invite-toast').classList.add('hidden');
         }
     </script>
