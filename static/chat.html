@@ -275,6 +275,14 @@
         let typingTimer = null;
         let onlineUsers = new Set();
 
+        // Virtual Gemini Bot Definition
+        const geminiBot = {
+            id: -999,
+            username: "Gemini AI",
+            pfp: "https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg",
+            status_text: "Always online and ready to chat!"
+        };
+
         // WebRTC & Calling State
         let localStream = null;
         let remoteStream = null;
@@ -487,6 +495,11 @@
                 return;
             }
 
+            if (currentReceiver.id === -999) {
+                alert("You cannot call Gemini AI!");
+                return;
+            }
+
             activeCallTargetId = currentReceiver.id;
             isVideoCallActive = isVideo;
 
@@ -622,7 +635,7 @@
                 const userId = item.getAttribute('data-userid');
                 const dot = item.querySelector('.status-dot');
                 if (dot && userId) {
-                    if (onlineUsers.has(parseInt(userId))) {
+                    if (userId === "-999" || onlineUsers.has(parseInt(userId))) {
                         dot.classList.add('online');
                     } else {
                         dot.classList.remove('online');
@@ -633,6 +646,8 @@
 
         function emitTyping() {
             if (currentChatType !== 'dm' || !currentReceiver || !currentUser) return;
+            if (currentReceiver.id === -999) return; // Don't emit socket typing for bot
+
             socket.emit('typing', { sender_id: currentUser.id, receiver_id: currentReceiver.id });
 
             clearTimeout(typingTimer);
@@ -648,14 +663,17 @@
                 const listEl = document.getElementById('friends-list');
                 listEl.innerHTML = '';
 
-                friends.forEach(f => {
+                // Combine Gemini at the top with regular friends list
+                const allFriends = [geminiBot, ...friends];
+
+                allFriends.forEach(f => {
                     const item = document.createElement('div');
                     item.className = 'friend-item';
                     item.setAttribute('data-userid', f.id);
                     const fallback = `https://api.dicebear.com/7.x/identicon/svg?seed=${f.username}`;
                     const avatarUrl = f.pfp || fallback;
                     
-                    const isOnline = onlineUsers.has(f.id) ? 'online' : '';
+                    const isOnline = (f.id === -999 || onlineUsers.has(f.id)) ? 'online' : '';
 
                     item.innerHTML = `
                         <div class="friend-left">
@@ -793,6 +811,14 @@
             document.getElementById('chat-target-name').innerText = friend.username;
             document.getElementById('typing-indicator').style.display = 'none';
             
+            // If Gemini is selected, just clear messages box (or you can keep a local memory buffer)
+            if (friend.id === -999) {
+                const box = document.getElementById('messages-box');
+                box.innerHTML = '';
+                appendMessage("Hello! I'm Gemini AI. How can I help you today?", 'received', geminiBot.pfp, geminiBot.id);
+                return;
+            }
+
             try {
                 const res = await fetch(`${BACKEND_URL}/api/messages/${currentUser.id}/${friend.id}`);
                 const messages = await res.json();
@@ -808,6 +834,10 @@
         }
 
         async function viewUserProfile(userId) {
+            if (userId === -999) {
+                openMyProfile(); // Or custom view for Gemini
+                return;
+            }
             try {
                 const res = await fetch(`${BACKEND_URL}/api/users/search?q=`);
                 const users = await res.json();
@@ -872,11 +902,46 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('message-input');
             const message = input.value.trim();
             if (!message) return;
 
+            // --- IF CHATTING WITH GEMINI AI ---
+            if (currentChatType === 'dm' && currentReceiver && currentReceiver.id === -999) {
+                appendMessage(message, 'sent', currentUser.pfp, currentUser.id);
+                input.value = '';
+
+                // Show typing indicator
+                const typingContainer = document.getElementById('typing-indicator');
+                const typingText = document.getElementById('typing-text');
+                const typingPfp = document.getElementById('typing-pfp');
+                
+                typingPfp.src = geminiBot.pfp;
+                typingText.innerText = "Gemini AI is thinking";
+                typingContainer.style.display = 'flex';
+
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AQ.Ab8RN6IQOdcp2WW2YduntMK9YCeZh2R69z-FIl-yDem5v2fMNw`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: message }] }]
+                        })
+                    });
+                    const data = await response.json();
+                    const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Hmm, I couldn't generate a response.";
+
+                    typingContainer.style.display = 'none';
+                    appendMessage(aiReply, 'received', geminiBot.pfp, geminiBot.id);
+                } catch (err) {
+                    typingContainer.style.display = 'none';
+                    appendMessage("Error communicating with Gemini.", 'received', geminiBot.pfp, geminiBot.id);
+                }
+                return;
+            }
+
+            // --- NORMAL MESSAGING LOGIC ---
             if (currentChatType === 'global') {
                 socket.emit('send_global_message', {
                     sender_id: currentUser.id,
@@ -913,7 +978,7 @@
                         username: currentUser.username,
                         pfp: currentUser.pfp
                     });
-                } else if (currentChatType === 'dm') {
+                } else if (currentChatType === 'dm' && currentReceiver.id !== -999) {
                     socket.emit('send_message', {
                         sender_id: currentUser.id,
                         receiver_id: currentReceiver.id,
