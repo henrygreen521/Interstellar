@@ -26,9 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="f-nav-right">
         <a class="navbar-link" href="/./a"><i class="fa-solid fa-gamepad navbar-icon"></i><an>&#71;&#97;</an><an>&#109;&#101;&#115;</an></a>
-        <a class="navbar-link" href="/./b"><i class="fa-solid fa-phone navbar-icon"></i><an>&#65;&#112;</an><an>&#112;&#112;&#115;</an></a>
+        <a class="navbar-link" href="/./b"><i class="fa-solid fa-phone navbar-icon"></i><an>&#65;&#112;</an><an>&#112;&#115;</an></a>
         ${qp ? "" : '<a class="navbar-link" href="/./d"><i class="fa-solid fa-laptop navbar-icon"></i><an>&#84;&#97;</an><an>&#98;&#115;</an></a>'}
         <a class="navbar-link" href="/./c"><i class="fa-solid fa-gear navbar-icon settings-icon"></i><an>&#83;&#101;&#116;</an><an>&#116;&#105;&#110;&#103;</an></a>
+        <a class="navbar-link" href="/chat.html"><i class="fa-solid fa-comments navbar-icon"></i>Chat</a>
+        <a class="navbar-link" href="/watch.html"><svg class="navbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;"><path d="M19 4H5C3.89 4 3 4.9 3 6V18C3 19.1 3.89 20 5 20H19C20.11 20 21 19.1 21 18V6C21 4.9 20.11 4 19 4ZM19 18H5V6H19V18Z"/><rect x="6" y="6" width="2" height="2" rx="0.5"/><rect x="11" y="6" width="2" height="2" rx="0.5"/><rect x="16" y="6" width="2" height="2" rx="0.5"/><rect x="6" y="16" width="2" height="2" rx="0.5"/><rect x="11" y="16" width="2" height="2" rx="0.5"/><rect x="16" y="16" width="2" height="2" rx="0.5"/><polygon points="10,9.5 15,12 10,14.5"/></svg>Watch</a>
       </div>`;
     nav.innerHTML = html;
   }
