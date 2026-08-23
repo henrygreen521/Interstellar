@@ -167,7 +167,6 @@
   <script src="/assets/languagearts/sj.all.js?v=2025-04-15"></script>
   <script src="/assets/js/sj-tp.js?v=2025-04-15"></script>
   <script src="/assets/js/m1.js"></script>
-  <!-- Ads removed -->
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     // 1. Glitch Intro Timer: Display block.jpg for 1.2s, then trigger glitch transition
@@ -316,55 +315,6 @@
       localStorage.setItem('coop_show_seconds', showSeconds);
       updateClock();
     });
-  });
-</script>
-  <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const navRight = document.querySelector('.f-nav-right');
-    if (navRight) {
-      const chatLink = document.createElement('a');
-      chatLink.className = 'navbar-link';
-      chatLink.href = '/chat.html';
-      chatLink.innerHTML = '<i class="fa-solid fa-comments navbar-icon"></i>Chat';
-      navRight.appendChild(chatLink);
-
-      const watchLink = document.createElement('a');
-      watchLink.className = 'navbar-link';
-      watchLink.href = '/watch.html';
-      watchLink.innerHTML = `
-        <svg class="navbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;">
-          <path d="M19 4H5C3.89 4 3 4.9 3 6V18C3 19.1 3.89 20 5 20H19C20.11 20 21 19.1 21 18V6C21 4.9 20.11 4 19 4ZM19 18H5V6H19V18Z"/>
-          <rect x="6" y="6" width="2" height="2" rx="0.5"/>
-          <rect x="11" y="6" width="2" height="2" rx="0.5"/>
-          <rect x="16" y="6" width="2" height="2" rx="0.5"/>
-          <rect x="6" y="16" width="2" height="2" rx="0.5"/>
-          <rect x="11" y="16" width="2" height="2" rx="0.5"/>
-          <rect x="16" y="16" width="2" height="2" rx="0.5"/>
-          <polygon points="10,9.5 15,12 10,14.5"/>
-        </svg>WATCH
-      `;
-      navRight.appendChild(watchLink);
-
-      const musicLink = document.createElement('a');
-      musicLink.className = 'navbar-link';
-      musicLink.href = '/music.html';
-      musicLink.innerHTML = `
-        <svg class="navbar-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: -2px; margin-right: 6px;">
-          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-        </svg>BEATS
-      `;
-      navRight.appendChild(musicLink);
-    }
-
-    // Automatically strip out ONLY the unwanted default apps navbar link (leaving games alone)
-    setTimeout(() => {
-      document.querySelectorAll('.navbar-link, a').forEach(el => {
-        const text = el.textContent.trim().toLowerCase();
-        if (text === 'apps' || text === 'app') {
-          el.remove();
-        }
-      });
-    }, 50);
   });
 </script>
   <script>
