@@ -12,15 +12,6 @@ try {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const blockedHostnames = ["gointerstellar.app"];
-
-  if (!blockedHostnames.includes(window.location.hostname)) {
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.textContent = `(()=>{const k="p",d=15e4,s=()=>{let t=localStorage.getItem(k);return !t||Date.now()-t>d},m=()=>localStorage.setItem(k,Date.now());function h(){if(!s())return;window.open("https://undercoverhiking.com/yabbhdzdww?key=6429d070f11caf7c64bd90bff05deb1f","_blank");m();document.removeEventListener("click",h)}s()&&document.addEventListener("click",h,{once:1})})();`;
-    document.body.appendChild(script);
-  }
-
   const nav = document.querySelector(".f-nav");
 
   if (nav) {
@@ -35,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="f-nav-right">
         <a class="navbar-link" href="/./a"><i class="fa-solid fa-gamepad navbar-icon"></i><an>&#71;&#97;</an><an>&#109;&#101;&#115;</an></a>
-        <a class="navbar-link" href="/./b"><i class="fa-solid fa-phone navbar-icon"></i><an>&#65;&#112;</an><an>&#112;&#115;</an></a>
+        <a class="navbar-link" href="/./b"><i class="fa-solid fa-phone navbar-icon"></i><an>&#65;&#112;</an><an>&#112;&#112;&#115;</an></a>
         ${qp ? "" : '<a class="navbar-link" href="/./d"><i class="fa-solid fa-laptop navbar-icon"></i><an>&#84;&#97;</an><an>&#98;&#115;</an></a>'}
         <a class="navbar-link" href="/./c"><i class="fa-solid fa-gear navbar-icon settings-icon"></i><an>&#83;&#101;&#116;</an><an>&#116;&#105;&#110;&#103;</an></a>
       </div>`;
