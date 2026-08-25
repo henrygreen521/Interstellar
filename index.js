@@ -119,6 +119,36 @@ app.use("/ca", cors({ origin: true }));
 app.use("/bm", express.static(baremuxPath, transportStaticOptions));
 app.use("/ep", express.static(epoxyDistPath, transportStaticOptions));
 
+// Chat API Proxy Endpoint - Route chat server requests through proxy
+app.all("/api/*", async (req, res) => {
+  try {
+    const chatServerUrl = "https://chickencoop-chat-server.onrender.com";
+    const targetUrl = chatServerUrl + req.path;
+    const queryString = Object.keys(req.query).length > 0 ? "?" + new URLSearchParams(req.query).toString() : "";
+    
+    const proxyReq = await fetch(targetUrl + queryString, {
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: new URL(targetUrl).host,
+      },
+      body: ["GET", "HEAD"].includes(req.method) ? undefined : JSON.stringify(req.body),
+    });
+
+    const contentType = proxyReq.headers.get("content-type");
+    res.set("Content-Type", contentType || "application/json");
+    
+    const data = await proxyReq.text();
+    res.status(proxyReq.status).send(data);
+  } catch (error) {
+    console.error("Error proxying chat API:", error);
+    res.status(502).json({ error: "Bad Gateway - Chat server unreachable" });
+  }
+});
+
+// WebSocket proxy for Socket.IO chat connections
+app.use("/socket.io", cors({ origin: true }));
+
 const routes = [
   { path: "/b", file: "apps.html" },
   { path: "/a", file: "games.html" },
@@ -155,6 +185,9 @@ server.on("request", (req, res) => {
 server.on("upgrade", (req, socket, head) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeUpgrade(req, socket, head);
+  } else if (req.url.startsWith("/socket.io")) {
+    // Route Socket.IO WebSocket upgrades through WISP
+    wisp.routeRequest(req, socket, head);
   } else {
     wisp.routeRequest(req, socket, head);
   }
