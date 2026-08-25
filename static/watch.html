@@ -484,6 +484,11 @@
                 }
             } catch (e) {}
 
+            // Fallback: always route through Bare proxy for Videasy URLs
+            if (rawUrl && (rawUrl.includes('videasy.net') || rawUrl.includes('player.videasy'))) {
+                return '/ca/' + encodeURIComponent(rawUrl);
+            }
+
             if (window.location.pathname.startsWith('/service/')) {
                 return '/service/' + encodeURIComponent(rawUrl);
             }
