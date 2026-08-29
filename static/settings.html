@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840529569014734"
     crossorigin="anonymous"></script>
-
 </head>
 
 <body>
@@ -221,6 +220,15 @@
         <button class="key-button" value="Export" onclick="exportSaveData();">Export Save</button>
         <button class="key-button" value="Import" onclick="importSaveData();">Import Save</button>
       </div>
+      
+      <div class="settings-card">
+        <h3>Secret Unlock</h3>
+        <p>Enter the secret code to reveal a surprise.</p>
+        <input class="key-form" type="text" id="secretCodeInput" placeholder="Enter code..." />
+        <button class="key-button" onclick="checkSecretCode()">Submit</button>
+        <div id="secretImageContainer" style="margin-top: 15px; text-align: center;"></div>
+      </div>
+
       <div class="settings-card">
         <h3>Information</h3>
         <p>Version: v5.2.6</p>
@@ -241,13 +249,23 @@
         scope: "/a/",
       });
     });
+
+    function checkSecretCode() {
+      const input = document.getElementById("secretCodeInput").value.trim();
+      const container = document.getElementById("secretImageContainer");
+      
+      if (input === "jolyneyams") {
+        container.innerHTML = '<img src="assets/media/icons/jolyne.jpg" alt="Jolyne" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" />';
+      } else {
+        container.innerHTML = '<p style="color: #ff5555; font-size: 0.9rem;">Incorrect code!</p>';
+      }
+    }
   </script>
   <script src="/assets/languagearts/sj.all.js?v=2025-04-15"></script>
   <script src="/assets/js/sj-tp.js?v=2025-04-15"></script>
   <script src="/assets/js/mg-pxy.js"></script>
   <script src="/assets/js/m1.js"></script>
   <script src="/assets/js/s1.js"></script>
-  <!-- DO NOT REMOVE-->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -258,7 +276,6 @@
 
     gtag("config", "G-WKJQ5QHQTJ");
   </script>
-  <!-- DO NOT REMOVE-->
-</body>
+  </body>
 
 </html>
