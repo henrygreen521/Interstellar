@@ -1,3 +1,7 @@
+/* Left-sidebar navigation adaptation
+   Converted the top fixed navbar into a vertical left sidebar with responsive fallback.
+*/
+
 .material-symbols-outlined {
    font-variation-settings:
       "FILL" 0,
@@ -23,97 +27,88 @@ img {
    display: inline;
 }
 
+/* LEFT SIDEBAR LAYOUT */
 .f-nav {
-   top: 0;
-   letter-spacing: 2px;
-   font-size: 22px;
-   left: 0;
-   right: 0;
-   min-height: 10vh;
-   padding: 0 25px;
+   top: 15px;
+   left: 15px;
+   bottom: 15px;
+   width: 220px;
+   height: calc(100vh - 30px);
+   padding: 18px;
    box-sizing: border-box;
    background-color: var(--background-nav);
    box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.5);
    -webkit-backdrop-filter: var(--backdrop-filter);
    backdrop-filter: var(--backdrop-filter);
    transition: 0.35s ease;
-   border-radius: 15px;
-   width: fill;
-   margin: 15px;
+   border-radius: 12px;
+   margin: 0;
    z-index: 100;
    position: fixed;
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   align-items: flex-start;
 }
 
+/* Icons inside the sidebar */
 .f-nav .icon:hover {
-   transform: translateY(-15%) scale(1.03);
+   transform: translateX(4%) scale(1.02);
    font-weight: 800;
 }
 
 .f-nav .icon {
-   position: absolute;
-   float: left;
+   position: relative;
+   float: none;
    text-transform: uppercase;
-   font-size: 30px;
+   font-size: 18px;
    font-family: "Inter", sans-serif;
    cursor: pointer;
    color: var(--text-primary);
    font-weight: 600;
-   margin-left: 5px;
+   margin: 6px 0;
    font-style: normal;
    text-decoration: none;
    transition: all 0.2s ease;
-   height: 5vh;
-   top: 18%;
+   height: auto;
+   top: auto;
 }
 
+/* Right-side links area becomes a vertical list in the sidebar */
 .f-nav-right {
-   position: absolute;
-   top: 50%;
-   transform: translateY(-50%);
-   text-transform: uppercase;
-   font-size: 18px;
-   color: var(--text-primary);
-   font-weight: 600;
-   right: 2%;
+   position: relative;
+   top: auto;
+   right: auto;
+   transform: none;
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+   width: 100%;
 }
 
 .f-nav-right .navbar-link {
-   margin-left: 10px;
+   margin-left: 0;
    text-transform: uppercase;
    cursor: pointer;
    color: var(--text-primary);
-   font-weight: 800;
-   right: 2%;
+   font-weight: 700;
    font-family: "Inter", sans-serif;
    font-style: normal;
    text-decoration: none;
    transition: all 0.2s ease;
    transform: translateX(0%);
+   display: flex;
+   align-items: center;
+   gap: 8px;
 }
 
 @media (orientation: portrait) {
    .f-nav-right .navbar-link {
-      margin-left: 10px;
-      text-transform: uppercase;
-      font-size: 2.5vw;
-      cursor: pointer;
-      color: var(--text-primary);
+      font-size: 3.2vw;
       font-weight: 800;
-      right: 2%;
-      font-family: "Inter", sans-serif;
-      font-style: normal;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      transform: translateX(0%);
    }
    .f-nav-right .navbar-link:hover {
-      text-transform: uppercase;
-      cursor: pointer;
-      font-weight: 800;
-      font-family: "Inter", sans-serif;
-      font-style: normal;
-      font-size: 3vw;
-      transform: translateX(-20%);
+      transform: translateX(-8%);
    }
 }
 
@@ -123,12 +118,11 @@ img {
    font-weight: 800;
    font-family: "Inter", sans-serif;
    font-style: normal;
-   font-size: 3vh;
-   transform: translateX(-20%);
+   transform: translateX(-8%);
 }
 
 .navbar-icon {
-   margin-right: 5px;
+   margin-right: 8px;
    transition: all 0.2s ease;
 }
 
@@ -141,15 +135,44 @@ img {
    animation-timing-function: cubic-bezier(0, 1.04, 0.91, 0.99);
 }
 
+/* Move main content over so it doesn't sit under the left sidebar */
+#particles-js .main {
+   margin-left: 260px; /* sidebar width + gap */
+   transition: margin-left 0.25s ease;
+}
+
 @media (max-width: 768px) {
+   /* On narrow screens revert to a top horizontal nav to save horizontal space */
+   .f-nav {
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: auto;
+      width: 100%;
+      height: auto;
+      border-radius: 0 0 12px 12px;
+      padding: 10px 14px;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+   }
+   .f-nav .icon {
+      font-size: 20px;
+   }
+   .f-nav-right {
+      flex-direction: row;
+      gap: 12px;
+      align-items: center;
+   }
+   #particles-js .main {
+      margin-left: 0;
+      margin-top: 70px; /* give room for top nav */
+   }
    .f-nav-right .navbar-link an {
       display: none;
    }
    .f-nav-right .fa-solid {
       display: inline;
-   }
-   .f-nav-right .navbar-link {
-      font-size: 4.5vw;
    }
 }
 
