@@ -1,5 +1,7 @@
-/* Left-sidebar navigation adaptation
-   Converted the top fixed navbar into a vertical left sidebar with responsive fallback.
+/* Compact icon-only left sidebar with hover-to-reveal labels
+   - Sidebar is narrow by default (64px) and shows only icons.
+   - Each .navbar-link reveals a floating label to the right on hover with a sliding animation.
+   - Keeps responsive fallback for small screens (top nav).
 */
 
 .material-symbols-outlined {
@@ -27,20 +29,20 @@ img {
    display: inline;
 }
 
-/* LEFT SIDEBAR LAYOUT */
+/* THIN LEFT SIDEBAR */
 .f-nav {
    top: 15px;
    left: 15px;
    bottom: 15px;
-   width: 220px;
+   width: 64px; /* compact width showing just icons */
    height: calc(100vh - 30px);
-   padding: 18px;
+   padding: 10px 8px; /* tighter padding for compact bar */
    box-sizing: border-box;
    background-color: var(--background-nav);
    box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.5);
    -webkit-backdrop-filter: var(--backdrop-filter);
    backdrop-filter: var(--backdrop-filter);
-   transition: 0.35s ease;
+   transition: width 0.25s ease, transform 0.25s ease;
    border-radius: 12px;
    margin: 0;
    z-index: 100;
@@ -48,12 +50,12 @@ img {
    display: flex;
    flex-direction: column;
    gap: 10px;
-   align-items: flex-start;
+   align-items: center; /* center icons */
 }
 
-/* Icons inside the sidebar */
+/* Icon style */
 .f-nav .icon:hover {
-   transform: translateX(4%) scale(1.02);
+   transform: translateX(4%) scale(1.03);
    font-weight: 800;
 }
 
@@ -61,7 +63,7 @@ img {
    position: relative;
    float: none;
    text-transform: uppercase;
-   font-size: 18px;
+   font-size: 22px; /* icon size */
    font-family: "Inter", sans-serif;
    cursor: pointer;
    color: var(--text-primary);
@@ -69,12 +71,18 @@ img {
    margin: 6px 0;
    font-style: normal;
    text-decoration: none;
-   transition: all 0.2s ease;
+   transition: all 0.18s ease;
    height: auto;
    top: auto;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 40px;
+   height: 40px;
+   border-radius: 8px;
 }
 
-/* Right-side links area becomes a vertical list in the sidebar */
+/* Navbar links are just icons visually; labels are hidden and shown on hover */
 .f-nav-right {
    position: relative;
    top: auto;
@@ -84,6 +92,7 @@ img {
    flex-direction: column;
    gap: 8px;
    width: 100%;
+   align-items: center;
 }
 
 .f-nav-right .navbar-link {
@@ -95,49 +104,56 @@ img {
    font-family: "Inter", sans-serif;
    font-style: normal;
    text-decoration: none;
-   transition: all 0.2s ease;
+   transition: background 0.12s ease;
    transform: translateX(0%);
    display: flex;
    align-items: center;
    gap: 8px;
+   width: 100%;
+   justify-content: center; /* keep icons centered in the thin bar */
+   padding: 6px 0;
+   position: relative; /* for label positioning */
 }
 
-@media (orientation: portrait) {
-   .f-nav-right .navbar-link {
-      font-size: 3.2vw;
-      font-weight: 800;
-   }
-   .f-nav-right .navbar-link:hover {
-      transform: translateX(-8%);
-   }
+/* Floating label that appears on hover */
+.f-nav-right .navbar-link .label {
+   position: absolute;
+   left: calc(100% + 12px); /* place to the right of the compact bar */
+   top: 50%;
+   transform: translateY(-50%) translateX(-8px);
+   opacity: 0;
+   background: rgba(10,10,10,0.9);
+   color: var(--text-primary);
+   padding: 8px 12px;
+   border-radius: 8px;
+   white-space: nowrap;
+   font-size: 14px;
+   font-weight: 700;
+   box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+   transition: transform 0.18s cubic-bezier(.2,.9,.2,1), opacity 0.18s ease;
+   pointer-events: none; /* label should not capture pointer events */
 }
 
-.f-nav-right .navbar-link:hover {
-   text-transform: uppercase;
-   cursor: pointer;
-   font-weight: 800;
-   font-family: "Inter", sans-serif;
-   font-style: normal;
-   transform: translateX(-8%);
+/* Reveal the label smoothly when hovering the individual link */
+.f-nav-right .navbar-link:hover .label {
+   transform: translateY(-50%) translateX(0);
+   opacity: 1;
 }
 
-.navbar-icon {
-   margin-right: 8px;
-   transition: all 0.2s ease;
+/* Icon + optional inner text hidden for compact mode */
+.f-nav-right .navbar-link .text {
+   display: none; /* hide inline text labels inside the compact bar */
 }
 
-.navbar-link {
-   margin-right: 5px;
-}
-
-.navbar-link:hover > .settings-icon {
-   animation: spin 0.5s;
-   animation-timing-function: cubic-bezier(0, 1.04, 0.91, 0.99);
+/* Highlight hovered icon with a subtle background */
+.f-nav-right .navbar-link:hover .icon,
+.f-nav .icon:focus {
+   background: rgba(255,255,255,0.03);
 }
 
 /* Move main content over so it doesn't sit under the left sidebar */
 #particles-js .main {
-   margin-left: 260px; /* sidebar width + gap */
+   margin-left: 100px; /* compact sidebar width plus gap */
    transition: margin-left 0.25s ease;
 }
 
@@ -158,15 +174,23 @@ img {
    }
    .f-nav .icon {
       font-size: 20px;
+      width: auto;
+      height: auto;
+      border-radius: 0;
    }
    .f-nav-right {
       flex-direction: row;
       gap: 12px;
       align-items: center;
+      justify-content: center;
+      width: auto;
    }
    #particles-js .main {
       margin-left: 0;
       margin-top: 70px; /* give room for top nav */
+   }
+   .f-nav-right .navbar-link .label {
+      display: none; /* no floating labels on small screens */
    }
    .f-nav-right .navbar-link an {
       display: none;
