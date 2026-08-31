@@ -12,10 +12,12 @@
    align-items: flex-start;
 }
 
-img {
-   width: 100%;
-   height: 100%;
-   padding-top: 5px;
+/* Constrain the logo/image so it doesn't blow up */
+.f-nav img, .f-nav .icon img {
+   width: 32px;
+   height: 32px;
+   object-fit: contain;
+   padding-top: 0;
 }
 
 .f-nav-container {
@@ -24,20 +26,20 @@ img {
    display: inline;
 }
 
-/* Transformed into a Left Sidebar */
+/* Left Sidebar */
 .f-nav {
    top: 15px;
    bottom: 15px;
    left: 15px;
-   width: 75px; /* Collapsed width showing only icons */
+   width: 70px; /* Collapsed width */
    height: calc(100vh - 30px);
-   padding: 20px 10px;
+   padding: 20px 12px;
    box-sizing: border-box;
    background-color: var(--background-nav);
    box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.5);
    -webkit-backdrop-filter: var(--backdrop-filter);
    backdrop-filter: var(--backdrop-filter);
-   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
    border-radius: 15px;
    z-index: 100;
    position: fixed;
@@ -46,14 +48,14 @@ img {
 
 /* Expand sidebar width on hover */
 .f-nav:hover {
-   width: 240px; 
+   width: 230px; 
 }
 
 .f-nav .icon {
    position: absolute;
-   left: 20px;
+   left: 15px;
    text-transform: uppercase;
-   font-size: 24px;
+   font-size: 20px;
    font-family: "Inter", sans-serif;
    cursor: pointer;
    color: var(--text-primary);
@@ -63,21 +65,24 @@ img {
    transition: all 0.2s ease;
    top: 25px;
    white-space: nowrap;
+   display: flex;
+   align-items: center;
+   gap: 12px;
 }
 
 .f-nav .icon:hover {
-   transform: scale(1.03);
+   transform: scale(1.02);
    font-weight: 800;
 }
 
 .f-nav-right {
    position: absolute;
-   top: 90px;
-   left: 12px;
+   top: 85px;
+   left: 10px;
    display: flex;
    flex-direction: column;
-   gap: 15px;
-   width: 100%;
+   gap: 10px;
+   width: calc(100% - 20px);
 }
 
 .f-nav-right .navbar-link {
@@ -92,35 +97,38 @@ img {
    font-family: "Inter", sans-serif;
    font-style: normal;
    text-decoration: none;
-   transition: all 0.3s ease;
+   transition: background-color 0.2s ease, transform 0.2s ease;
    white-space: nowrap;
    border-radius: 8px;
+   overflow: hidden;
 }
 
-/* Hide text labels when collapsed, slide/fade them in smoothly when sidebar is hovered */
+/* Completely hide text labels when collapsed, fade/slide in on hover */
 .f-nav-right .navbar-link span.link-text {
    opacity: 0;
+   visibility: hidden;
    transform: translateX(-10px);
-   transition: opacity 0.25s ease, transform 0.25s ease;
+   transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
    margin-left: 12px;
-   font-size: 15px;
+   font-size: 14px;
 }
 
 .f-nav:hover .f-nav-right .navbar-link span.link-text {
    opacity: 1;
+   visibility: visible;
    transform: translateX(0);
 }
 
 .f-nav-right .navbar-link:hover {
    background-color: rgba(255, 255, 255, 0.08);
-   transform: translateX(4px);
+   transform: translateX(3px);
 }
 
 .navbar-icon {
-   font-size: 24px;
-   min-width: 30px;
+   font-size: 22px;
+   min-width: 26px;
    text-align: center;
-   transition: all 0.2s ease;
+   display: inline-block;
 }
 
 .navbar-link:hover > .settings-icon {
@@ -147,7 +155,7 @@ img {
 }
 
 @media (orientation: portrait) {
-   img {
-      height: 40px;
+   .f-nav img, .f-nav .icon img {
+      height: 32px;
    }
 }
