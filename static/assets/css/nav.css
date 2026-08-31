@@ -80,10 +80,10 @@
    transition: background-color 0.2s ease, transform 0.2s ease;
    border-radius: 8px;
    white-space: nowrap;
-   overflow: hidden;
+   overflow: hidden; /* Clips whatever text overflows when collapsed */
 }
 
-/* Force icons and watch symbols to stay a consistent, clean size */
+/* Force icons and watch symbols to stay visible, properly sized, and spaced */
 .navbar-icon, 
 .f-nav-right .fa-solid, 
 .f-nav-right .material-symbols-outlined,
@@ -97,25 +97,19 @@
    align-items: center;
    justify-content: center;
    flex-shrink: 0;
+   margin-right: 16px !important; /* Forces a clean gap between icon and text */
 }
 
-/* --- PROPER TEXT HIDING & SPACING --- */
-/* Completely clip/hide any loose text nodes or inline text when collapsed */
+/* --- THE CLEAN FIX --- */
+/* When collapsed, fade out only the text content without touching the link or icon */
 .f-nav-right .navbar-link {
-   clip-path: inset(0 100% 0 0); /* Hides text horizontally */
-   opacity: 0;
-   transition: clip-path 0.3s ease, opacity 0.2s ease;
+   color: rgba(0, 0, 0, 0); /* Makes text invisible when collapsed */
+   transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
 }
 
-/* When sidebar is hovered, reveal the text smoothly with proper spacing */
+/* When the sidebar is hovered, reveal the text color smoothly */
 .f-nav:hover .f-nav-right .navbar-link {
-   clip-path: inset(0 0 0 0);
-   opacity: 1;
-}
-
-/* Ensure proper spacing between icon and text */
-.navbar-icon, .fa-solid, .material-symbols-outlined {
-   margin-right: 15px;
+   color: var(--text-primary); 
 }
 
 .f-nav-right .navbar-link:hover {
@@ -135,7 +129,6 @@
 
 @media (max-width: 768px) {
    .f-nav-right .navbar-link {
-      clip-path: inset(0 0 0 0);
-      opacity: 1;
+      color: var(--text-primary);
    }
 }
