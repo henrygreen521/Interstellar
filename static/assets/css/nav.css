@@ -71,7 +71,7 @@
    display: flex;
    align-items: center;
    height: 45px;
-   padding: 0 8px;
+   padding: 0 10px;
    cursor: pointer;
    color: var(--text-primary);
    font-family: "Inter", sans-serif;
@@ -97,32 +97,28 @@
    align-items: center;
    justify-content: center;
    flex-shrink: 0;
+   margin-right: 0px; /* Reset any bad margins */
 }
 
-/* --- THE FIX: Brute-force hide text until hovered --- */
+/* --- CLEAN TEXT HIDING TRICK --- */
+/* When collapsed, shrink text size to 0 and hide color so no weird broken letters show */
 .f-nav-right .navbar-link {
-   color: transparent !important; /* Hides raw text color completely */
-   text-shadow: none;
+   font-size: 0px;
+   color: transparent;
 }
 
+/* When hovered, bring back the proper text size, color, and spacing */
 .f-nav:hover .f-nav-right .navbar-link {
-   color: var(--text-primary) !important; /* Brings text color back on hover */
-   transition: color 0.1s ease 0.1s; /* Slight delay so it appears as it opens */
+   font-size: 14px;
+   color: var(--text-primary);
 }
 
-/* If your text is wrapped in spans or tags, this hides/shows them smoothly */
-.f-nav-right .navbar-link > *:not(.navbar-icon):not(.fa-solid):not(.material-symbols-outlined):not(svg) {
-   opacity: 0;
-   visibility: hidden;
-   transform: translateX(-15px);
-   transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-   margin-left: 12px;
-}
-
-.f-nav:hover .f-nav-right .navbar-link > *:not(.navbar-icon):not(.fa-solid):not(.material-symbols-outlined):not(svg) {
-   opacity: 1;
-   visibility: visible;
-   transform: translateX(0);
+/* Add a clean, consistent gap between the icon and the text once expanded */
+.navbar-icon + *, 
+.f-nav-right .fa-solid + *, 
+.f-nav-right .material-symbols-outlined + *,
+.f-nav-right svg + * {
+   margin-left: 14px;
 }
 
 .f-nav-right .navbar-link:hover {
@@ -142,6 +138,7 @@
 
 @media (max-width: 768px) {
    .f-nav-right .navbar-link {
-      color: var(--text-primary) !important;
+      font-size: 14px;
+      color: var(--text-primary);
    }
 }
