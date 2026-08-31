@@ -123,6 +123,45 @@
    animation-timing-function: cubic-bezier(0, 1.04, 0.91, 0.99);
 }
 
+#search-navbar-icon {
+   display: flex;
+   align-items: center;
+   height: 45px;
+   padding: 0 10px;
+   cursor: pointer;
+   color: var(--text-primary);
+   font-family: "Inter", sans-serif;
+   font-weight: 800;
+   text-decoration: none;
+   transition: background-color 0.2s ease, transform 0.2s ease;
+   border-radius: 8px;
+   white-space: nowrap;
+   overflow: hidden;
+}
+
+#search-navbar-icon:hover {
+   background-color: rgba(255, 255, 255, 0.08);
+   transform: translateX(3px);
+}
+
+#search-navbar-icon i {
+   font-size: 22px !important;
+   width: 24px !important;
+   height: 24px !important;
+   min-width: 24px;
+   text-align: center;
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   flex-shrink: 0;
+   margin-right: 16px !important;
+   color: var(--text-primary) !important;
+}
+
+.f-nav:hover #search-navbar-icon {
+   color: var(--text-primary);
+}
+
 @keyframes spin {
    from { transform: rotate(0deg); }
    to { transform: rotate(360deg); }
@@ -130,6 +169,10 @@
 
 @media (max-width: 768px) {
    .f-nav-right .navbar-link {
+      color: var(--text-primary);
+   }
+   
+   #search-navbar-icon {
       color: var(--text-primary);
    }
 }
