@@ -97,28 +97,25 @@
    align-items: center;
    justify-content: center;
    flex-shrink: 0;
-   margin-right: 0px; /* Reset any bad margins */
 }
 
-/* --- CLEAN TEXT HIDING TRICK --- */
-/* When collapsed, shrink text size to 0 and hide color so no weird broken letters show */
+/* --- PROPER TEXT HIDING & SPACING --- */
+/* Completely clip/hide any loose text nodes or inline text when collapsed */
 .f-nav-right .navbar-link {
-   font-size: 0px;
-   color: transparent;
+   clip-path: inset(0 100% 0 0); /* Hides text horizontally */
+   opacity: 0;
+   transition: clip-path 0.3s ease, opacity 0.2s ease;
 }
 
-/* When hovered, bring back the proper text size, color, and spacing */
+/* When sidebar is hovered, reveal the text smoothly with proper spacing */
 .f-nav:hover .f-nav-right .navbar-link {
-   font-size: 14px;
-   color: var(--text-primary);
+   clip-path: inset(0 0 0 0);
+   opacity: 1;
 }
 
-/* Add a clean, consistent gap between the icon and the text once expanded */
-.navbar-icon + *, 
-.f-nav-right .fa-solid + *, 
-.f-nav-right .material-symbols-outlined + *,
-.f-nav-right svg + * {
-   margin-left: 14px;
+/* Ensure proper spacing between icon and text */
+.navbar-icon, .fa-solid, .material-symbols-outlined {
+   margin-right: 15px;
 }
 
 .f-nav-right .navbar-link:hover {
@@ -138,7 +135,7 @@
 
 @media (max-width: 768px) {
    .f-nav-right .navbar-link {
-      font-size: 14px;
-      color: var(--text-primary);
+      clip-path: inset(0 0 0 0);
+      opacity: 1;
    }
 }
