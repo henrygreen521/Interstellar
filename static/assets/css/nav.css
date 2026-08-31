@@ -6,7 +6,7 @@
       "opsz" 48;
 }
 
-/* Base styles for images/icons */
+/* Base sizing for logo/images */
 .f-nav img, .f-nav svg {
    width: 32px !important;
    height: 32px !important;
@@ -56,10 +56,6 @@
    white-space: nowrap;
 }
 
-.f-nav .icon:hover {
-   font-weight: 800;
-}
-
 /* Right links section stacked vertically */
 .f-nav-right {
    position: absolute;
@@ -87,12 +83,12 @@
    overflow: hidden;
 }
 
-/* Force all icons and watch symbols to stay crisp and properly sized */
+/* Force icons and watch symbols to stay a consistent, clean size */
 .navbar-icon, 
 .f-nav-right .fa-solid, 
 .f-nav-right .material-symbols-outlined,
 .f-nav-right svg {
-   font-size: 24px !important;
+   font-size: 22px !important;
    width: 24px !important;
    height: 24px !important;
    min-width: 24px;
@@ -103,25 +99,29 @@
    flex-shrink: 0;
 }
 
-/* Hide any raw text nodes inside the links when collapsed, fade/slide them in on hover */
+/* --- THE FIX: Brute-force hide text until hovered --- */
 .f-nav-right .navbar-link {
-   font-size: 0; /* Hides loose text when collapsed */
+   color: transparent !important; /* Hides raw text color completely */
+   text-shadow: none;
 }
 
 .f-nav:hover .f-nav-right .navbar-link {
-   font-size: 14px; /* Restores text size when expanded */
+   color: var(--text-primary) !important; /* Brings text color back on hover */
+   transition: color 0.1s ease 0.1s; /* Slight delay so it appears as it opens */
 }
 
-/* Add spacing between the icon and the text when expanded */
+/* If your text is wrapped in spans or tags, this hides/shows them smoothly */
 .f-nav-right .navbar-link > *:not(.navbar-icon):not(.fa-solid):not(.material-symbols-outlined):not(svg) {
    opacity: 0;
-   transform: translateX(-10px);
-   transition: opacity 0.2s ease, transform 0.2s ease;
+   visibility: hidden;
+   transform: translateX(-15px);
+   transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
    margin-left: 12px;
 }
 
 .f-nav:hover .f-nav-right .navbar-link > *:not(.navbar-icon):not(.fa-solid):not(.material-symbols-outlined):not(svg) {
    opacity: 1;
+   visibility: visible;
    transform: translateX(0);
 }
 
@@ -136,16 +136,12 @@
 }
 
 @keyframes spin {
-   from {
-      transform: rotate(0deg);
-   }
-   to {
-      transform: rotate(360deg);
-   }
+   from { transform: rotate(0deg); }
+   to { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {
    .f-nav-right .navbar-link {
-      font-size: 14px;
+      color: var(--text-primary) !important;
    }
 }
