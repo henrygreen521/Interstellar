@@ -12,10 +12,10 @@
    align-items: flex-start;
 }
 
-/* Constrain the logo/image so it doesn't blow up */
+/* Fix logo size to look proportional and clean */
 .f-nav img, .f-nav .icon img {
-   width: 32px;
-   height: 32px;
+   width: 40px;
+   height: 40px;
    object-fit: contain;
    padding-top: 0;
 }
@@ -31,7 +31,7 @@
    top: 15px;
    bottom: 15px;
    left: 15px;
-   width: 70px; /* Collapsed width */
+   width: 75px; /* Collapsed width */
    height: calc(100vh - 30px);
    padding: 20px 12px;
    box-sizing: border-box;
@@ -48,14 +48,14 @@
 
 /* Expand sidebar width on hover */
 .f-nav:hover {
-   width: 230px; 
+   width: 240px; 
 }
 
 .f-nav .icon {
    position: absolute;
    left: 15px;
    text-transform: uppercase;
-   font-size: 20px;
+   font-size: 18px;
    font-family: "Inter", sans-serif;
    cursor: pointer;
    color: var(--text-primary);
@@ -63,11 +63,12 @@
    font-style: normal;
    text-decoration: none;
    transition: all 0.2s ease;
-   top: 25px;
+   top: 20px;
    white-space: nowrap;
    display: flex;
    align-items: center;
-   gap: 12px;
+   gap: 15px;
+   height: 45px;
 }
 
 .f-nav .icon:hover {
@@ -75,21 +76,35 @@
    font-weight: 800;
 }
 
+/* Completely hide the main title/logo text when collapsed */
+.f-nav .icon span.link-text {
+   opacity: 0;
+   visibility: hidden;
+   transform: translateX(-10px);
+   transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+}
+
+.f-nav:hover .f-nav .icon span.link-text {
+   opacity: 1;
+   visibility: visible;
+   transform: translateX(0);
+}
+
 .f-nav-right {
    position: absolute;
-   top: 85px;
-   left: 10px;
+   top: 90px;
+   left: 12px;
    display: flex;
    flex-direction: column;
-   gap: 10px;
-   width: calc(100% - 20px);
+   gap: 12px;
+   width: calc(100% - 24px);
 }
 
 .f-nav-right .navbar-link {
    display: flex;
    align-items: center;
    height: 45px;
-   padding: 0 10px;
+   padding: 0 8px;
    text-transform: uppercase;
    cursor: pointer;
    color: var(--text-primary);
@@ -103,13 +118,13 @@
    overflow: hidden;
 }
 
-/* Completely hide text labels when collapsed, fade/slide in on hover */
+/* Completely hide link text labels when collapsed, fade/slide in on hover */
 .f-nav-right .navbar-link span.link-text {
    opacity: 0;
    visibility: hidden;
    transform: translateX(-10px);
    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
-   margin-left: 12px;
+   margin-left: 15px;
    font-size: 14px;
 }
 
@@ -124,9 +139,10 @@
    transform: translateX(3px);
 }
 
-.navbar-icon {
-   font-size: 22px;
-   min-width: 26px;
+/* Force icons and fontawesome symbols to stay large and crisp */
+.navbar-icon, .f-nav-right .fa-solid, .f-nav-right .material-symbols-outlined {
+   font-size: 24px !important;
+   min-width: 28px;
    text-align: center;
    display: inline-block;
 }
@@ -134,15 +150,6 @@
 .navbar-link:hover > .settings-icon {
    animation: spin 0.5s;
    animation-timing-function: cubic-bezier(0, 1.04, 0.91, 0.99);
-}
-
-@media (max-width: 768px) {
-   .f-nav-right .navbar-link span.link-text {
-      display: none;
-   }
-   .f-nav-right .fa-solid {
-      display: inline;
-   }
 }
 
 @keyframes spin {
@@ -156,6 +163,6 @@
 
 @media (orientation: portrait) {
    .f-nav img, .f-nav .icon img {
-      height: 32px;
+      height: 40px;
    }
 }
