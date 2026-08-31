@@ -146,27 +146,7 @@
     </div>
   </div>
 
-  <!-- Search Modal -->
-  <div id="search-modal">
-    <div id="search-modal-content">
-      <form id="search-modal-form" method="POST">
-        <input id="search-modal-input" class="truncate" placeholder="Search or enter a URL" type="text" />
-      </form>
-    </div>
-  </div>
-
-  <div class="f-nav">
-    <a href="/" class="icon">
-      <img src="assets/media/icons/cooplogo2.webp" alt="ChickenCoop" />
-    </a>
-    <div class="f-nav-right">
-      <div class="navbar-link" id="search-navbar-icon" style="cursor: pointer;">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <span>Search</span>
-      </div>
-    </div>
-  </div>
-
+  <div class="f-nav"></div>
   <div id="particles-js">
     <script rel="preload" src="https://cdn.jsdelivr.net/particles.js/2.0.0/"></script>
     <div class="main">
@@ -335,54 +315,6 @@
       localStorage.setItem('coop_show_seconds', showSeconds);
       updateClock();
     });
-
-    // 3. Search Modal Functionality
-    const searchIcon = document.getElementById('search-navbar-icon');
-    const searchModal = document.getElementById('search-modal');
-    const searchModalInput = document.getElementById('search-modal-input');
-    const searchModalForm = document.getElementById('search-modal-form');
-    const originalSearchForm = document.getElementById('fv');
-
-    // Open search modal when icon is clicked
-    if (searchIcon) {
-      searchIcon.addEventListener('click', (e) => {
-        e.preventDefault();
-        searchModal.classList.add('active');
-        searchModalInput.focus();
-      });
-    }
-
-    // Close search modal when clicking outside
-    if (searchModal) {
-      searchModal.addEventListener('click', (e) => {
-        if (e.target === searchModal) {
-          searchModal.classList.remove('active');
-        }
-      });
-    }
-
-    // Close modal on Escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && searchModal.classList.contains('active')) {
-        searchModal.classList.remove('active');
-      }
-    });
-
-    // Handle search form submission
-    if (searchModalForm) {
-      searchModalForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const query = searchModalInput.value;
-        // Copy the query to the original form and submit it
-        const originalInput = document.getElementById('input');
-        if (originalInput) {
-          originalInput.value = query;
-          if (originalSearchForm) {
-            originalSearchForm.submit();
-          }
-        }
-      });
-    }
   });
 </script>
   <script>
