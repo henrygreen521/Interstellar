@@ -8,7 +8,8 @@
 
 .f-nav #icon-container {
    display: flex;
-   align-items: center;
+   flex-direction: column;
+   align-items: flex-start;
 }
 
 img {
@@ -23,117 +24,103 @@ img {
    display: inline;
 }
 
+/* Transformed into a Left Sidebar */
 .f-nav {
-   top: 0;
-   letter-spacing: 2px;
-   font-size: 22px;
-   left: 0;
-   right: 0;
-   min-height: 10vh;
-   padding: 0 25px;
+   top: 15px;
+   bottom: 15px;
+   left: 15px;
+   width: 75px; /* Collapsed width showing only icons */
+   height: calc(100vh - 30px);
+   padding: 20px 10px;
    box-sizing: border-box;
    background-color: var(--background-nav);
    box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.5);
    -webkit-backdrop-filter: var(--backdrop-filter);
    backdrop-filter: var(--backdrop-filter);
-   transition: 0.35s ease;
+   transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
    border-radius: 15px;
-   width: fill;
-   margin: 15px;
    z-index: 100;
    position: fixed;
+   overflow: hidden;
 }
 
-.f-nav .icon:hover {
-   transform: translateY(-15%) scale(1.03);
-   font-weight: 800;
+/* Expand sidebar width on hover */
+.f-nav:hover {
+   width: 240px; 
 }
 
 .f-nav .icon {
    position: absolute;
-   float: left;
+   left: 20px;
    text-transform: uppercase;
-   font-size: 30px;
+   font-size: 24px;
    font-family: "Inter", sans-serif;
    cursor: pointer;
    color: var(--text-primary);
    font-weight: 600;
-   margin-left: 5px;
    font-style: normal;
    text-decoration: none;
    transition: all 0.2s ease;
-   height: 5vh;
-   top: 18%;
+   top: 25px;
+   white-space: nowrap;
+}
+
+.f-nav .icon:hover {
+   transform: scale(1.03);
+   font-weight: 800;
 }
 
 .f-nav-right {
    position: absolute;
-   top: 50%;
-   transform: translateY(-50%);
-   text-transform: uppercase;
-   font-size: 18px;
-   color: var(--text-primary);
-   font-weight: 600;
-   right: 2%;
+   top: 90px;
+   left: 12px;
+   display: flex;
+   flex-direction: column;
+   gap: 15px;
+   width: 100%;
 }
 
 .f-nav-right .navbar-link {
-   margin-left: 10px;
+   display: flex;
+   align-items: center;
+   height: 45px;
+   padding: 0 10px;
    text-transform: uppercase;
    cursor: pointer;
    color: var(--text-primary);
    font-weight: 800;
-   right: 2%;
    font-family: "Inter", sans-serif;
    font-style: normal;
    text-decoration: none;
-   transition: all 0.2s ease;
-   transform: translateX(0%);
+   transition: all 0.3s ease;
+   white-space: nowrap;
+   border-radius: 8px;
 }
 
-@media (orientation: portrait) {
-   .f-nav-right .navbar-link {
-      margin-left: 10px;
-      text-transform: uppercase;
-      font-size: 2.5vw;
-      cursor: pointer;
-      color: var(--text-primary);
-      font-weight: 800;
-      right: 2%;
-      font-family: "Inter", sans-serif;
-      font-style: normal;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      transform: translateX(0%);
-   }
-   .f-nav-right .navbar-link:hover {
-      text-transform: uppercase;
-      cursor: pointer;
-      font-weight: 800;
-      font-family: "Inter", sans-serif;
-      font-style: normal;
-      font-size: 3vw;
-      transform: translateX(-20%);
-   }
+/* Hide text labels when collapsed, slide/fade them in smoothly when sidebar is hovered */
+.f-nav-right .navbar-link span.link-text {
+   opacity: 0;
+   transform: translateX(-10px);
+   transition: opacity 0.25s ease, transform 0.25s ease;
+   margin-left: 12px;
+   font-size: 15px;
+}
+
+.f-nav:hover .f-nav-right .navbar-link span.link-text {
+   opacity: 1;
+   transform: translateX(0);
 }
 
 .f-nav-right .navbar-link:hover {
-   text-transform: uppercase;
-   cursor: pointer;
-   font-weight: 800;
-   font-family: "Inter", sans-serif;
-   font-style: normal;
-   font-size: 3vh;
-   transform: translateX(-20%);
+   background-color: rgba(255, 255, 255, 0.08);
+   transform: translateX(4px);
 }
 
 .navbar-icon {
-   margin-right: 5px;
+   font-size: 24px;
+   min-width: 30px;
+   text-align: center;
    transition: all 0.2s ease;
-}
-
-.navbar-link {
-   margin-right: 5px;
 }
 
 .navbar-link:hover > .settings-icon {
@@ -142,14 +129,11 @@ img {
 }
 
 @media (max-width: 768px) {
-   .f-nav-right .navbar-link an {
+   .f-nav-right .navbar-link span.link-text {
       display: none;
    }
    .f-nav-right .fa-solid {
       display: inline;
-   }
-   .f-nav-right .navbar-link {
-      font-size: 4.5vw;
    }
 }
 
