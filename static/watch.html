@@ -510,11 +510,11 @@
 
             let targetUrl = '';
             if (item.type === 'tv') {
-                targetUrl = `https://player.videasy.net/tv/${item.id}/1/1`;
+                targetUrl = `https://CoopWatch.b-cdn.net/tv/${item.id}/1/1`;
                 setupSeasonsAndEpisodes(item, 1);
                 if (episodesPanel) episodesPanel.style.display = 'flex';
             } else {
-                targetUrl = `https://player.videasy.net/movie/${item.id}`;
+                targetUrl = `https://CoopWatchMovie/movie/${item.id}`;
                 if (episodesPanel) episodesPanel.style.display = 'none';
             }
 
