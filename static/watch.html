@@ -624,7 +624,7 @@
                 btn.className = `ep-btn ${ep === 1 ? 'active' : ''}`;
                 btn.innerText = ep;
                 btn.onclick = () => {
-                    const targetUrl = `https://player.videasy.net/tv/${show.id}/${seasonNum}/${ep}`;
+                    const targetUrl = `https://cooptv.b-cdn.net/tv/${show.id}/${seasonNum}/${ep}`;
                     if (frame) frame.src = getProxyUrl(targetUrl);
                     document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
