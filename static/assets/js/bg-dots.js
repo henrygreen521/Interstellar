@@ -1,11 +1,9 @@
 // Lightweight falling white-dots background
 (function () {
-  // Don't run on chat or watch pages (user requested exclusion)
-  const EXCLUDE_PATHS = ['/chat.html', '/watch.html'];
+  // Don't run on chat/watch pages (user requested exclusion)
   try {
-    if (EXCLUDE_PATHS.includes(window.location.pathname)) {
-      // early-exit so those pages keep their original backgrounds
-      // canvas may still be present in the DOM (e.g. chat.html), but we won't draw on it
+    const name = (window.location.pathname.split('/').pop() || '').toLowerCase();
+    if (['chat.html', 'watch.html'].includes(name)) {
       console.log('bg-dots: disabled on', window.location.pathname);
       return;
     }
@@ -29,7 +27,7 @@
     canvas.style.left = 0;
     canvas.style.width = '100vw';
     canvas.style.height = '100vh';
-    canvas.style.zIndex = 0;
+    canvas.style.zIndex = 1; // visible above default panels
     canvas.style.pointerEvents = 'none';
     canvas.setAttribute('aria-hidden', 'true');
     ctx = canvas.getContext('2d');
