@@ -1,5 +1,18 @@
 // Lightweight falling white-dots background
 (function () {
+  // Don't run on chat or watch pages (user requested exclusion)
+  const EXCLUDE_PATHS = ['/chat.html', '/watch.html'];
+  try {
+    if (EXCLUDE_PATHS.includes(window.location.pathname)) {
+      // early-exit so those pages keep their original backgrounds
+      // canvas may still be present in the DOM (e.g. chat.html), but we won't draw on it
+      console.log('bg-dots: disabled on', window.location.pathname);
+      return;
+    }
+  } catch (e) {
+    // If accessing location throws for any reason, fall through and run
+  }
+
   const MAX_PARTICLES = 90; // adjust density
   const SPAWN_PADDING = 60;
   let canvas, ctx, particles = [], w = 0, h = 0, dpr = 1, rafId;
