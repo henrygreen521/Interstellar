@@ -83,74 +83,61 @@ body {
   display: none !important;
 }
 
-/* --- ORGANIC RANDOMIZED FALLING STARFIELD --- */
+/* --- RANDOMIZED GLOWING FALLING STARFIELD (Pure CSS) --- */
 
-/* Base starfield container container */
-.starfield-layer {
+body::before,
+body::after {
+   content: "";
    position: fixed;
-   top: 0;
+   top: -100vh;
    left: 0;
    width: 100%;
-   height: 200vh; /* Double height to allow seamless looping */
+   height: 200vh;
    pointer-events: none;
    z-index: 1;
 }
 
-/* Layer 1: Small, dim, fast-falling background stars */
-.starfield-layer.small {
+/* Star Layer 1: Medium speed, mixed sizes and custom glows */
+body::before {
    background: transparent;
    box-shadow: 
-      120px 80px rgba(255,255,255,0.2), 340px 450px rgba(255,255,255,0.3), 
-      650px 200px rgba(255,255,255,0.15), 900px 780px rgba(255,255,255,0.25), 
-      1150px 300px rgba(255,255,255,0.2), 1400px 950px rgba(255,255,255,0.3),
-      200px 1200px rgba(255,255,255,0.2), 550px 1500px rgba(255,255,255,0.1),
-      800px 1350px rgba(255,255,255,0.3), 1300px 1650px rgba(255,255,255,0.25);
-   width: 2px;
-   height: 2px;
-   border-radius: 50%;
-   animation: fallStars 12s linear infinite;
+      120px 150px 1px 0px rgba(255,255,255,0.4),
+      350px 480px 2px 1px rgba(255,255,255,0.9), /* Bright glowing star */
+      580px 200px 1px 0px rgba(255,255,255,0.3),
+      820px 750px 3px 2px rgba(255,255,255,1),   /* Super bright glowing star */
+      1050px 320px 1px 0px rgba(255,255,255,0.5),
+      250px 950px 2px 0px rgba(255,255,255,0.6),
+      700px 1200px 1px 0px rgba(255,255,255,0.2),
+      950px 1500px 3px 1px rgba(255,255,255,0.8),
+      150px 1700px 1px 0px rgba(255,255,255,0.4),
+      480px 1900px 2px 1px rgba(255,255,255,0.7);
+   animation: fallStars 16s linear infinite;
 }
 
-/* Layer 2: Medium-sized stars with moderate brightness */
-.starfield-layer.medium {
+/* Star Layer 2: Slower speed, offset positions for depth, dim & bright mix */
+body::after {
    background: transparent;
    box-shadow: 
-      80px 300px rgba(255,255,255,0.5), 450px 120px rgba(255,255,255,0.4), 
-      720px 850px rgba(255,255,255,0.6), 1050px 500px rgba(255,255,255,0.45), 
-      1350px 150px rgba(255,255,255,0.5), 300px 980px rgba(255,255,255,0.4),
-      600px 1400px rgba(255,255,255,0.6), 950px 1700px rgba(255,255,255,0.35),
-      1200px 1250px rgba(255,255,255,0.5);
-   width: 2.5px;
-   height: 2.5px;
-   border-radius: 50%;
-   animation: fallStars 18s linear infinite;
+      200px 300px 2px 0px rgba(255,255,255,0.7),
+      450px 100px 1px 0px rgba(255,255,255,0.3),
+      750px 600px 3px 2px rgba(255,255,255,0.95), /* Bright glowing star */
+      1100px 850px 1px 0px rgba(255,255,255,0.4),
+      300px 1150px 2px 1px rgba(255,255,255,0.5),
+      600px 1450px 1px 0px rgba(255,255,255,0.2),
+      900px 1750px 3px 1px rgba(255,255,255,0.85),
+      100px 1950px 1px 0px rgba(255,255,255,0.6);
+   animation: fallStars 24s linear infinite;
 }
 
-/* Layer 3: Large, bright, glowing stars that fall slower for depth */
-.starfield-layer.large {
-   background: transparent;
-   box-shadow: 
-      250px 150px #fff, 0 0 6px #fff,
-      780px 600px #fff, 0 0 8px rgba(255,255,255,0.9),
-      1250px 900px #fff, 0 0 5px #fff,
-      500px 1300px #fff, 0 0 7px rgba(255,255,255,0.8),
-      1000px 1600px #fff, 0 0 9px #fff;
-   width: 3.5px;
-   height: 3.5px;
-   border-radius: 50%;
-   animation: fallStars 26s linear infinite;
-}
-
-/* Continuous downward scroll loop */
 @keyframes fallStars {
    0% {
       transform: translateY(0);
    }
    100% {
-      transform: translateY(-100vh);
+      transform: translateY(100vh);
    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .starfield-layer { animation: none !important; }
+  body::before, body::after { animation: none !important; }
 }
