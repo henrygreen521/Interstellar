@@ -51,12 +51,13 @@
 body {
    font-family: "Inter", sans-serif;
    text-decoration: none;
-   background: #000; /* solid black background as a safe fallback */
+   background: #000; /* solid black background */
    height: 100%;
    background-position: center;
    background-repeat: no-repeat;
    background-size: cover;
    background-attachment: fixed;
+   overflow-x: hidden;
 }
 
 ::placeholder {
@@ -77,39 +78,53 @@ body {
    z-index: 99;
 }
 
-/* Hide the canvas-based animation to avoid clashes with CSS stars */
+/* Hide canvas animation */
 #bg-dots-canvas {
   display: none !important;
 }
 
-/* Gentle, static star background (no motion) - made intentionally subtle to avoid seizures */
+/* Falling & Fading White Dots Background */
 body::before,
 body::after {
   content: "";
   position: fixed;
-  inset: 0;
+  inset: -50px; /* extends slightly beyond screen to prevent edge popping */
   pointer-events: none;
   background-repeat: repeat;
-  will-change: auto;
-  z-index: 1; /* sits above body background but below main UI (main has z-index:99) */
+  z-index: 1; /* sits above body background, below UI */
 }
 
-/* Small, low-contrast dots with low opacity; no animation */
+/* Layer 1: Smaller, denser, faster falling stars */
 body::before {
-  background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
-  background-size: 12px 12px; /* larger spacing -> less dense */
-  opacity: 0.18; /* very low opacity */
-  filter: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.8) 1px, transparent 1px);
+  background-size: 70px 70px;
+  animation: fallAndFade 8s linear infinite;
+  opacity: 0.8;
 }
 
+/* Layer 2: Larger, sparser, slower falling stars for depth */
 body::after {
-  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 24px 24px; /* sparser secondary layer */
-  opacity: 0.12;
-  filter: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.5) 1.5px, transparent 1.5px);
+  background-size: 120px 120px;
+  animation: fallAndFade 14s linear infinite;
+  opacity: 0.5;
 }
 
-/* Remove any star animation keyframes (no-op) */
+/* Smooth continuous downward loop */
+@keyframes fallAndFade {
+  0% {
+     background-position: 0 0;
+     opacity: 0.2;
+  }
+  50% {
+     opacity: 0.9;
+  }
+  100% {
+     background-position: 0 600px;
+     opacity: 0.2;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body::before, body::after { animation: none !important; }
 }
