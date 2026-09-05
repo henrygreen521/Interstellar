@@ -3,7 +3,7 @@
 
 :root {
    /* Background Variables */
-   --background-image: url("/./assets/media/background/full-main.png"); /* Background Image */
+   --background-image: none; /* removed full-main.png to use animated background */
    --backdrop-filter: blur(10px) brightness(80%); /* Nav Backdrop filter */
    --background-nav: rgba(255, 255, 255, 0.02); /* Nav Background */
    --background-color: #222; /* Main Background Color */
@@ -51,7 +51,7 @@
 body {
    font-family: "Inter", sans-serif;
    text-decoration: none;
-   background: var(--background-image);
+   background: #000; /* solid black background for the falling dots animation */
    height: 100%;
    background-position: center;
    background-repeat: no-repeat;
@@ -75,4 +75,15 @@ body {
    top: 0%;
    position: absolute;
    z-index: 99;
+}
+
+/* Canvas background layer styling (kept here so pages that import global.css automatically get correct stacking) */
+#bg-dots-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0; /* behind .main (z-index:99) but above the body background */
+  pointer-events: none; /* don't block clicks */
 }
