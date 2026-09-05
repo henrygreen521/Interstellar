@@ -51,7 +51,7 @@
 body {
    font-family: "Inter", sans-serif;
    text-decoration: none;
-   background: #000; /* solid black background for the falling dots animation */
+   background: #000; /* solid black background as a safe fallback */
    height: 100%;
    background-position: center;
    background-repeat: no-repeat;
@@ -77,19 +77,12 @@ body {
    z-index: 99;
 }
 
-/* Canvas background layer styling (kept here so pages that import global.css automatically get correct stacking) */
+/* Hide the canvas-based animation to avoid clashes with CSS stars */
 #bg-dots-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 0; /* behind .main (z-index:99) but above the body background */
-  pointer-events: none; /* don't block clicks */
-  display: none !important; /* hide the canvas-based animation to avoid clashes with CSS stars */
+  display: none !important;
 }
 
-/* Simple CSS stars implemented using body pseudo-elements for maximum coverage */
+/* Gentle, static star background (no motion) - made intentionally subtle to avoid seizures */
 body::before,
 body::after {
   content: "";
@@ -97,27 +90,26 @@ body::after {
   inset: 0;
   pointer-events: none;
   background-repeat: repeat;
-  will-change: background-position;
-  z-index: 1; /* sits above background but below main UI (main has z-index:99) */
+  will-change: auto;
+  z-index: 1; /* sits above body background but below main UI (main has z-index:99) */
 }
 
+/* Small, low-contrast dots with low opacity; no animation */
 body::before {
-  background-image: radial-gradient(#fff 1px, transparent 1px);
-  background-size: 3px 3px;
-  opacity: 0.65;
-  filter: drop-shadow(0 0 4px rgba(255,255,255,0.06));
-  animation: starsMove 60s linear infinite;
+  background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 12px 12px; /* larger spacing -> less dense */
+  opacity: 0.18; /* very low opacity */
+  filter: none;
 }
 
 body::after {
-  background-image: radial-gradient(#fff 1px, transparent 1px);
-  background-size: 6px 6px;
-  opacity: 0.28;
-  filter: blur(1px);
-  animation: starsMove 120s linear infinite reverse;
+  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 24px 24px; /* sparser secondary layer */
+  opacity: 0.12;
+  filter: none;
 }
 
-@keyframes starsMove {
-  from { background-position: 0 0; }
-  to   { background-position: 2000px 2000px; }
+/* Remove any star animation keyframes (no-op) */
+@media (prefers-reduced-motion: reduce) {
+  body::before, body::after { animation: none !important; }
 }
