@@ -132,6 +132,7 @@
 </head>
 
 <body class="center" onload="SplashT">
+  <canvas id="bg-dots-canvas" aria-hidden="true"></canvas>
   <!-- Glitch Intro Screen -->
   <div id="glitch-intro-screen"></div>
 
@@ -161,6 +162,7 @@
   </div>
   <script src="/assets/js/mg-pxy.js"></script>
   <script src="assets/js/index-3.js"></script>
+  <script src="/assets/js/bg-dots.js"></script>
   <script src="/assets/js/h1.js"></script>
   <script src="./assets/mathematics/bundle.js?v=2025-04-15"></script>
   <script src="./assets/mathematics/config.js?v=2025-04-15"></script>
@@ -278,7 +280,7 @@
         <span style="font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;">Seconds</span>
         <label style="position: relative; display: inline-block; width: 32px; height: 18px; cursor: pointer;">
           <input type="checkbox" id="coop-sec-checkbox" ${showSeconds ? 'checked' : ''} style="opacity: 0; width: 0; height: 0;">
-          <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .3s; border-radius: 18px; border: 1px solid rgba(255,255,255,[...]
+          <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .3s; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2);"></span>
         </label>
       </div>
     `;
