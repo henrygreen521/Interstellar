@@ -10,7 +10,6 @@
   <title id="t">Games - ChickenCoop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <!-- Core Stylesheets -->
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/container.css?v=2" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
@@ -87,6 +86,14 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
+      min-height: 400px;
+    }
+
+    .apps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
     }
   </style>
 
@@ -107,7 +114,7 @@
       <option value="2P">&#77;&#117;&#108;&#116;&#105;&#112;&#108;&#97;&#121;&#101;&#114;</option>
       <option value="sports">&#83;&#112;&#111;&#114;&#116;&#115;</option>
       <option value="flash">&#70;&#108;&#97;&#115;&#104;</option>
-      <option value="emu">&#69;&#109;&#117;&#108;&#97;&#116;&#111;&#114;</option>
+      <option value="emu">&#69;&#109;&#117;&#108;&#116;&#105;&#112;&#108;&#114;</option>
       <option value="local">&#76;&#111;&#99;&#97;&#108;</option>
     </select>
   </div>
@@ -117,12 +124,19 @@
     <div class="apps"></div>
   </div>
 
-  <!-- Scripts -->
   <script src="/assets/js/c1.js?v=001"></script>
   <script src="./assets/mathematics/bundle.js?v=2025-04-15"></script>
   <script src="./assets/mathematics/config.js?v=2025-04-15"></script>
   <script src="/assets/mathematics/gn-math.js"></script>
   <script src="/assets/js/m1.js"></script>
+
+  <script>
+    // Quick diagnostic check to see what failed or if elements are missing
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log("Apps container exists:", !!document.querySelector('.apps'));
+      console.log("c1.js loaded status check complete.");
+    });
+  </script>
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
   <script>
