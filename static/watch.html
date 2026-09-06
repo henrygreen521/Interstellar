@@ -624,7 +624,7 @@
                 btn.className = `ep-btn ${ep === 1 ? 'active' : ''}`;
                 btn.innerText = ep;
                 btn.onclick = () => {
-                    const targetUrl = `https://cooptv.b-cdn.net/tv/${show.id}/${seasonNum}/${ep}`;
+                    const targetUrl = `https://player.videasy.net/tv/${show.id}/${seasonNum}/${ep}`;
                     if (frame) frame.src = getProxyUrl(targetUrl);
                     document.querySelectorAll('.ep-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -708,7 +708,15 @@
                 resultsList.appendChild(div);
             });
         }
+    </script>
 
+    <!-- Missing Proxy Scripts Added Here -->
+    <script src="/assets/js/mg-pxy.js"></script>
+    <script src="/assets/js/index-3.js"></script>
+    <script src="/assets/mathematics/bundle.js?v=2025-04-15"></script>
+    <script src="/assets/mathematics/config.js?v=2025-04-15"></script>
+    <script src="/assets/js/m1.js"></script>
+    <script>
         // Initialize view
         renderLibrary();
     </script>
