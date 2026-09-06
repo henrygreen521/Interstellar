@@ -9,15 +9,18 @@
   <link rel="shortcut icon" id="tab-favicon" href="favicon.png" />
   <title id="t">Home</title>
   
-  <!-- Fallback/Import web-safe futuristic fonts matching Anurati style -->
-  <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&display=swap" rel="stylesheet">
-  
+  <!-- External Stylesheets loaded FIRST -->
+  <link rel="stylesheet" href="/assets/css/global.css?v=6" />
+  <link rel="stylesheet" href="/assets/css/h.css?v=01" />
+  <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
-    /* --- IMPORT ANURATI FONT (with local fallback to web font) --- */
+    /* --- IMPORT ANURATI FONT --- */
     @font-face {
       font-family: 'Anurati';
-      src: url('assets/media/fonts/anurati-regular.otf') format('opentype'),
-           url('./assets/media/fonts/anurati-regular.ttf') format('truetype');
+      src: url('/assets/media/fonts/anurati-regular.otf') format('opentype'),
+           url('/assets/media/fonts/anurati-regular.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
     }
@@ -130,9 +133,9 @@
       font-weight: 600;
     }
 
-    /* Custom style for the Anurati home page title (with Syncopate fallback if local file fails) */
-    h1.title.anurati-title {
-      font-family: 'Anurati', 'Syncopate', sans-serif !important;
+    /* Custom style placed at the bottom of HEAD so it overrides external CSS files */
+    h1.title, h1.title.anurati-title {
+      font-family: 'Anurati', sans-serif !important;
       font-size: 3rem !important;
       color: #ffffff !important;
       letter-spacing: 4px !important;
@@ -142,11 +145,6 @@
       visibility: hidden;
     }
   </style>
-
-  <link rel="stylesheet" href="/assets/css/global.css?v=6" />
-  <link rel="stylesheet" href="/assets/css/h.css?v=01" />
-  <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body class="center" onload="SplashT">
