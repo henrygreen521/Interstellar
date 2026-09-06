@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    /* --- iOS Liquid Glass Styling Overrides --- */
+    /* --- iOS Liquid Glass Theme --- */
     body {
       background-color: #0b0b0b;
       color: #ffffff;
@@ -47,19 +47,21 @@
     .input-c input, .input-c select {
       background: linear-gradient(
         135deg, 
-        rgba(255, 255, 255, 0.1) 0%, 
-        rgba(255, 255, 255, 0.03) 100%
-      ), rgba(20, 20, 20, 0.5);
+        rgba(255, 255, 255, 0.12) 0%, 
+        rgba(255, 255, 255, 0.03) 50%, 
+        rgba(255, 255, 255, 0.06) 100%
+      ), rgba(20, 20, 20, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.15);
       padding: 12px 18px;
       border-radius: 16px;
       color: #fff;
       font-size: 15px;
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      backdrop-filter: blur(25px) saturate(210%);
+      -webkit-backdrop-filter: blur(25px) saturate(210%);
       box-shadow: 
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 
-        0 10px 30px rgba(0, 0, 0, 0.4);
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 
+        inset 0 -1px 0 0 rgba(255, 255, 255, 0.05),
+        0 15px 35px rgba(0, 0, 0, 0.4);
       outline: none;
       transition: all 0.3s ease;
     }
@@ -73,7 +75,7 @@
       box-shadow: 
         inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 
         0 0 15px rgba(255, 87, 34, 0.3),
-        0 10px 30px rgba(0, 0, 0, 0.4);
+        0 15px 35px rgba(0, 0, 0, 0.4);
     }
 
     .input-c select option {
@@ -81,7 +83,6 @@
       color: #fff;
     }
 
-    /* Main Container for Library */
     .games-main-wrapper {
       max-width: 1200px;
       margin: 0 auto;
@@ -97,29 +98,32 @@
 
 <body>
   <div class="f-nav"></div>
-  
+
   <div class="input-c">
-    <input type="text" id="search" placeholder="Search math games..." />
-    <select id="category" name="category">
-      <option value="all">All Games</option>
-      <option value="math">Math</option>
-      <option value="puzzle">Puzzle</option>
-      <option value="strategy">Strategy</option>
+    <input type="text" id="search" onkeyup="bar()" placeholder="Search..." />
+    <select id="category" name="category" onchange="category()">
+      <option value="all">&#65;&#108;&#108;</option>
+      <option value="android">&#65;&#110;&#100;&#114;&#111;&#105;&#100;&#32;&#69;&#109;&#117;&#108;&#97;&#116;&#111;&#114;</option>
+      <option value="2P">&#77;&#117;&#108;&#116;&#105;&#112;&#108;&#97;&#121;&#101;&#114;</option>
+      <option value="sports">&#83;&#112;&#111;&#114;&#116;&#115;</option>
+      <option value="flash">&#70;&#108;&#97;&#115;&#104;</option>
+      <option value="emu">&#69;&#109;&#117;&#108;&#97;&#116;&#111;&#114;</option>
+      <option value="local">&#76;&#111;&#99;&#97;&#108;</option>
     </select>
   </div>
 
   <div class="games-main-wrapper">
     <div class="pinned"></div>
-    <!-- Replaced dead link grid with native gn-math layout container -->
-    <div class="apps" id="gn-math-container"></div>
+    <div class="apps"></div>
   </div>
 
   <!-- Scripts -->
+  <script src="/assets/js/c1.js?v=001"></script>
   <script src="./assets/mathematics/bundle.js?v=2025-04-15"></script>
   <script src="./assets/mathematics/config.js?v=2025-04-15"></script>
   <script src="/assets/mathematics/gn-math.js"></script>
   <script src="/assets/js/m1.js"></script>
-  
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
