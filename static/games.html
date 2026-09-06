@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Original Navbar & Proxy Scripts in Head -->
+  <!-- Core Proxy & Navigation Scripts -->
   <script src="/assets/js/mg-pxy.js"></script>
   <script src="/assets/js/index-3.js"></script>
 
@@ -185,7 +185,7 @@
 </head>
 
 <body>
-  <!-- Restored Navigation Container -->
+  <!-- Navigation Container -->
   <div class="f-nav"></div>
 
   <!-- Search & Category Filters -->
@@ -219,12 +219,12 @@
     </div>
   </div>
 
-  <!-- Restored Original Bottom Script -->
+  <!-- Bottom Script -->
   <script src="/assets/js/m1.js"></script>
 
-  <!-- Native Game List Generator Script -->
+  <!-- Native Game List Generator & Proxy Handler -->
   <script>
-    const gnBaseUrl = "https://genizymath.github.io/games/";
+    const targetBaseUrl = "https://genizymath.github.io/games/";
     const gnGamesList = [
       { title: "Drive Mad", slug: "drive-mad", category: "math" },
       { title: "Monster Tracks", slug: "monster-tracks", category: "math" },
@@ -276,7 +276,19 @@
 
     function openGame(slug, title) {
       document.getElementById('modal-title').textContent = title;
-      iframe.src = gnBaseUrl + slug + "/";
+      
+      const rawUrl = targetBaseUrl + slug + "/";
+      
+      // Routes through your proxy handler if available, else falls back cleanly
+      if (typeof window.processUrl === 'function') {
+        iframe.src = window.processUrl(rawUrl);
+      } else if (window.location.pathname.includes('/service/')) {
+        // Standard Ultraviolet path encoding fallback
+        iframe.src = window.location.origin + '/service/' + encodeURIComponent(rawUrl);
+      } else {
+        iframe.src = rawUrl;
+      }
+
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
