@@ -10,28 +10,22 @@
   <title id="t">Games - ChickenCoop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <!-- Core Stylesheets -->
+  <!-- Original Stylesheets -->
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/container.css?v=2" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+  <!-- Original Navbar & Proxy Scripts in Head -->
+  <script src="/assets/js/mg-pxy.js"></script>
+  <script src="/assets/js/index-3.js"></script>
+
   <style>
-    /* --- iOS Liquid Glass Theme --- */
+    /* --- iOS Liquid Glass Game Grid & Modal Styling --- */
     body {
       background-color: #0b0b0b;
       color: #ffffff;
       font-family: inherit;
-    }
-
-    .f-nav {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      backdrop-filter: blur(25px) saturate(210%);
-      -webkit-backdrop-filter: blur(25px) saturate(210%);
-      background: rgba(20, 20, 20, 0.6);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .input-c {
@@ -65,6 +59,8 @@
       transition: all 0.3s ease;
     }
 
+    .input-c input { flex: 1; }
+
     .input-c input:focus, .input-c select:focus {
       border-color: #ff5722;
       box-shadow: 0 0 15px rgba(255, 87, 34, 0.3), 0 15px 35px rgba(0, 0, 0, 0.4);
@@ -86,7 +82,6 @@
       justify-content: center;
     }
 
-    /* --- Liquid Glass Game Cards --- */
     .game-card {
       width: 180px;
       border-radius: 20px;
@@ -120,13 +115,12 @@
       font-size: 15px;
       margin: 0;
       color: #fff;
-      font-family: inherit;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* --- Cinematic In-Page Player --- */
+    /* --- Cinematic In-Page Player Modal --- */
     #game-modal {
       display: none;
       position: fixed;
@@ -139,14 +133,9 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      opacity: 0;
-      transition: opacity 0.3s ease;
     }
 
-    #game-modal.active {
-      display: flex;
-      opacity: 1;
-    }
+    #game-modal.active { display: flex; }
 
     .modal-controls {
       width: 90%;
@@ -157,12 +146,7 @@
       margin-bottom: 15px;
     }
 
-    .modal-controls h2 {
-      margin: 0;
-      color: #fff;
-      font-size: 22px;
-      letter-spacing: 1px;
-    }
+    .modal-controls h2 { margin: 0; color: #fff; font-size: 22px; }
 
     .modal-controls button {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
@@ -171,10 +155,9 @@
       padding: 10px 24px;
       border-radius: 14px;
       cursor: pointer;
-      backdrop-filter: blur(10px);
-      transition: 0.3s;
       font-weight: bold;
       margin-left: 10px;
+      transition: 0.3s;
     }
 
     .modal-controls button:hover {
@@ -189,7 +172,6 @@
       height: 80vh;
       border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
       overflow: hidden;
       background: #000;
     }
@@ -203,12 +185,13 @@
 </head>
 
 <body>
+  <!-- Restored Navigation Container -->
   <div class="f-nav"></div>
 
   <!-- Search & Category Filters -->
   <div class="input-c">
     <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
-    <select id="category" onchange="filterGames()">
+    <select id="category" name="category" onchange="filterGames()">
       <option value="all">All Games</option>
       <option value="math">Trending</option>
       <option value="2P">Multiplayer</option>
@@ -218,16 +201,17 @@
   </div>
 
   <div class="games-main-wrapper">
+    <div class="pinned"></div>
     <div class="apps" id="apps-container"></div>
   </div>
 
-  <!-- The Cinematic Liquid Glass Player Overlay -->
+  <!-- Cinematic Game Player Modal -->
   <div id="game-modal">
     <div class="modal-controls">
       <h2 id="modal-title">Game Title</h2>
       <div>
         <button onclick="toggleFullscreen()">Fullscreen</button>
-        <button onclick="closeGame()" style="background: rgba(255, 59, 48, 0.2); border-color: #ff3b30; color: #ff3b30;">Close Game</button>
+        <button onclick="closeGame()" style="background: rgba(255, 59, 48, 0.2); border-color: #ff3b30; color: #ff3b30;">Close</button>
       </div>
     </div>
     <div class="modal-iframe-container">
@@ -235,12 +219,12 @@
     </div>
   </div>
 
-  <!-- Build the Native Grid from GN-Math Endpoints -->
-  <script>
-    // The base URL where GN-Math hosts individual game files
-    const gnBaseUrl = "https://genizymath.github.io/games/";
+  <!-- Restored Original Bottom Script -->
+  <script src="/assets/js/m1.js"></script>
 
-    // Your curated list of games. You can add as many as you want here!
+  <!-- Native Game List Generator Script -->
+  <script>
+    const gnBaseUrl = "https://genizymath.github.io/games/";
     const gnGamesList = [
       { title: "Drive Mad", slug: "drive-mad", category: "math" },
       { title: "Monster Tracks", slug: "monster-tracks", category: "math" },
@@ -258,10 +242,8 @@
 
     const appsContainer = document.getElementById('apps-container');
 
-    // Renders the game cards natively into the Liquid Glass UI
     function renderGrid(filterCat = "all", searchQuery = "") {
       appsContainer.innerHTML = "";
-      
       gnGamesList.forEach(game => {
         const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCat = filterCat === "all" || game.category === filterCat;
@@ -269,49 +251,39 @@
         if (matchesSearch && matchesCat) {
           const card = document.createElement('div');
           card.className = 'game-card';
-          
-          // Grabs the image directly from GN-math or falls back to a placeholder
           const imgUrl = `https://genizymath.github.io/images/${game.slug}.png`;
           
           card.innerHTML = `
             <img src="${imgUrl}" alt="${game.title}" onerror="this.src='https://via.placeholder.com/150/1a1a1a/ff5722?text=Game'">
             <h3>${game.title}</h3>
           `;
-          
-          // Triggers the cinematic overlay
           card.onclick = () => openGame(game.slug, game.title);
           appsContainer.appendChild(card);
         }
       });
     }
 
-    // Runs once when the page loads
     renderGrid();
 
-    // Handles the search bar and category dropdown
     function filterGames() {
       const q = document.getElementById('search').value;
       const cat = document.getElementById('category').value;
       renderGrid(cat, q);
     }
 
-    // --- Cinematic Player Functions ---
     const modal = document.getElementById('game-modal');
     const iframe = document.getElementById('game-frame');
 
     function openGame(slug, title) {
       document.getElementById('modal-title').textContent = title;
-      
-      // Points the iframe directly to the GN-Math endpoint for that specific game
-      iframe.src = gnBaseUrl + slug + "/"; 
-      
+      iframe.src = gnBaseUrl + slug + "/";
       modal.classList.add('active');
-      document.body.style.overflow = 'hidden'; // Prevents scrolling behind the game
+      document.body.style.overflow = 'hidden';
     }
 
     function closeGame() {
       modal.classList.remove('active');
-      iframe.src = ""; // Instantly kills the game audio/process
+      iframe.src = "";
       document.body.style.overflow = 'auto';
     }
 
@@ -322,6 +294,15 @@
         iframe.webkitRequestFullscreen();
       }
     }
+  </script>
+
+  <!-- Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag("js", new Date());
+    gtag("config", "G-WKJQ5QHQTJ");
   </script>
 </body>
 </html>
