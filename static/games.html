@@ -3,27 +3,17 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="referrer" content="no-referrer" />
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <link rel="shortcut icon" id="tab-favicon" href="favicon.png" />
-  <title id="t">Games - ChickenCoop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games - ChickenCoop</title>
   
-  <link rel="stylesheet" href="/assets/css/global.css?v=6" />
-  <link rel="stylesheet" href="/assets/css/container.css?v=2" />
-  <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <script src="/assets/js/mg-pxy.js"></script>
-  <script src="/assets/js/index-3.js"></script>
-
   <style>
-    /* --- iOS Liquid Glass Game Grid & Modal Styling --- */
+    /* --- iOS Liquid Glass Theme --- */
     body {
       background-color: #0b0b0b;
       color: #ffffff;
-      font-family: inherit;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
     .f-nav {
@@ -34,6 +24,9 @@
       -webkit-backdrop-filter: blur(25px) saturate(210%);
       background: rgba(20, 20, 20, 0.6);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px 30px;
+      font-weight: bold;
+      font-size: 18px;
     }
 
     .input-c {
@@ -193,24 +186,26 @@
 </head>
 
 <body>
-  <div class="f-nav"></div>
+  <!-- Simple Header -->
+  <div class="f-nav">ChickenCoop Games</div>
 
+  <!-- Search & Category Filters -->
   <div class="input-c">
     <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
     <select id="category" name="category" onchange="filterGames()">
       <option value="all">All Games</option>
+      <option value="flash">Classics / Flash</option>
       <option value="math">Trending</option>
       <option value="2P">Multiplayer</option>
-      <option value="flash">Classics</option>
       <option value="sports">Sports</option>
     </select>
   </div>
 
   <div class="games-main-wrapper">
-    <div class="pinned"></div>
     <div class="apps" id="apps-container"></div>
   </div>
 
+  <!-- Cinematic Game Player Modal -->
   <div id="game-modal">
     <div class="modal-controls">
       <h2 id="modal-title">Game Title</h2>
@@ -224,10 +219,9 @@
     </div>
   </div>
 
-  <script src="/assets/js/m1.js"></script>
-
+  <!-- Pure Local Game Grid & Modal Logic -->
   <script>
-    // Easily add your games here! Just fill in the title, folder slug, and category.
+    // Add your games here! Replace "insert-game-folder-name" with your actual folders in /games/
     const gnGamesList = [
       { title: "The Binding of Isaac", slug: "binding-of-isaac", category: "flash" },
       { title: "Game 1", slug: "insert-game-folder-name", category: "math" },
@@ -247,7 +241,7 @@
     function renderGrid(filterCat = "all", searchQuery = "") {
       appsContainer.innerHTML = "";
       gnGamesList.forEach(game => {
-        // Skip unconfigured placeholder slots so they don't clutter the page
+        // Skip unconfigured placeholder slots
         if (game.slug === "insert-game-folder-name") return;
 
         const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -281,6 +275,7 @@
 
     function openGame(slug, title) {
       document.getElementById('modal-title').textContent = title;
+      // Direct local path to the game folder's index.html
       iframe.src = `/games/${slug}/index.html`;
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -299,14 +294,6 @@
         iframe.webkitRequestFullscreen();
       }
     }
-  </script>
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag("js", new Date());
-    gtag("config", "G-WKJQ5QHQTJ");
   </script>
 </body>
 </html>
