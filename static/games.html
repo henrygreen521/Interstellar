@@ -10,13 +10,11 @@
   <title id="t">Games - ChickenCoop</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <!-- Original Stylesheets -->
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/container.css?v=2" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Original Navbar & Proxy Scripts -->
   <script src="/assets/js/mg-pxy.js"></script>
   <script src="/assets/js/index-3.js"></script>
 
@@ -195,10 +193,8 @@
 </head>
 
 <body>
-  <!-- Navigation Container -->
   <div class="f-nav"></div>
 
-  <!-- Search & Category Filters -->
   <div class="input-c">
     <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
     <select id="category" name="category" onchange="filterGames()">
@@ -215,7 +211,6 @@
     <div class="apps" id="apps-container"></div>
   </div>
 
-  <!-- Cinematic Game Player Modal -->
   <div id="game-modal">
     <div class="modal-controls">
       <h2 id="modal-title">Game Title</h2>
@@ -229,15 +224,22 @@
     </div>
   </div>
 
-  <!-- Navbar Script -->
   <script src="/assets/js/m1.js"></script>
 
-  <!-- Local Game Grid & Modal Logic -->
   <script>
+    // Easily add your games here! Just fill in the title, folder slug, and category.
     const gnGamesList = [
-      { title: "Drive Mad", slug: "drive-mad", category: "math" },
-      { title: "Slope", slug: "slope", category: "math" }
-      // Add more items here matching your local /games/[slug]/ folders
+      { title: "The Binding of Isaac", slug: "binding-of-isaac", category: "flash" },
+      { title: "Game 1", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 2", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 3", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 4", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 5", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 6", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 7", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 8", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 9", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 10", slug: "insert-game-folder-name", category: "math" }
     ];
 
     const appsContainer = document.getElementById('apps-container');
@@ -245,6 +247,9 @@
     function renderGrid(filterCat = "all", searchQuery = "") {
       appsContainer.innerHTML = "";
       gnGamesList.forEach(game => {
+        // Skip unconfigured placeholder slots so they don't clutter the page
+        if (game.slug === "insert-game-folder-name") return;
+
         const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCat = filterCat === "all" || game.category === filterCat;
         
@@ -276,7 +281,6 @@
 
     function openGame(slug, title) {
       document.getElementById('modal-title').textContent = title;
-      // Points directly to the local game index inside your repo
       iframe.src = `/games/${slug}/index.html`;
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -297,7 +301,6 @@
     }
   </script>
 
-  <!-- Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
