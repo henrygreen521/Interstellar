@@ -9,11 +9,15 @@
   <link rel="shortcut icon" id="tab-favicon" href="favicon.png" />
   <title id="t">Home</title>
   
+  <!-- Fallback/Import web-safe futuristic fonts matching Anurati style -->
+  <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&display=swap" rel="stylesheet">
+  
   <style>
-    /* --- IMPORT ANURATI FONT --- */
+    /* --- IMPORT ANURATI FONT (with local fallback to web font) --- */
     @font-face {
       font-family: 'Anurati';
-      src: url('assets/media/fonts/Anurati-Regular.otf') format('opentype');
+      src: url('assets/media/fonts/anurati-regular.otf') format('opentype'),
+           url('./assets/media/fonts/anurati-regular.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
     }
@@ -126,12 +130,12 @@
       font-weight: 600;
     }
 
-    /* Custom style for the Anurati home page title */
+    /* Custom style for the Anurati home page title (with Syncopate fallback if local file fails) */
     h1.title.anurati-title {
-      font-family: 'Anurati', sans-serif !important;
+      font-family: 'Anurati', 'Syncopate', sans-serif !important;
       font-size: 3rem !important;
       color: #ffffff !important;
-      letter-spacing: 3px !important;
+      letter-spacing: 4px !important;
     }
 
     #splash {
@@ -150,7 +154,7 @@
   <!-- Glitch Intro Screen -->
   <div id="glitch-intro-screen"></div>
 
-  <!-- Interactive Mockup Preload Overlay (Keeps cooplogo.webp) -->
+  <!-- Interactive Mockup Preload Overlay -->
   <div id="coop-preload-overlay">
     <div class="splash-content">
       <img src="assets/media/icons/cooplogo2.webp" alt="ChickenCoop Logo" class="preload-logo" id="preload-logo-img" />
@@ -235,7 +239,7 @@
     }
     requestAnimationFrame(updateProgress);
 
-    // 1. Branding & Cloak Protection Script (Updated to lock in Anurati text title instead of overwriting with image)
+    // 1. Branding & Cloak Protection Script (Keeps title locked to CHICKEN COOP)
     const text = 'welcome to the coop brothers 🥶🥶';
     const logoHtml = 'CHICKEN COOP';
     const faviconUrl = 'assets/media/favicon/cooplogo.png';
