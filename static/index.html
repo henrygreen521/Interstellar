@@ -13,7 +13,7 @@
     /* --- IMPORT ANURATI FONT --- */
     @font-face {
       font-family: 'Anurati';
-      src: url('assets/media/fonts/anurati-regular.otf') format('opentype'); /* Adjust path if needed */
+      src: url('assets/media/fonts/Anurati-Regular.otf') format('opentype');
       font-weight: normal;
       font-style: normal;
     }
@@ -71,7 +71,6 @@
       width: 100vw;
       height: 100vh;
       background-color: #000000;
-      /* Smooth 15% gradient blend band for a soft edge effect */
       background-image: linear-gradient(
         to right, 
         #ff5722 0%, 
@@ -96,13 +95,10 @@
       align-items: center;
       gap: 20px;
     }
-    .preload-logo-text {
-      font-family: 'Anurati', sans-serif;
-      font-size: 2.2rem;
-      color: #ffffff;
-      letter-spacing: 2px;
-      text-align: center;
-      /* Dynamic glow tracks the edge position via JavaScript */
+    .preload-logo {
+      max-height: 80px;
+      width: auto;
+      object-fit: contain;
       filter: var(--logo-glow, drop-shadow(0 0 20px rgba(255, 87, 34, 0.7)));
       transition: filter 0.05s linear;
     }
@@ -130,6 +126,14 @@
       font-weight: 600;
     }
 
+    /* Custom style for the Anurati home page title */
+    h1.title.anurati-title {
+      font-family: 'Anurati', sans-serif !important;
+      font-size: 3rem !important;
+      color: #ffffff !important;
+      letter-spacing: 3px !important;
+    }
+
     #splash {
       visibility: hidden;
     }
@@ -146,10 +150,10 @@
   <!-- Glitch Intro Screen -->
   <div id="glitch-intro-screen"></div>
 
-  <!-- Interactive Mockup Preload Overlay -->
+  <!-- Interactive Mockup Preload Overlay (Keeps cooplogo.webp) -->
   <div id="coop-preload-overlay">
     <div class="splash-content">
-      <div class="preload-logo-text" id="preload-logo-text">CHICKEN COOP</div>
+      <img src="assets/media/icons/cooplogo2.webp" alt="ChickenCoop Logo" class="preload-logo" id="preload-logo-img" />
       <div class="progress-track">
         <div class="progress-fill" id="progress-bar-fill"></div>
       </div>
@@ -161,7 +165,7 @@
   <div id="particles-js">
     <script rel="preload" src="https://cdn.jsdelivr.net/particles.js/2.0.0/"></script>
     <div class="main">
-      <h1 class="title">&#73;&#110;&#116;&#101;&#114;&#115;&#101;&#108;&#108;&#97;</h1>
+      <h1 class="title anurati-title">CHICKEN COOP</h1>
       <p id="splash"></p>
       <div class="search-container">
         <form id="fv" method="POST">
@@ -196,7 +200,7 @@
     const overlay = document.getElementById('coop-preload-overlay');
     const fill = document.getElementById('progress-bar-fill');
     const percentText = document.getElementById('loading-percentage');
-    const logoText = document.getElementById('preload-logo-text');
+    const logoImg = document.getElementById('preload-logo-img');
 
     function updateProgress(currentTime) {
       const elapsed = currentTime - startTime;
@@ -207,14 +211,14 @@
       if (percentText) percentText.textContent = `Loading... [${rounded}]%`;
       if (overlay) overlay.style.setProperty('--load-progress', progress + '%');
 
-      // Perfect Edge Tracking with brighter glow values for text
-      if (logoText) {
+      // Perfect Edge Tracking with brighter glow values
+      if (logoImg) {
         if (progress < 42) {
-          logoText.style.filter = 'drop-shadow(0 0 22px rgba(255, 87, 34, 0.75))';
+          logoImg.style.filter = 'drop-shadow(0 0 22px rgba(255, 87, 34, 0.75))';
         } else if (progress <= 58) {
-          logoText.style.filter = 'drop-shadow(0 0 24px rgba(0, 0, 0, 0.85))';
+          logoImg.style.filter = 'drop-shadow(0 0 24px rgba(0, 0, 0, 0.85))';
         } else {
-          logoText.style.filter = 'drop-shadow(0 0 22px rgba(0, 0, 0, 0.75))';
+          logoImg.style.filter = 'drop-shadow(0 0 22px rgba(0, 0, 0, 0.75))';
         }
       }
 
@@ -231,14 +235,17 @@
     }
     requestAnimationFrame(updateProgress);
 
-    // 1. Branding & Cloak Protection Script
+    // 1. Branding & Cloak Protection Script (Updated to lock in Anurati text title instead of overwriting with image)
     const text = 'welcome to the coop brothers 🥶🥶';
-    const logo = '<img src="/assets/media/icons/cooplogo2.webp" style="max-height: 90px;">';
+    const logoHtml = 'CHICKEN COOP';
     const faviconUrl = 'assets/media/favicon/cooplogo.png';
 
     setInterval(() => {
       const h1Title = document.querySelector('h1.title');
-      if (h1Title && h1Title.innerHTML !== logo) h1Title.innerHTML = logo;
+      if (h1Title && h1Title.innerHTML !== logoHtml) {
+        h1Title.innerHTML = logoHtml;
+        h1Title.classList.add('anurati-title');
+      }
       
       const splash = document.getElementById('splash');
       if (splash) {
