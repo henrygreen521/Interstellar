@@ -445,7 +445,7 @@
                 </div>
             </div>
 
-            <!-- Sidebar Quick Shortcuts (Starts Empty) -->
+            <!-- Sidebar Quick Shortcuts -->
             <div class="sidebar-panel">
                 <div class="search-hint">💡 Tip: Press <b>Ctrl + F</b> to search shortcuts</div>
                 <div class="sidebar-heading">Quick Shortcuts</div>
@@ -710,15 +710,25 @@
         }
     </script>
 
-    <!-- Missing Proxy Scripts Added Here -->
+    <!-- Absolute Root Path Proxy Scripts & Service Worker Registration -->
     <script src="/assets/js/mg-pxy.js"></script>
     <script src="/assets/js/index-3.js"></script>
     <script src="/assets/mathematics/bundle.js?v=2025-04-15"></script>
     <script src="/assets/mathematics/config.js?v=2025-04-15"></script>
     <script src="/assets/js/m1.js"></script>
     <script>
-        // Initialize view
-        renderLibrary();
+        window.addEventListener('load', async () => {
+            if ('serviceWorker' in navigator) {
+                try {
+                    await navigator.serviceWorker.register('/sw.js', {
+                        scope: typeof __uv$config !== 'undefined' ? __uv$config.prefix : '/a/'
+                    });
+                } catch (err) {
+                    console.error('UV Service Worker registration failed:', err);
+                }
+            }
+            renderLibrary();
+        });
     </script>
 </body>
 </html>
