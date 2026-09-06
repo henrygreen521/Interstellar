@@ -10,6 +10,14 @@
   <title id="t">Home</title>
   
   <style>
+    /* --- IMPORT ANURATI FONT --- */
+    @font-face {
+      font-family: 'Anurati';
+      src: url('assets/media/fonts/Anurati-Regular.otf') format('opentype'); /* Adjust path if needed */
+      font-weight: normal;
+      font-style: normal;
+    }
+
     /* --- STAGE 0: THE GLITCH INTRO SCREEN --- */
     #glitch-intro-screen {
       position: fixed;
@@ -88,11 +96,13 @@
       align-items: center;
       gap: 20px;
     }
-    .preload-logo {
-      max-height: 80px;
-      width: auto;
-      object-fit: contain;
-      /* Dynamic glow tracks the edge position via JavaScript (made slightly brighter) */
+    .preload-logo-text {
+      font-family: 'Anurati', sans-serif;
+      font-size: 2.2rem;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-align: center;
+      /* Dynamic glow tracks the edge position via JavaScript */
       filter: var(--logo-glow, drop-shadow(0 0 20px rgba(255, 87, 34, 0.7)));
       transition: filter 0.05s linear;
     }
@@ -139,7 +149,7 @@
   <!-- Interactive Mockup Preload Overlay -->
   <div id="coop-preload-overlay">
     <div class="splash-content">
-      <img src="assets/media/icons/cooplogo2.webp" alt="ChickenCoop Logo" class="preload-logo" id="preload-logo-img" />
+      <div class="preload-logo-text" id="preload-logo-text">CHICKEN COOP</div>
       <div class="progress-track">
         <div class="progress-fill" id="progress-bar-fill"></div>
       </div>
@@ -186,7 +196,7 @@
     const overlay = document.getElementById('coop-preload-overlay');
     const fill = document.getElementById('progress-bar-fill');
     const percentText = document.getElementById('loading-percentage');
-    const logoImg = document.getElementById('preload-logo-img');
+    const logoText = document.getElementById('preload-logo-text');
 
     function updateProgress(currentTime) {
       const elapsed = currentTime - startTime;
@@ -197,14 +207,14 @@
       if (percentText) percentText.textContent = `Loading... [${rounded}]%`;
       if (overlay) overlay.style.setProperty('--load-progress', progress + '%');
 
-      // Perfect Edge Tracking with brighter glow values
-      if (logoImg) {
+      // Perfect Edge Tracking with brighter glow values for text
+      if (logoText) {
         if (progress < 42) {
-          logoImg.style.filter = 'drop-shadow(0 0 22px rgba(255, 87, 34, 0.75))';
+          logoText.style.filter = 'drop-shadow(0 0 22px rgba(255, 87, 34, 0.75))';
         } else if (progress <= 58) {
-          logoImg.style.filter = 'drop-shadow(0 0 24px rgba(0, 0, 0, 0.85))';
+          logoText.style.filter = 'drop-shadow(0 0 24px rgba(0, 0, 0, 0.85))';
         } else {
-          logoImg.style.filter = 'drop-shadow(0 0 22px rgba(0, 0, 0, 0.75))';
+          logoText.style.filter = 'drop-shadow(0 0 22px rgba(0, 0, 0, 0.75))';
         }
       }
 
