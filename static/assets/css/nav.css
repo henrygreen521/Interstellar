@@ -14,7 +14,7 @@
    flex-shrink: 0;
 }
 
-/* Left Sidebar Container */
+/* Left Sidebar Container - iOS Liquid Glass Effect */
 .f-nav {
    top: 15px;
    bottom: 15px;
@@ -23,20 +23,53 @@
    height: calc(100vh - 30px);
    padding: 20px 10px;
    box-sizing: border-box;
-   background-color: var(--background-nav);
-   box-shadow: 0 0 15px 2px rgba(0, 0, 0, 0.5);
-   -webkit-backdrop-filter: var(--backdrop-filter);
-   backdrop-filter: var(--backdrop-filter);
-   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-   border-radius: 15px;
+   
+   /* Multi-stop liquid glass gradient & heavy iOS blur/saturation */
+   background: linear-gradient(
+      135deg, 
+      rgba(255, 255, 255, 0.12) 0%, 
+      rgba(255, 255, 255, 0.03) 50%, 
+      rgba(255, 255, 255, 0.06) 100%
+   ), var(--background-nav);
+   
+   backdrop-filter: blur(25px) saturate(210%);
+   -webkit-backdrop-filter: blur(25px) saturate(210%);
+   
+   /* Crisp outer drop shadow combined with an inner glass specular border */
+   box-shadow: 
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 
+      inset 0 -1px 0 0 rgba(255, 255, 255, 0.05),
+      0 20px 40px rgba(0, 0, 0, 0.5);
+      
+   border: 1px solid rgba(255, 255, 255, 0.15);
+   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, border-color 0.3s ease;
+   border-radius: 20px;
    z-index: 100;
    position: fixed;
    overflow: hidden;
 }
 
+/* Luminous glowing edge highlight when background particles/stars pass underneath */
+.f-nav::after {
+   content: '';
+   position: absolute;
+   inset: 0;
+   border-radius: 20px;
+   pointer-events: none;
+   box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+   z-index: 1;
+}
+
 /* Expand sidebar width on hover */
 .f-nav:hover {
    width: 230px; 
+   border-color: rgba(255, 255, 255, 0.3);
+   background: linear-gradient(
+      135deg, 
+      rgba(255, 255, 255, 0.18) 0%, 
+      rgba(255, 255, 255, 0.05) 50%, 
+      rgba(255, 255, 255, 0.09) 100%
+   ), var(--background-nav);
 }
 
 /* Main logo/icon area */
@@ -54,6 +87,7 @@
    font-weight: 600;
    font-size: 18px;
    white-space: nowrap;
+   z-index: 2;
 }
 
 /* Right links section stacked vertically */
@@ -65,6 +99,7 @@
    flex-direction: column;
    gap: 10px;
    width: calc(100% - 20px);
+   z-index: 2;
 }
 
 .f-nav-right .navbar-link {
@@ -77,8 +112,8 @@
    font-family: "Inter", sans-serif;
    font-weight: 800;
    text-decoration: none;
-   transition: background-color 0.2s ease, transform 0.2s ease;
-   border-radius: 8px;
+   transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+   border-radius: 10px;
    white-space: nowrap;
    overflow: hidden;
 }
@@ -103,9 +138,8 @@
 }
 
 /* --- BULLETPROOF ICON-VISIBLE / TEXT-HIDDEN TRICK --- */
-/* When collapsed, fade out the text color specifically without hiding the whole link container */
 .f-nav-right .navbar-link {
-   color: transparent; /* Hides raw text */
+   color: transparent; /* Hides raw text when collapsed */
 }
 
 /* When sidebar is hovered, restore the text color */
@@ -114,7 +148,8 @@
 }
 
 .f-nav-right .navbar-link:hover {
-   background-color: rgba(255, 255, 255, 0.08);
+   background-color: rgba(255, 255, 255, 0.12);
+   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
    transform: translateX(3px);
 }
 
@@ -134,13 +169,15 @@
    font-weight: 800;
    text-decoration: none;
    transition: background-color 0.2s ease, transform 0.2s ease;
-   border-radius: 8px;
+   border-radius: 10px;
    white-space: nowrap;
    overflow: hidden;
+   z-index: 2;
 }
 
 #search-navbar-icon:hover {
-   background-color: rgba(255, 255, 255, 0.08);
+   background-color: rgba(255, 255, 255, 0.12);
+   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
    transform: translateX(3px);
 }
 
