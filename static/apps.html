@@ -6,18 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Games - ChickenCoop</title>
   
-  <!-- Original Stylesheets -->
+  <!-- Core Stylesheets -->
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/container.css?v=2" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Original Navbar & Proxy Scripts -->
-  <script src="/assets/js/mg-pxy.js"></script>
-  <script src="/assets/js/index-3.js"></script>
-
   <style>
-    /* --- iOS Liquid Glass Theme --- */
     body {
       background-color: #0b0b0b;
       color: #ffffff;
@@ -26,57 +21,43 @@
       padding: 0;
     }
 
+    /* Proper Navbar Wrapper to stop it from gluing to the top */
     .f-nav {
-      position: sticky;
-      top: 0;
+      width: 100%;
+      position: relative;
       z-index: 1000;
+    }
+
+    .page-wrapper {
+      padding-top: 15px;
     }
 
     .input-c {
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin: 30px auto 20px auto;
+      margin: 20px auto;
       max-width: 600px;
       padding: 0 20px;
     }
 
     .input-c input, .input-c select {
-      background: linear-gradient(
-        135deg, 
-        rgba(255, 255, 255, 0.12) 0%, 
-        rgba(255, 255, 255, 0.03) 50%, 
-        rgba(255, 255, 255, 0.06) 100%
-      ), rgba(20, 20, 20, 0.4);
+      background: rgba(20, 20, 20, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.15);
       padding: 12px 18px;
       border-radius: 16px;
       color: #fff;
       font-size: 15px;
-      backdrop-filter: blur(25px) saturate(210%);
-      -webkit-backdrop-filter: blur(25px) saturate(210%);
-      box-shadow: 
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 
-        inset 0 -1px 0 0 rgba(255, 255, 255, 0.05),
-        0 15px 35px rgba(0, 0, 0, 0.4);
       outline: none;
-      transition: all 0.3s ease;
     }
 
     .input-c input { flex: 1; }
-
-    .input-c input:focus, .input-c select:focus {
-      border-color: #ff5722;
-      box-shadow: 0 0 15px rgba(255, 87, 34, 0.3), 0 15px 35px rgba(0, 0, 0, 0.4);
-    }
-
     .input-c select option { background-color: #1a1a1a; color: #fff; }
 
     .games-main-wrapper {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
-      min-height: 400px;
     }
 
     .apps {
@@ -89,21 +70,17 @@
     .game-card {
       width: 180px;
       border-radius: 20px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(20, 20, 20, 0.4);
+      background: rgba(20, 20, 20, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       padding: 15px;
       text-align: center;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      transition: transform 0.3s ease, border-color 0.3s ease;
     }
 
     .game-card:hover {
       transform: translateY(-6px);
       border-color: #ff5722;
-      box-shadow: 0 15px 35px rgba(255, 87, 34, 0.3);
     }
 
     .game-card img {
@@ -124,16 +101,14 @@
       text-overflow: ellipsis;
     }
 
-    /* --- Cinematic In-Page Player Modal --- */
+    /* Modal Player */
     #game-modal {
       display: none;
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
-      z-index: 9999999;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 999999;
       justify-content: center;
       align-items: center;
       flex-direction: column;
@@ -150,24 +125,15 @@
       margin-bottom: 15px;
     }
 
-    .modal-controls h2 { margin: 0; color: #fff; font-size: 22px; }
+    .modal-controls h2 { margin: 0; color: #fff; font-size: 20px; }
 
     .modal-controls button {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+      background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
-      padding: 10px 24px;
-      border-radius: 14px;
+      padding: 8px 16px;
+      border-radius: 10px;
       cursor: pointer;
-      font-weight: bold;
-      margin-left: 10px;
-      transition: 0.3s;
-    }
-
-    .modal-controls button:hover {
-      background: #ff5722;
-      border-color: #ff5722;
-      box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
     }
 
     .modal-iframe-container {
@@ -189,32 +155,33 @@
 </head>
 
 <body>
-  <!-- Navbar Injection Container -->
+  <!-- Navbar Injected Here -->
   <div class="f-nav"></div>
 
-  <!-- Search & Category Filters -->
-  <div class="input-c">
-    <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
-    <select id="category" name="category" onchange="filterGames()">
-      <option value="all">All Games</option>
-      <option value="flash">Classics / Flash</option>
-      <option value="math">Trending</option>
-      <option value="2P">Multiplayer</option>
-      <option value="sports">Sports</option>
-    </select>
+  <div class="page-wrapper">
+    <!-- Search & Filters -->
+    <div class="input-c">
+      <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
+      <select id="category" name="category" onchange="filterGames()">
+        <option value="all">All Games</option>
+        <option value="flash">Classics / Flash</option>
+        <option value="math">Trending</option>
+      </select>
+    </div>
+
+    <!-- Games Grid -->
+    <div class="games-main-wrapper">
+      <div class="apps" id="apps-container"></div>
+    </div>
   </div>
 
-  <div class="games-main-wrapper">
-    <div class="apps" id="apps-container"></div>
-  </div>
-
-  <!-- Cinematic Game Player Modal -->
+  <!-- Modal Player -->
   <div id="game-modal">
     <div class="modal-controls">
       <h2 id="modal-title">Game Title</h2>
       <div>
         <button onclick="toggleFullscreen()">Fullscreen</button>
-        <button onclick="closeGame()" style="background: rgba(255, 59, 48, 0.2); border-color: #ff3b30; color: #ff3b30;">Close</button>
+        <button onclick="closeGame()" style="background: rgba(255, 59, 48, 0.3); border-color: #ff3b30;">Close</button>
       </div>
     </div>
     <div class="modal-iframe-container">
@@ -222,32 +189,22 @@
     </div>
   </div>
 
-  <!-- Navbar Injection Script -->
+  <!-- Navbar Script Only -->
   <script src="/assets/js/m1.js"></script>
 
-  <!-- Local Game Grid & Modal Logic -->
+  <!-- Game Grid Render Script -->
   <script>
     const gnGamesList = [
       { title: "The Binding of Isaac", slug: "binding-of-isaac", category: "flash" },
-      { title: "Baldi's Basics", slug: "baldis-basics", category: "flash" },
-      { title: "Game 1", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 2", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 3", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 4", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 5", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 6", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 7", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 8", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 9", slug: "insert-game-folder-name", category: "math" }
+      { title: "Baldi's Basics", slug: "baldis-basics", category: "flash" }
     ];
 
-    const appsContainer = document.getElementById('apps-container');
-
     function renderGrid(filterCat = "all", searchQuery = "") {
+      const appsContainer = document.getElementById('apps-container');
+      if (!appsContainer) return;
       appsContainer.innerHTML = "";
+      
       gnGamesList.forEach(game => {
-        if (game.slug === "insert-game-folder-name") return;
-
         const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCat = filterCat === "all" || game.category === filterCat;
         
@@ -266,6 +223,7 @@
       });
     }
 
+    // Execute immediately so cards populate without waiting for hanging network events
     renderGrid();
 
     function filterGames() {
@@ -274,28 +232,22 @@
       renderGrid(cat, q);
     }
 
-    const modal = document.getElementById('game-modal');
-    const iframe = document.getElementById('game-frame');
-
     function openGame(slug, title) {
       document.getElementById('modal-title').textContent = title;
-      iframe.src = `/games/${slug}/index.html`;
-      modal.classList.add('active');
+      document.getElementById('game-frame').src = `/games/${slug}/index.html`;
+      document.getElementById('game-modal').classList.add('active');
       document.body.style.overflow = 'hidden';
     }
 
     function closeGame() {
-      modal.classList.remove('active');
-      iframe.src = "";
+      document.getElementById('game-modal').classList.remove('active');
+      document.getElementById('game-frame').src = "";
       document.body.style.overflow = 'auto';
     }
 
     function toggleFullscreen() {
-      if (iframe.requestFullscreen) {
-        iframe.requestFullscreen();
-      } else if (iframe.webkitRequestFullscreen) {
-        iframe.webkitRequestFullscreen();
-      }
+      const iframe = document.getElementById('game-frame');
+      if (iframe.requestFullscreen) iframe.requestFullscreen();
     }
   </script>
 </body>
