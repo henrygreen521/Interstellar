@@ -3,60 +3,291 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="referrer" content="no-referrer" />
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <link rel="shortcut icon" id="tab-favicon" href="favicon.png" />
-  <title id="t">Home</title>
-  <script src="./assets/mathematics/bundle.js?v=2025-04-15"></script>
-  <script src="./assets/mathematics/config.js?v=2025-04-15"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games - ChickenCoop</title>
+  
+  <!-- Original Stylesheets for your Navbar -->
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/container.css?v=2" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
-  <script src="/assets/js/mg-pxy.js"></script>
-  <script src="/assets/js/index-3.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840529569014734"
-    crossorigin="anonymous"></script>
+
+  <style>
+    /* --- iOS Liquid Glass Theme --- */
+    body {
+      background-color: #0b0b0b;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .input-c {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 30px auto 20px auto;
+      max-width: 600px;
+      padding: 0 20px;
+    }
+
+    .input-c input, .input-c select {
+      background: linear-gradient(
+        135deg, 
+        rgba(255, 255, 255, 0.12) 0%, 
+        rgba(255, 255, 255, 0.03) 50%, 
+        rgba(255, 255, 255, 0.06) 100%
+      ), rgba(20, 20, 20, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 12px 18px;
+      border-radius: 16px;
+      color: #fff;
+      font-size: 15px;
+      backdrop-filter: blur(25px) saturate(210%);
+      -webkit-backdrop-filter: blur(25px) saturate(210%);
+      box-shadow: 
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 
+        inset 0 -1px 0 0 rgba(255, 255, 255, 0.05),
+        0 15px 35px rgba(0, 0, 0, 0.4);
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-c input { flex: 1; }
+
+    .input-c input:focus, .input-c select:focus {
+      border-color: #ff5722;
+      box-shadow: 0 0 15px rgba(255, 87, 34, 0.3), 0 15px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .input-c select option { background-color: #1a1a1a; color: #fff; }
+
+    .games-main-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 400px;
+    }
+
+    .apps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .game-card {
+      width: 180px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(20, 20, 20, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .game-card:hover {
+      transform: translateY(-6px);
+      border-color: #ff5722;
+      box-shadow: 0 15px 35px rgba(255, 87, 34, 0.3);
+    }
+
+    .game-card img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      object-fit: cover;
+      background: rgba(0,0,0,0.5);
+    }
+
+    .game-card h3 {
+      font-size: 15px;
+      margin: 0;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* --- Cinematic In-Page Player Modal --- */
+    #game-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      z-index: 9999999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #game-modal.active { display: flex; }
+
+    .modal-controls {
+      width: 90%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .modal-controls h2 { margin: 0; color: #fff; font-size: 22px; }
+
+    .modal-controls button {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 10px;
+      transition: 0.3s;
+    }
+
+    .modal-controls button:hover {
+      background: #ff5722;
+      border-color: #ff5722;
+      box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
+    }
+
+    .modal-iframe-container {
+      width: 90%;
+      max-width: 1200px;
+      height: 80vh;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+      background: #000;
+    }
+
+    .modal-iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
 </head>
 
 <body>
+  <!-- Restored Navigation Container & Script -->
   <div class="f-nav"></div>
+  <script src="/assets/js/m1.js"></script>
+
+  <!-- Search & Category Filters -->
   <div class="input-c">
-    <input type="text" id="search" onkeyup="bar()" placeholder="Search" />
-    <select title="Category" id="category" name="category" onchange="category()">
-      <option value="all">&#65;&#108;&#108;</option>
-      <option value="android">
-        &#65;&#110;&#100;&#114;&#111;&#105;&#100;&#32;&#69;&#109;&#117;&#108;&#97;&#116;&#111;&#114;</option>
-      <option value="social">&#83;&#111;&#99;&#105;&#97;&#108;</option>
-      <option value="stream">&#83;&#116;&#114;&#101;&#97;&#109;</option>
-      <option value="message">&#77;&#101;&#115;&#115;&#97;&#103;&#101;</option>
-      <option value="media">&#84;&#86;&#32;&amp;&#32;&#77;&#111;&#118;&#105;&#101;&#115;</option>
-      <option value="game">&#71;&#97;&#109;&#101;&#32;&#83;&#105;&#116;&#101;&#115;</option>
-      <option value="cloud">&#67;&#108;&#111;&#117;&#100;&#32;&#71;&#97;&#109;&#105;&#110;&#103;</option>
-      <option value="tool">&#84;&#111;&#111;&#108;&#115;</option>
-      <option value="ai">&#65;&#73;</option>
-      <option value="emu">&#69;&#109;&#117;&#108;&#97;&#116;&#111;&#114;</option>
-      <option value="mail">&#77;&#97;&#105;&#108;</option>
+    <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
+    <select id="category" name="category" onchange="filterGames()">
+      <option value="all">All Games</option>
+      <option value="flash">Classics / Flash</option>
+      <option value="math">Trending</option>
+      <option value="2P">Multiplayer</option>
+      <option value="sports">Sports</option>
     </select>
   </div>
-  <div class="pinned"></div>
-  <div class="apps"></div>
-  <script src="assets/js/c1.js?v=001"></script>
-  <script src="/assets/js/m1.js"></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
-  <!-- DO NOT REMOVE-->
+
+  <div class="games-main-wrapper">
+    <div class="apps" id="apps-container"></div>
+  </div>
+
+  <!-- Cinematic Game Player Modal -->
+  <div id="game-modal">
+    <div class="modal-controls">
+      <h2 id="modal-title">Game Title</h2>
+      <div>
+        <button onclick="toggleFullscreen()">Fullscreen</button>
+        <button onclick="closeGame()" style="background: rgba(255, 59, 48, 0.2); border-color: #ff3b30; color: #ff3b30;">Close</button>
+      </div>
+    </div>
+    <div class="modal-iframe-container">
+      <iframe id="game-frame" src="" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Local Game Grid & Modal Logic -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
+    // Configured with Binding of Isaac, Baldi's Basics, and blank placeholders for more!
+    const gnGamesList = [
+      { title: "The Binding of Isaac", slug: "binding-of-isaac", category: "flash" },
+      { title: "Baldi's Basics", slug: "baldis-basics", category: "flash" },
+      { title: "Game 1", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 2", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 3", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 4", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 5", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 6", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 7", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 8", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 9", slug: "insert-game-folder-name", category: "math" }
+    ];
+
+    const appsContainer = document.getElementById('apps-container');
+
+    function renderGrid(filterCat = "all", searchQuery = "") {
+      appsContainer.innerHTML = "";
+      gnGamesList.forEach(game => {
+        // Skip unconfigured placeholder slots
+        if (game.slug === "insert-game-folder-name") return;
+
+        const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCat = filterCat === "all" || game.category === filterCat;
+        
+        if (matchesSearch && matchesCat) {
+          const card = document.createElement('div');
+          card.className = 'game-card';
+          const imgUrl = `/games/${game.slug}/thumbnail.png`; 
+          
+          card.innerHTML = `
+            <img src="${imgUrl}" alt="${game.title}" onerror="this.src='https://via.placeholder.com/150/1a1a1a/ff5722?text=Game'">
+            <h3>${game.title}</h3>
+          `;
+          card.onclick = () => openGame(game.slug, game.title);
+          appsContainer.appendChild(card);
+        }
+      });
     }
-    gtag("js", new Date());
 
-    gtag("config", "G-WKJQ5QHQTJ");
+    renderGrid();
+
+    function filterGames() {
+      const q = document.getElementById('search').value;
+      const cat = document.getElementById('category').value;
+      renderGrid(cat, q);
+    }
+
+    const modal = document.getElementById('game-modal');
+    const iframe = document.getElementById('game-frame');
+
+    function openGame(slug, title) {
+      document.getElementById('modal-title').textContent = title;
+      // Direct local path to the game folder's index.html
+      iframe.src = `/games/${slug}/index.html`;
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeGame() {
+      modal.classList.remove('active');
+      iframe.src = "";
+      document.body.style.overflow = 'auto';
+    }
+
+    function toggleFullscreen() {
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.webkitRequestFullscreen) {
+        iframe.webkitRequestFullscreen();
+      }
+    }
   </script>
-  <!-- DO NOT REMOVE-->
 </body>
-
 </html>
