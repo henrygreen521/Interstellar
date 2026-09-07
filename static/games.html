@@ -10,7 +10,6 @@
   <title id="t">Games - ChickenCoop</title>
   
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
-  <link rel="stylesheet" href="/assets/css/error.css?v=2" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
@@ -18,33 +17,22 @@
     crossorigin="anonymous"></script>
 
   <style>
-    /* --- Bulletproof Reset to Stop Cursor Floating / Disappearing Content --- * /
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      background-color: #0b0b0b !important;
-      color: #ffffff !important;
+      background-color: #0b0b0b;
+      color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0 !important;
-      padding: 0 !important;
-      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
     }
 
-    /* Force navbar to stay completely static at the top, overriding any global script cursor tracking */
     .f-nav {
-      position: relative !important;
-      top: auto !important;
-      left: auto !important;
-      transform: none !important;
-      width: 100% !important;
+      position: sticky;
+      top: 0;
       z-index: 1000;
     }
 
-    /* --- Search & Filter Styling --- */
     .input-c {
-      display: flex !important;
+      display: flex;
       justify-content: center;
       gap: 12px;
       margin: 30px auto 20px auto;
@@ -77,17 +65,15 @@
 
     .input-c select option { background-color: #1a1a1a; color: #fff; }
 
-    /* --- Games Grid Styling --- */
     .games-main-wrapper {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
       min-height: 400px;
-      display: block !important;
     }
 
     .apps {
-      display: flex !important;
+      display: flex;
       flex-wrap: wrap;
       gap: 20px;
       justify-content: center;
@@ -129,7 +115,6 @@
       text-overflow: ellipsis;
     }
 
-    /* --- Cinematic In-Page Player Modal --- */
     #game-modal {
       display: none;
       position: fixed;
@@ -142,7 +127,7 @@
       flex-direction: column;
     }
 
-    #game-modal.active { display: flex !important; }
+    #game-modal.active { display: flex; }
 
     .modal-controls {
       width: 90%;
@@ -218,13 +203,6 @@
       <iframe id="game-frame" src="" allowfullscreen></iframe>
     </div>
   </div>
-
-  <!-- Your Original Script Stack -->
-  <script src="/assets/js/mg-pxy.js"></script>
-  <script src="/assets/js/index-3.js"></script>
-  <script src="/assets/mathematics/bundle.js?v=2025-04-15"></script>
-  <script src="/assets/mathematics/config.js?v=2025-04-15"></script>
-  <script src="/assets/js/m1.js"></script>
 
   <!-- Game Grid & Modal Logic Script -->
   <script>
