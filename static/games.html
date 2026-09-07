@@ -6,15 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Games - ChickenCoop</title>
   
-  <!-- Core Stylesheets -->
-  <link rel="stylesheet" href="/assets/css/global.css?v=6" />
-  <link rel="stylesheet" href="/assets/css/container.css?v=2" />
-  <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js" crossorigin="anonymous"></script>
-
   <style>
     /* --- iOS Liquid Glass Theme --- */
     body {
@@ -25,13 +16,17 @@
       padding: 0;
     }
 
-    /* Fixed Navbar Positioning with Safe Spacing */
     .f-nav {
       position: sticky;
       top: 0;
       z-index: 1000;
-      width: 100%;
-      min-height: 60px;
+      backdrop-filter: blur(25px) saturate(210%);
+      -webkit-backdrop-filter: blur(25px) saturate(210%);
+      background: rgba(20, 20, 20, 0.6);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px 30px;
+      font-weight: bold;
+      font-size: 18px;
     }
 
     .input-c {
@@ -191,8 +186,8 @@
 </head>
 
 <body>
-  <!-- Navbar Container -->
-  <div class="f-nav"></div>
+  <!-- Simple Header -->
+  <div class="f-nav">ChickenCoop Games</div>
 
   <!-- Search & Category Filters -->
   <div class="input-c">
@@ -224,14 +219,11 @@
     </div>
   </div>
 
-  <!-- Navbar Injection Script -->
-  <script src="/assets/js/m1.js"></script>
-
-  <!-- Local Game Grid & Modal Logic -->
+  <!-- Pure Local Game Grid & Modal Logic -->
   <script>
+    // Add your games here! Replace "insert-game-folder-name" with your actual folders in /games/
     const gnGamesList = [
       { title: "The Binding of Isaac", slug: "binding-of-isaac", category: "flash" },
-      { title: "Baldi's Basics", slug: "baldis-basics", category: "flash" },
       { title: "Game 1", slug: "insert-game-folder-name", category: "math" },
       { title: "Game 2", slug: "insert-game-folder-name", category: "math" },
       { title: "Game 3", slug: "insert-game-folder-name", category: "math" },
@@ -240,7 +232,8 @@
       { title: "Game 6", slug: "insert-game-folder-name", category: "math" },
       { title: "Game 7", slug: "insert-game-folder-name", category: "math" },
       { title: "Game 8", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 9", slug: "insert-game-folder-name", category: "math" }
+      { title: "Game 9", slug: "insert-game-folder-name", category: "math" },
+      { title: "Game 10", slug: "insert-game-folder-name", category: "math" }
     ];
 
     const appsContainer = document.getElementById('apps-container');
@@ -248,6 +241,7 @@
     function renderGrid(filterCat = "all", searchQuery = "") {
       appsContainer.innerHTML = "";
       gnGamesList.forEach(game => {
+        // Skip unconfigured placeholder slots
         if (game.slug === "insert-game-folder-name") return;
 
         const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -281,6 +275,7 @@
 
     function openGame(slug, title) {
       document.getElementById('modal-title').textContent = title;
+      // Direct local path to the game folder's index.html
       iframe.src = `/games/${slug}/index.html`;
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
