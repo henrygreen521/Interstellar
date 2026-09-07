@@ -18,7 +18,24 @@
     crossorigin="anonymous"></script>
 
   <style>
-    /* --- Search, Grid, & Modal Styling --- */
+    /* --- Base Layout Fixes --- */
+    body {
+      background-color: #0b0b0b;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Force navbar to stay fixed/stuck at top properly without following cursor */
+    .f-nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      width: 100%;
+    }
+
+    /* --- Search & Filter Styling --- */
     .input-c {
       display: flex;
       justify-content: center;
@@ -59,11 +76,13 @@
 
     .input-c select option { background-color: #1a1a1a; color: #fff; }
 
+    /* --- Games Grid Styling --- */
     .games-main-wrapper {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
       min-height: 400px;
+      display: block !important;
     }
 
     .apps {
