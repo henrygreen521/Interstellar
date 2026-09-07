@@ -18,26 +18,33 @@
     crossorigin="anonymous"></script>
 
   <style>
-    /* --- Base Layout Fixes --- */
-    body {
-      background-color: #0b0b0b;
-      color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
+    /* --- Bulletproof Reset to Stop Cursor Floating / Disappearing Content --- * /
+    * {
+      box-sizing: border-box;
     }
 
-    /* Force navbar to stay fixed/stuck at top properly without following cursor */
+    body {
+      background-color: #0b0b0b !important;
+      color: #ffffff !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow-x: hidden;
+    }
+
+    /* Force navbar to stay completely static at the top, overriding any global script cursor tracking */
     .f-nav {
-      position: sticky;
-      top: 0;
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      transform: none !important;
+      width: 100% !important;
       z-index: 1000;
-      width: 100%;
     }
 
     /* --- Search & Filter Styling --- */
     .input-c {
-      display: flex;
+      display: flex !important;
       justify-content: center;
       gap: 12px;
       margin: 30px auto 20px auto;
@@ -57,12 +64,6 @@
       border-radius: 16px;
       color: #fff;
       font-size: 15px;
-      backdrop-filter: blur(25px) saturate(210%);
-      -webkit-backdrop-filter: blur(25px) saturate(210%);
-      box-shadow: 
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 
-        inset 0 -1px 0 0 rgba(255, 255, 255, 0.05),
-        0 15px 35px rgba(0, 0, 0, 0.4);
       outline: none;
       transition: all 0.3s ease;
     }
@@ -71,7 +72,7 @@
 
     .input-c input:focus, .input-c select:focus {
       border-color: #ff5722;
-      box-shadow: 0 0 15px rgba(255, 87, 34, 0.3), 0 15px 35px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 15px rgba(255, 87, 34, 0.3);
     }
 
     .input-c select option { background-color: #1a1a1a; color: #fff; }
@@ -86,7 +87,7 @@
     }
 
     .apps {
-      display: flex;
+      display: flex !important;
       flex-wrap: wrap;
       gap: 20px;
       justify-content: center;
@@ -97,8 +98,6 @@
       border-radius: 20px;
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(20, 20, 20, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       padding: 15px;
       text-align: center;
@@ -137,15 +136,13 @@
       top: 0; left: 0;
       width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
       z-index: 9999999;
       justify-content: center;
       align-items: center;
       flex-direction: column;
     }
 
-    #game-modal.active { display: flex; }
+    #game-modal.active { display: flex !important; }
 
     .modal-controls {
       width: 90%;
@@ -167,13 +164,6 @@
       cursor: pointer;
       font-weight: bold;
       margin-left: 10px;
-      transition: 0.3s;
-    }
-
-    .modal-controls button:hover {
-      background: #ff5722;
-      border-color: #ff5722;
-      box-shadow: 0 0 15px rgba(255, 87, 34, 0.5);
     }
 
     .modal-iframe-container {
