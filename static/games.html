@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Games - ChickenCoop</title>
   
-  <!-- Stylesheets -->
+  <!-- Core Stylesheets -->
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/container.css?v=2" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
@@ -25,12 +25,13 @@
       padding: 0;
     }
 
-    /* Fixed Navbar Positioning & Spacing */
+    /* Fixed Navbar Positioning with Safe Spacing */
     .f-nav {
       position: sticky;
       top: 0;
       z-index: 1000;
-      margin-bottom: 20px;
+      width: 100%;
+      min-height: 60px;
     }
 
     .input-c {
@@ -223,7 +224,7 @@
     </div>
   </div>
 
-  <!-- Essential Navbar Script -->
+  <!-- Navbar Injection Script -->
   <script src="/assets/js/m1.js"></script>
 
   <!-- Local Game Grid & Modal Logic -->
