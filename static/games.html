@@ -10,6 +10,7 @@
   <title id="t">Games - ChickenCoop</title>
   
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
+  <link rel="stylesheet" href="/assets/css/error.css?v=2" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
@@ -25,17 +26,19 @@
       padding: 0;
     }
 
+    /* Keep navbar pinned properly at the top */
     .f-nav {
       position: sticky;
       top: 0;
       z-index: 1000;
     }
 
+    /* --- Search & Filter Styling --- */
     .input-c {
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin: 30px auto 20px auto;
+      margin: 20px auto;
       max-width: 600px;
       padding: 0 20px;
     }
@@ -65,10 +68,11 @@
 
     .input-c select option { background-color: #1a1a1a; color: #fff; }
 
+    /* --- Games Grid Styling --- */
     .games-main-wrapper {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 10px 20px 20px 20px;
       min-height: 400px;
     }
 
@@ -115,6 +119,7 @@
       text-overflow: ellipsis;
     }
 
+    /* --- Cinematic In-Page Player Modal --- */
     #game-modal {
       display: none;
       position: fixed;
@@ -203,6 +208,13 @@
       <iframe id="game-frame" src="" allowfullscreen></iframe>
     </div>
   </div>
+
+  <!-- Restored Script Stack for Navbar Population -->
+  <script src="/assets/js/mg-pxy.js"></script>
+  <script src="/assets/js/index-3.js"></script>
+  <script src="/assets/mathematics/bundle.js?v=2025-04-15"></script>
+  <script src="/assets/mathematics/config.js?v=2025-04-15"></script>
+  <script src="/assets/js/m1.js"></script>
 
   <!-- Game Grid & Modal Logic Script -->
   <script>
