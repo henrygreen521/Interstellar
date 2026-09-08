@@ -222,44 +222,6 @@
       { title: "Game 9", slug: "insert-game-folder-name", category: "math" }
     ];
 
-    function ensureGamesUnderNav() {
-      try {
-        const nav = document.querySelector('.f-nav');
-        const inputC = document.querySelector('.input-c');
-        const gamesWrap = document.querySelector('.games-main-wrapper');
-        if (!nav || !gamesWrap) return;
-        // Ensure input search is right under nav
-        if (inputC && nav.nextElementSibling !== inputC) {
-          nav.parentNode.insertBefore(inputC, nav.nextSibling);
-        }
-        // Then ensure games wrapper follows the search
-        if (nav.nextElementSibling !== gamesWrap) {
-          nav.parentNode.insertBefore(gamesWrap, inputC ? inputC.nextSibling : nav.nextSibling);
-        }
-      } catch (e) {
-        // ignore
-        console.error('ensureGamesUnderNav error', e);
-      }
-    }
-
-    function scrollToGames() {
-      try {
-        const nav = document.querySelector('.f-nav');
-        const appsContainer = document.getElementById('apps-container');
-        if (!appsContainer) return false;
-        const navHeight = nav ? nav.offsetHeight : 0;
-        const first = appsContainer.querySelector('.game-card') || appsContainer;
-        const appsTop = first.getBoundingClientRect().top + window.scrollY;
-        const target = Math.max(0, appsTop - navHeight - 8);
-        // use instant scroll to avoid smooth being interrupted
-        window.scrollTo({ top: target, behavior: 'auto' });
-        return true;
-      } catch (e) {
-        console.error('scrollToGames error', e);
-        return false;
-      }
-    }
-
     function renderGrid(filterCat = "all", searchQuery = "") {
       const appsContainer = document.getElementById('apps-container');
       if (!appsContainer) return;
@@ -284,21 +246,6 @@
           appsContainer.appendChild(card);
         }
       });
-
-      // Ensure games wrapper is directly under nav in case other scripts injected content
-      ensureGamesUnderNav();
-
-      // Auto-scroll once when games render so grid appears under nav
-      try {
-        if (!window._gamesAutoScrolled && appsContainer.children.length > 0) {
-          if (scrollToGames()) {
-            window._gamesAutoScrolled = true;
-          }
-        }
-      } catch (e) {
-        // ignore
-        console.error('Auto-scroll error', e);
-      }
     }
 
     window.filterGames = function() {
@@ -343,59 +290,14 @@
 
   <!-- Force-Snap Layout Lock: Eliminates any injected script spacers below the navbar -->
   <script>
-    // Keep forcing order and scroll until layout stabilizes
     window.addEventListener('load', () => {
-      try {
-        const nav = document.querySelector('.f-nav');
-        const inputC = document.querySelector('.input-c');
-        const gamesWrap = document.querySelector('.games-main-wrapper');
-        if (nav && inputC && nav.nextElementSibling !== inputC) {
-          // move search under nav
-          nav.parentNode.insertBefore(inputC, nav.nextSibling);
-        }
-        if (nav && gamesWrap && nav.nextElementSibling !== gamesWrap) {
-          // move games under search
-          nav.parentNode.insertBefore(gamesWrap, inputC ? inputC.nextSibling : nav.nextSibling);
-        }
-
-        // If games are already rendered, scroll immediately
-        const apps = document.getElementById('apps-container');
-        if (apps && apps.children.length > 0 && !window._gamesAutoScrolled) {
-          scrollToGames();
-          window._gamesAutoScrolled = true;
-        }
-      } catch (e) {
-        console.error('load handler error', e);
+      const nav = document.querySelector('.f-nav');
+      const inputC = document.querySelector('.input-c');
+      if (nav && inputC && nav.nextElementSibling !== inputC) {
+        // If a script injected something between the nav and search, force move it right under nav!
+        nav.parentNode.insertBefore(inputC, nav.nextSibling);
       }
     });
-
-    // Observe DOM mutations and ensure the games wrapper and search remain directly under nav,
-    // and scroll when children appear.
-    (function observeAndEnforce() {
-      const body = document.body;
-      if (!body) return;
-      let tries = 0;
-      const iv = setInterval(() => {
-        tries++;
-        ensureGamesUnderNav();
-        const apps = document.getElementById('apps-container');
-        if (apps && apps.children.length > 0 && !window._gamesAutoScrolled) {
-          scrollToGames();
-          window._gamesAutoScrolled = true;
-        }
-        if (tries > 40) clearInterval(iv);
-      }, 250);
-
-      const obs = new MutationObserver((mutations) => {
-        ensureGamesUnderNav();
-        const apps = document.getElementById('apps-container');
-        if (apps && apps.children.length > 0 && !window._gamesAutoScrolled) {
-          scrollToGames();
-          window._gamesAutoScrolled = true;
-        }
-      });
-      obs.observe(body, { childList: true, subtree: true });
-    })();
   </script>
 </body>
 
