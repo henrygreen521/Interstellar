@@ -7,7 +7,7 @@
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="shortcut icon" id="tab-favicon" href="/favicon.png" />
-  <title id="t">Games - ChickenCoop</title>
+  <title id="t">Games - Chicken Coop</title>
   
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/error.css?v=2" />
@@ -35,7 +35,7 @@
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin: 15px auto 10px auto;
+      margin: 10px auto 10px auto !important;
       max-width: 600px;
       padding: 0 20px;
     }
@@ -206,7 +206,7 @@
     </div>
   </div>
 
-  <!-- Game Grid & Modal Logic Script (Loaded first to guarantee availability) -->
+  <!-- Game Grid & Modal Logic Script -->
   <script>
     const gnGamesList = [
       { title: "The Binding of Isaac", slug: "binding-of-isaac", category: "flash" },
@@ -276,7 +276,6 @@
       }
     };
 
-    // Run render on load
     document.addEventListener("DOMContentLoaded", () => {
       renderGrid();
     });
@@ -288,6 +287,18 @@
   <script src="/assets/mathematics/bundle.js?v=2025-04-15"></script>
   <script src="/assets/mathematics/config.js?v=2025-04-15"></script>
   <script src="/assets/js/m1.js"></script>
+
+  <!-- Force-Snap Layout Lock: Eliminates any injected script spacers below the navbar -->
+  <script>
+    window.addEventListener('load', () => {
+      const nav = document.querySelector('.f-nav');
+      const inputC = document.querySelector('.input-c');
+      if (nav && inputC && nav.nextElementSibling !== inputC) {
+        // If a script injected something between the nav and search, force move it right under nav!
+        nav.parentNode.insertBefore(inputC, nav.nextSibling);
+      }
+    });
+  </script>
 </body>
 
 </html>
