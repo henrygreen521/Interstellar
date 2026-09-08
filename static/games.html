@@ -297,6 +297,16 @@
         // If a script injected something between the nav and search, force move it right under nav!
         nav.parentNode.insertBefore(inputC, nav.nextSibling);
       }
+
+      // Ensure the games grid is visible at the top of the viewport (under the nav) on load.
+      // Some injected scripts can push content down; this recenters the view onto the games area.
+      const apps = document.getElementById('apps-container');
+      if (apps) {
+        const navHeight = nav ? nav.offsetHeight : 0;
+        const appsTop = apps.getBoundingClientRect().top + window.scrollY;
+        const target = Math.max(0, appsTop - navHeight - 8);
+        window.scrollTo({ top: target, behavior: 'smooth' });
+      }
     });
   </script>
 </body>
