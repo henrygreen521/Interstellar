@@ -7,7 +7,7 @@
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="shortcut icon" id="tab-favicon" href="/favicon.png" />
-  <title id="t">Games - Chicken Coop</title>
+  <title id="t">Games - ChickenCoop</title>
   
   <link rel="stylesheet" href="/assets/css/global.css?v=6" />
   <link rel="stylesheet" href="/assets/css/error.css?v=2" />
@@ -21,13 +21,26 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       margin: 0;
       padding: 0;
+      display: flex;
+      min-height: 100vh;
     }
 
-    /* Pinned Navbar */
+    /* Left Sidebar Navbar */
     .f-nav {
+      flex-shrink: 0;
       position: sticky;
       top: 0;
+      height: 100vh;
       z-index: 1000;
+    }
+
+    /* Main Content Area to the right of the sidebar */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 20px;
     }
 
     /* --- Search & Category Filters --- */
@@ -35,9 +48,9 @@
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin: 10px auto 10px auto !important;
+      margin: 0 auto 20px auto;
       max-width: 600px;
-      padding: 0 20px;
+      width: 100%;
     }
 
     .input-c input, .input-c select {
@@ -48,7 +61,7 @@
         rgba(255, 255, 255, 0.06) 100%
       ), rgba(20, 20, 20, 0.4);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 10px 18px;
+      padding: 12px 18px;
       border-radius: 16px;
       color: #fff;
       font-size: 15px;
@@ -69,7 +82,8 @@
     .games-main-wrapper {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 20px 20px 20px;
+      width: 100%;
+      padding: 0 0 20px 0;
       min-height: 400px;
     }
 
@@ -172,24 +186,27 @@
 </head>
 
 <body>
-  <!-- Navbar Target -->
+  <!-- Left Sidebar Navbar Target -->
   <div class="f-nav"></div>
 
-  <!-- Search & Category Filters -->
-  <div class="input-c">
-    <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
-    <select id="category" name="category" onchange="filterGames()">
-      <option value="all">All Games</option>
-      <option value="flash">Classics / Flash</option>
-      <option value="math">Trending</option>
-      <option value="2P">Multiplayer</option>
-      <option value="sports">Sports</option>
-    </select>
-  </div>
+  <!-- Main Content Wrapper (Sits beside sidebar, starts cleanly at the top) -->
+  <div class="main-content">
+    <!-- Search & Category Filters -->
+    <div class="input-c">
+      <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
+      <select id="category" name="category" onchange="filterGames()">
+        <option value="all">All Games</option>
+        <option value="flash">Classics / Flash</option>
+        <option value="math">Trending</option>
+        <option value="2P">Multiplayer</option>
+        <option value="sports">Sports</option>
+      </select>
+    </div>
 
-  <!-- Games Grid Container -->
-  <div class="games-main-wrapper">
-    <div class="apps" id="apps-container"></div>
+    <!-- Games Grid Container -->
+    <div class="games-main-wrapper">
+      <div class="apps" id="apps-container"></div>
+    </div>
   </div>
 
   <!-- Cinematic Game Player Modal -->
@@ -287,18 +304,6 @@
   <script src="/assets/mathematics/bundle.js?v=2025-04-15"></script>
   <script src="/assets/mathematics/config.js?v=2025-04-15"></script>
   <script src="/assets/js/m1.js"></script>
-
-  <!-- Force-Snap Layout Lock: Eliminates any injected script spacers below the navbar -->
-  <script>
-    window.addEventListener('load', () => {
-      const nav = document.querySelector('.f-nav');
-      const inputC = document.querySelector('.input-c');
-      if (nav && inputC && nav.nextElementSibling !== inputC) {
-        // If a script injected something between the nav and search, force move it right under nav!
-        nav.parentNode.insertBefore(inputC, nav.nextSibling);
-      }
-    });
-  </script>
 </body>
 
 </html>
