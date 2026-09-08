@@ -33,7 +33,7 @@
       z-index: 1000;
     }
 
-    /* --- Pull everything right up under the navbar --- */
+    /* --- Search & Category Filters --- */
     .input-c {
       display: flex;
       justify-content: center;
@@ -271,7 +271,6 @@
     function openGame(slug, title) {
       document.getElementById('modal-title').textContent = title;
       iframe.src = `/games/${slug}/index.html`;
-      modal.classList.0 = 'active'; // safety check
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
