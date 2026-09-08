@@ -13,9 +13,6 @@
   <link rel="stylesheet" href="/assets/css/error.css?v=2" />
   <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840529569014734"
-    crossorigin="anonymous"></script>
 
   <style>
     body {
@@ -209,14 +206,7 @@
     </div>
   </div>
 
-  <!-- Script Stack -->
-  <script src="/assets/js/mg-pxy.js"></script>
-  <script src="/assets/js/index-3.js"></script>
-  <script src="/assets/mathematics/bundle.js?v=2025-04-15"></script>
-  <script src="/assets/mathematics/config.js?v=2025-04-15"></script>
-  <script src="/assets/js/m1.js"></script>
-
-  <!-- Game Grid & Modal Logic Script -->
+  <!-- Game Grid & Modal Logic Script (Loaded first to guarantee availability) -->
   <script>
     const gnGamesList = [
       { title: "The Binding of Isaac", slug: "binding-of-isaac", category: "flash" },
@@ -232,10 +222,11 @@
       { title: "Game 9", slug: "insert-game-folder-name", category: "math" }
     ];
 
-    const appsContainer = document.getElementById('apps-container');
-
     function renderGrid(filterCat = "all", searchQuery = "") {
+      const appsContainer = document.getElementById('apps-container');
+      if (!appsContainer) return;
       appsContainer.innerHTML = "";
+      
       gnGamesList.forEach(game => {
         if (game.slug === "insert-game-folder-name") return;
 
@@ -257,38 +248,46 @@
       });
     }
 
-    renderGrid();
-
-    function filterGames() {
+    window.filterGames = function() {
       const q = document.getElementById('search').value;
       const cat = document.getElementById('category').value;
       renderGrid(cat, q);
-    }
+    };
 
-    const modal = document.getElementById('game-modal');
-    const iframe = document.getElementById('game-frame');
-
-    function openGame(slug, title) {
+    window.openGame = function(slug, title) {
       document.getElementById('modal-title').textContent = title;
-      iframe.src = `/games/${slug}/index.html`;
-      modal.classList.add('active');
+      document.getElementById('game-frame').src = `/games/${slug}/index.html`;
+      document.getElementById('game-modal').classList.add('active');
       document.body.style.overflow = 'hidden';
-    }
+    };
 
-    function closeGame() {
-      modal.classList.remove('active');
-      iframe.src = "";
+    window.closeGame = function() {
+      document.getElementById('game-modal').classList.remove('active');
+      document.getElementById('game-frame').src = "";
       document.body.style.overflow = 'auto';
-    }
+    };
 
-    function toggleFullscreen() {
+    window.toggleFullscreen = function() {
+      const iframe = document.getElementById('game-frame');
       if (iframe.requestFullscreen) {
         iframe.requestFullscreen();
       } else if (iframe.webkitRequestFullscreen) {
         iframe.webkitRequestFullscreen();
       }
-    }
+    };
+
+    // Run render on load
+    document.addEventListener("DOMContentLoaded", () => {
+      renderGrid();
+    });
   </script>
+
+  <!-- Navbar & Utility Script Stack -->
+  <script src="/assets/js/mg-pxy.js"></script>
+  <script src="/assets/js/index-3.js"></script>
+  <script src="/assets/mathematics/bundle.js?v=2025-04-15"></script>
+  <script src="/assets/mathematics/config.js?v=2025-04-15"></script>
+  <script src="/assets/js/m1.js"></script>
 </body>
 
 </html>
