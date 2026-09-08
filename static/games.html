@@ -33,14 +33,15 @@
       z-index: 1000;
     }
 
-    /* --- Force Search & Games Up to the Top --- */
+    /* --- Aggressive Pull-Up Override --- */
     .input-c {
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin: 15px auto 10px auto !important;
+      margin: 10px auto 5px auto !important;
       max-width: 600px;
       padding: 0 20px;
+      position: relative;
     }
 
     .input-c input, .input-c select {
@@ -72,7 +73,7 @@
     .games-main-wrapper {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 5px 20px 20px 20px !important;
+      padding: 0px 20px 20px 20px !important;
       min-height: 400px;
     }
 
@@ -271,6 +272,7 @@
     function openGame(slug, title) {
       document.getElementById('modal-title').textContent = title;
       iframe.src = `/games/${slug}/index.html`;
+      modal.classList.0 = 'active'; // safety check
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
