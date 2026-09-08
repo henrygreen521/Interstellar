@@ -30,12 +30,11 @@
       left: 0;
       height: 100vh;
       z-index: 1000;
-      /* If your sidebar has a set width, specify it here (e.g., width: 250px;) */
     }
 
-    /* Main Content Area - Pushed right past the sidebar and pinned strictly to the top */
+    /* Main Content Area - Pushed right past the sidebar */
     .main-content {
-      margin-left: 260px; /* Adjust this value if your sidebar is wider or narrower */
+      margin-left: 260px;
       padding: 20px;
       min-height: 100vh;
       box-sizing: border-box;
@@ -243,6 +242,8 @@
       if (!appsContainer) return;
       appsContainer.innerHTML = "";
       
+      const localSvgFallback = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><rect width='150' height='150' fill='%23141414'/><text x='50%' y='50%' fill='%23ff5722' font-family='sans-serif' font-size='13' font-weight='bold' text-anchor='middle' dominant-baseline='middle'>No Icon</text></svg>";
+
       gnGamesList.forEach(game => {
         if (game.slug === "insert-game-folder-name") return;
 
@@ -252,10 +253,10 @@
         if (matchesSearch && matchesCat) {
           const card = document.createElement('div');
           card.className = 'game-card';
-          const imgUrl = `/games/${game.slug}/thumbnail.png`; 
+          const imgUrl = `/games/${game.slug}/icon.png`; 
           
           card.innerHTML = `
-            <img src="${imgUrl}" alt="${game.title}" onerror="this.src='https://via.placeholder.com/150/1a1a1a/ff5722?text=Game'">
+            <img src="${imgUrl}" alt="${game.title}" onerror="this.onerror=null; this.src='${localSvgFallback}';">
             <h3>${game.title}</h3>
           `;
           card.onclick = () => openGame(game.slug, game.title);
