@@ -201,9 +201,12 @@
       </select>
     </div>
 
-    <!-- Games Grid Container -->
+    <!-- Games Grid Container & Lumin SDK Target -->
     <div class="games-main-wrapper">
       <div class="apps" id="apps-container"></div>
+      
+      <!-- Lumin SDK Container Integration -->
+      <div id="games" style="margin-top: 30px;"></div>
     </div>
   </div>
 
@@ -226,15 +229,7 @@
     const gnGamesList = [
       { title: "The Binding of Isaac", slug: "binding-of-isaac", category: "flash" },
       { title: "Baldi's Basics", slug: "baldis-basics", category: "flash" },
-      { title: "Minecraft 1.8.8", slug: "minecraft-1.8.8", category: "trending" },
-      { title: "Game 2", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 3", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 4", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 5", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 6", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 7", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 8", slug: "insert-game-folder-name", category: "math" },
-      { title: "Game 9", slug: "insert-game-folder-name", category: "math" }
+      { title: "Minecraft 1.8.8", slug: "minecraft-1.8.8", category: "trending" }
     ];
 
     function renderGrid(filterCat = "all", searchQuery = "") {
@@ -245,8 +240,6 @@
       const localSvgFallback = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><rect width='150' height='150' fill='%23141414'/><text x='50%' y='50%' fill='%23ff5722' font-family='sans-serif' font-size='13' font-weight='bold' text-anchor='middle' dominant-baseline='middle'>No Icon</text></svg>";
 
       gnGamesList.forEach(game => {
-        if (game.slug === "insert-game-folder-name") return;
-
         const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCat = filterCat === "all" || game.category === filterCat;
         
@@ -295,6 +288,15 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       renderGrid();
+    });
+  </script>
+
+  <!-- Lumin SDK Scripts -->
+  <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
+  <script>
+    Lumin.init({
+      container: '#games',
+      theme: 'dark'
     });
   </script>
 
