@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="referrer" content="no-referrer" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="Content-Type-Options" content="nosniff" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="shortcut icon" id="tab-favicon" href="/favicon.png" />
   <title id="t">Games - Chicken Coop</title>
@@ -41,40 +41,200 @@
       top: 0;
     }
 
-    /* --- Search & Category Filters --- */
+    /* --- Library Choice Landing View --- */
+    #selection-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      text-align: center;
+    }
+
+    #selection-view h1 {
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .choice-container {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Liquid Glass Choice Cards */
+    .choice-card {
+      width: 220px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 20, 20, 0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 30px 20px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .choice-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 10px 30px rgba(180, 180, 180, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.05);
+    }
+
+    .choice-card h3 {
+      margin: 18px 0 6px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    .choice-card p {
+      margin: 0;
+      font-size: 12px;
+      color: #888;
+    }
+
+    /* --- CSS Art: Gray World Wide Web Globe --- */
+    .art-globe {
+      width: 56px;
+      height: 56px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      position: relative;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .art-globe::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: scale(0.7);
+    }
+    .art-globe-line-v {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateX(-50%);
+    }
+    .art-globe-line-h {
+      position: absolute;
+      left: 0; right: 0;
+      top: 50%;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-50%);
+    }
+
+    /* --- CSS Art: Gray Laptop --- */
+    .art-laptop {
+      width: 56px;
+      height: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .laptop-screen {
+      width: 52px;
+      height: 34px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 5px 5px 0 0;
+      position: relative;
+      backdrop-filter: blur(4px);
+    }
+    .laptop-screen::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 50%;
+      transform: translateX(-50%);
+      width: 3px; height: 3px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+    }
+    .laptop-base {
+      width: 62px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0 0 5px 5px;
+    }
+
+    /* --- Active View Containers --- */
+    .content-view {
+      display: none;
+    }
+    .content-view.active {
+      display: block;
+    }
+
+    /* Liquid Glass Back Button */
+    .back-btn {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 20, 20, 0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ccc;
+      padding: 8px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%), rgba(30, 30, 30, 0.6);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
+
+    /* --- Search & Category Filters (Liquid Glass) --- */
     .input-c {
       display: flex;
       justify-content: center;
-      gap: 12px;
+      gap: 10px;
       margin: 0 auto 20px auto;
       max-width: 600px;
       width: 100%;
     }
 
     .input-c input, .input-c select {
-      background: linear-gradient(
-        135deg, 
-        rgba(255, 255, 255, 0.12) 0%, 
-        rgba(255, 255, 255, 0.03) 50%, 
-        rgba(255, 255, 255, 0.06) 100%
-      ), rgba(20, 20, 20, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 12px 18px;
-      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 20, 20, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 10px 16px;
+      border-radius: 14px;
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
       outline: none;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
     }
 
     .input-c input { flex: 1; }
 
     .input-c input:focus, .input-c select:focus {
-      border-color: #ff5722;
-      box-shadow: 0 0 15px rgba(255, 87, 34, 0.3);
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
     }
 
-    .input-c select option { background-color: #1a1a1a; color: #fff; }
+    .input-c select option { background-color: #141414; color: #fff; }
 
     /* --- Games Grid Styling --- */
     .games-main-wrapper {
@@ -88,41 +248,43 @@
     .apps {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 16px;
       justify-content: center;
     }
 
+    /* Liquid Glass Game Cards */
     .game-card {
-      width: 180px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(20, 20, 20, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      padding: 15px;
+      width: 160px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 20, 20, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 12px;
       text-align: center;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .game-card:hover {
-      transform: translateY(-6px);
-      border-color: #ff5722;
-      box-shadow: 0 15px 35px rgba(255, 87, 34, 0.3);
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(180, 180, 180, 0.1);
     }
 
     .game-card img {
       width: 100%;
       aspect-ratio: 1/1;
-      border-radius: 12px;
-      margin-bottom: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
       object-fit: cover;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.3);
     }
 
     .game-card h3 {
-      font-size: 15px;
+      font-size: 14px;
+      font-weight: 400;
       margin: 0;
-      color: #fff;
+      color: #ddd;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -135,6 +297,7 @@
       top: 0; left: 0;
       width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
       z-index: 9999999;
       justify-content: center;
       align-items: center;
@@ -149,30 +312,39 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
-    .modal-controls h2 { margin: 0; color: #fff; font-size: 22px; }
+    .modal-controls h2 { margin: 0; color: #eee; font-size: 18px; font-weight: 500; }
 
     .modal-controls button {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      padding: 10px 24px;
-      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(20, 20, 20, 0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ccc;
+      padding: 8px 16px;
+      border-radius: 12px;
       cursor: pointer;
-      font-weight: bold;
-      margin-left: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-left: 8px;
+      transition: all 0.2s ease;
+    }
+    .modal-controls button:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%), rgba(30, 30, 30, 0.6);
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #fff;
     }
 
     .modal-iframe-container {
       width: 90%;
       max-width: 1200px;
       height: 80vh;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%), rgba(10, 10, 10, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       overflow: hidden;
-      background: #000;
     }
 
     .modal-iframe-container iframe {
@@ -189,25 +361,59 @@
 
   <!-- Main Content Wrapper -->
   <div class="main-content">
-    <!-- Search & Category Filters -->
-    <div class="input-c">
-      <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
-      <select id="category" name="category" onchange="filterGames()">
-        <option value="all">All Games</option>
-        <option value="flash">Classics / Flash</option>
-        <option value="math">Trending</option>
-        <option value="2P">Multiplayer</option>
-        <option value="sports">Sports</option>
-      </select>
+    
+    <!-- Initial Selection View -->
+    <div id="selection-view">
+      <h1>Choose your library</h1>
+      <div class="choice-container">
+        <!-- Hosted Choice Card -->
+        <div class="choice-card" onclick="selectLibrary('hosted')">
+          <div class="art-globe">
+            <div class="art-globe-line-v"></div>
+            <div class="art-globe-line-h"></div>
+          </div>
+          <h3>Hosted</h3>
+          <p>Cloud SDK catalog</p>
+        </div>
+
+        <!-- Local Choice Card -->
+        <div class="choice-card" onclick="selectLibrary('local')">
+          <div class="art-laptop">
+            <div class="laptop-screen"></div>
+            <div class="laptop-base"></div>
+          </div>
+          <h3>Local</h3>
+          <p>Local directories</p>
+        </div>
+      </div>
     </div>
 
-    <!-- Games Grid Container & Lumin SDK Target -->
-    <div class="games-main-wrapper">
-      <div class="apps" id="apps-container"></div>
+    <!-- Local Games View -->
+    <div id="local-view" class="content-view">
+      <button class="back-btn" onclick="goHome()"><i class="fa-solid fa-arrow-left"></i> Back</button>
       
-      <!-- Lumin SDK Container Integration -->
-      <div id="games" style="margin-top: 30px;"></div>
+      <div class="input-c">
+        <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
+        <select id="category" name="category" onchange="filterGames()">
+          <option value="all">All Games</option>
+          <option value="flash">Classics / Flash</option>
+          <option value="math">Trending</option>
+          <option value="2P">Multiplayer</option>
+          <option value="sports">Sports</option>
+        </select>
+      </div>
+
+      <div class="games-main-wrapper">
+        <div class="apps" id="apps-container"></div>
+      </div>
     </div>
+
+    <!-- Hosted Games View -->
+    <div id="hosted-view" class="content-view">
+      <button class="back-btn" onclick="goHome()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <div id="games"></div>
+    </div>
+
   </div>
 
   <!-- Cinematic Game Player Modal -->
@@ -216,7 +422,7 @@
       <h2 id="modal-title">Game Title</h2>
       <div>
         <button onclick="toggleFullscreen()">Fullscreen</button>
-        <button onclick="closeGame()" style="background: rgba(255, 59, 48, 0.2); border-color: #ff3b30; color: #ff3b30;">Close</button>
+        <button onclick="closeGame()" style="border-color: rgba(255, 100, 100, 0.3); color: #f88;">Close</button>
       </div>
     </div>
     <div class="modal-iframe-container">
@@ -224,7 +430,7 @@
     </div>
   </div>
 
-  <!-- Game Grid & Modal Logic Script -->
+  <!-- Game Grid & View Switching Script -->
   <script>
     const gnGamesList = [
       { title: "The Binding of Isaac", slug: "binding-of-isaac", category: "flash" },
@@ -232,12 +438,38 @@
       { title: "Minecraft 1.8.8", slug: "minecraft-1.8.8", category: "trending" }
     ];
 
+    let luminInitialized = false;
+
+    function selectLibrary(type) {
+      document.getElementById('selection-view').classList.remove('active');
+      
+      if (type === 'local') {
+        document.getElementById('local-view').classList.add('active');
+        renderGrid();
+      } else if (type === 'hosted') {
+        document.getElementById('hosted-view').classList.add('active');
+        if (!luminInitialized && typeof Lumin !== 'undefined') {
+          Lumin.init({
+            container: '#games',
+            theme: 'dark'
+          });
+          luminInitialized = true;
+        }
+      }
+    }
+
+    function goHome() {
+      document.getElementById('local-view').classList.remove('active');
+      document.getElementById('hosted-view').classList.remove('active');
+      document.getElementById('selection-view').classList.add('active');
+    }
+
     function renderGrid(filterCat = "all", searchQuery = "") {
       const appsContainer = document.getElementById('apps-container');
       if (!appsContainer) return;
       appsContainer.innerHTML = "";
       
-      const localSvgFallback = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><rect width='150' height='150' fill='%23141414'/><text x='50%' y='50%' fill='%23ff5722' font-family='sans-serif' font-size='13' font-weight='bold' text-anchor='middle' dominant-baseline='middle'>No Icon</text></svg>";
+      const localSvgFallback = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><rect width='150' height='150' fill='%23141414'/><text x='50%' y='50%' fill='%23888' font-family='sans-serif' font-size='12' text-anchor='middle' dominant-baseline='middle'>No Icon</text></svg>";
 
       gnGamesList.forEach(game => {
         const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -287,18 +519,12 @@
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-      renderGrid();
+      goHome();
     });
   </script>
 
   <!-- Lumin SDK Scripts -->
   <script src="https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js"></script>
-  <script>
-    Lumin.init({
-      container: '#games',
-      theme: 'dark'
-    });
-  </script>
 
   <!-- Navbar & Utility Script Stack -->
   <script src="/assets/js/mg-pxy.js"></script>
