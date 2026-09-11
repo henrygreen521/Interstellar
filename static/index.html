@@ -80,8 +80,8 @@
       background-color: #000000;
       background-image: linear-gradient(
         to right, 
-        #ff5722 0%, 
-        #ff5722 calc(var(--load-progress, 0%) - 7.5%), 
+        #ffffff 0%, 
+        #ffffff calc(var(--load-progress, 0%) - 7.5%), 
         #000000 calc(var(--load-progress, 0%) + 7.5%), 
         #000000 100%
       );
@@ -103,17 +103,19 @@
       gap: 20px;
     }
     .preload-logo {
-      max-height: 80px;
-      width: auto;
-      object-fit: contain;
-      filter: var(--logo-glow, drop-shadow(0 0 20px rgba(255, 87, 34, 0.7)));
+      font-family: 'Anurati', sans-serif !important;
+      font-size: 2.2rem !important;
+      color: #ffffff !important;
+      letter-spacing: 4px !important;
+      margin: 0;
+      filter: var(--logo-glow, drop-shadow(0 0 20px rgba(255, 255, 255, 0.7)));
       transition: filter 0.05s linear;
     }
     .progress-track {
       width: 260px;
       height: 16px;
       background: rgba(0, 0, 0, 0.4);
-      border: 2px solid #ff5722;
+      border: 2px solid #ffffff;
       border-radius: 10px;
       overflow: hidden;
       padding: 2px;
@@ -121,12 +123,12 @@
     .progress-fill {
       width: 0%;
       height: 100%;
-      background-color: #ff5722;
+      background-color: #ffffff;
       border-radius: 6px;
       transition: width 0.05s linear;
     }
     .loading-text {
-      color: #ff5722;
+      color: #ffffff;
       font-family: inherit;
       font-size: 0.95rem;
       letter-spacing: 0.5px;
@@ -155,7 +157,7 @@
   <!-- Interactive Mockup Preload Overlay -->
   <div id="coop-preload-overlay">
     <div class="splash-content">
-      <img src="assets/media/icons/cooplogo2.webp" alt="ChickenCoop Logo" class="preload-logo" id="preload-logo-img" />
+      <h1 class="preload-logo" id="preload-logo-text">CHICKEN COOP</h1>
       <div class="progress-track">
         <div class="progress-fill" id="progress-bar-fill"></div>
       </div>
@@ -202,7 +204,7 @@
     const overlay = document.getElementById('coop-preload-overlay');
     const fill = document.getElementById('progress-bar-fill');
     const percentText = document.getElementById('loading-percentage');
-    const logoImg = document.getElementById('preload-logo-img');
+    const logoText = document.getElementById('preload-logo-text');
 
     function updateProgress(currentTime) {
       const elapsed = currentTime - startTime;
@@ -214,13 +216,13 @@
       if (overlay) overlay.style.setProperty('--load-progress', progress + '%');
 
       // Perfect Edge Tracking with brighter glow values
-      if (logoImg) {
+      if (logoText) {
         if (progress < 42) {
-          logoImg.style.filter = 'drop-shadow(0 0 22px rgba(255, 87, 34, 0.75))';
+          logoText.style.filter = 'drop-shadow(0 0 22px rgba(255, 255, 255, 0.75))';
         } else if (progress <= 58) {
-          logoImg.style.filter = 'drop-shadow(0 0 24px rgba(0, 0, 0, 0.85))';
+          logoText.style.filter = 'drop-shadow(0 0 24px rgba(200, 200, 200, 0.85))';
         } else {
-          logoImg.style.filter = 'drop-shadow(0 0 22px rgba(0, 0, 0, 0.75))';
+          logoText.style.filter = 'drop-shadow(0 0 22px rgba(255, 255, 255, 0.75))';
         }
       }
 
@@ -316,8 +318,8 @@
 
     const sliderStyle = document.createElement('style');
     sliderStyle.innerHTML = `
-      #coop-clock input:checked + span { background-color: #ff5722 !important; }
-      #coop-clock input:checked + span:before { transform: translateX(14px); }
+      #coop-clock input:checked + span { background-color: #ffffff !important; border-color: #ffffff !important; }
+      #coop-clock input:checked + span:before { transform: translateX(14px); background-color: #141414; }
       #coop-clock span:before {
         position: absolute; content: ""; height: 12px; width: 12px; left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%;
       }
