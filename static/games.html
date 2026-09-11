@@ -15,6 +15,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       background-color: #0b0b0b;
       color: #ffffff;
@@ -180,6 +184,9 @@
     /* --- Active View Containers --- */
     .content-view {
       display: none;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
     .content-view.active {
       display: block;
@@ -390,7 +397,7 @@
 
     <!-- Local Games View -->
     <div id="local-view" class="content-view">
-      <button class="back-btn" onclick="goHome()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <button class="back-btn" onclick="goHome()"><i class="fa-solid fa-arrow-left"></i> Top Selection</button>
       
       <div class="input-c">
         <input type="text" id="search" onkeyup="filterGames()" placeholder="Search library..." />
@@ -410,7 +417,7 @@
 
     <!-- Hosted Games View -->
     <div id="hosted-view" class="content-view">
-      <button class="back-btn" onclick="goHome()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <button class="back-btn" onclick="goHome()"><i class="fa-solid fa-arrow-left"></i> Top Selection</button>
       <div id="games"></div>
     </div>
 
@@ -441,13 +448,15 @@
     let luminInitialized = false;
 
     function selectLibrary(type) {
-      document.getElementById('selection-view').classList.remove('active');
+      document.getElementById('local-view').classList.remove('active');
+      document.getElementById('hosted-view').classList.remove('active');
+      
+      const targetView = document.getElementById(type + '-view');
+      targetView.classList.add('active');
       
       if (type === 'local') {
-        document.getElementById('local-view').classList.add('active');
         renderGrid();
       } else if (type === 'hosted') {
-        document.getElementById('hosted-view').classList.add('active');
         if (!luminInitialized && typeof Lumin !== 'undefined') {
           Lumin.init({
             container: '#games',
@@ -456,12 +465,15 @@
           luminInitialized = true;
         }
       }
+
+      // Instantly scroll smoothly down to the library section
+      targetView.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function goHome() {
       document.getElementById('local-view').classList.remove('active');
       document.getElementById('hosted-view').classList.remove('active');
-      document.getElementById('selection-view').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function renderGrid(filterCat = "all", searchQuery = "") {
@@ -519,7 +531,8 @@
     };
 
     document.addEventListener("DOMContentLoaded", () => {
-      goHome();
+      // Start at the top selection view
+      window.scrollTo({ top: 0, behavior: 'instant' });
     });
   </script>
 
