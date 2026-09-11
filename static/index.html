@@ -105,10 +105,10 @@
     .preload-logo {
       font-family: 'Anurati', sans-serif !important;
       font-size: 2.2rem !important;
-      color: #ffffff !important;
+      color: #000000 !important;
       letter-spacing: 4px !important;
       margin: 0;
-      filter: var(--logo-glow, drop-shadow(0 0 20px rgba(255, 255, 255, 0.7)));
+      filter: var(--logo-glow, drop-shadow(0 0 20px rgba(0, 0, 0, 0.4)));
       transition: filter 0.05s linear;
     }
     .progress-track {
@@ -215,14 +215,14 @@
       if (percentText) percentText.textContent = `Loading... [${rounded}]%`;
       if (overlay) overlay.style.setProperty('--load-progress', progress + '%');
 
-      // Perfect Edge Tracking with brighter glow values
+      // Perfect Edge Tracking with shadow values
       if (logoText) {
         if (progress < 42) {
-          logoText.style.filter = 'drop-shadow(0 0 22px rgba(255, 255, 255, 0.75))';
+          logoText.style.filter = 'drop-shadow(0 0 22px rgba(0, 0, 0, 0.4))';
         } else if (progress <= 58) {
-          logoText.style.filter = 'drop-shadow(0 0 24px rgba(200, 200, 200, 0.85))';
+          logoText.style.filter = 'drop-shadow(0 0 24px rgba(50, 50, 50, 0.5))';
         } else {
-          logoText.style.filter = 'drop-shadow(0 0 22px rgba(255, 255, 255, 0.75))';
+          logoText.style.filter = 'drop-shadow(0 0 22px rgba(0, 0, 0, 0.4))';
         }
       }
 
